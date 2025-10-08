@@ -69,10 +69,10 @@ Dataset yang digunakan berasal dari Kaggle:
 ---
 
 ## 🌐 Link Deployment PWS
-🔗 **[TO BE ADDED]**
+🔗 [EPLRadar](https://raihan-maulana41-eplradar.pbp.cs.ui.ac.id/)
 
 ---
 
 ## 🎨 Link Figma (Prototype Desain)
-🔗 [Figma Prototype - EPL Info Hub](https://www.figma.com/design/x3Nh1E5K1JBcf06W9FKGO8/Prototype?node-id=0-1&t=IZnH6RKu0OLDW8Ei-1)
+🔗 [Figma Prototype - EPLRadar](https://www.figma.com/design/x3Nh1E5K1JBcf06W9FKGO8/Prototype?node-id=0-1&t=IZnH6RKu0OLDW8Ei-1)
 
