@@ -1,3 +1,8 @@
 from django.shortcuts import render
 
-# Create your views here.
+# fungsi untuk test doang
+def show_news(request):
+    context = {
+        'news' : "news"
+    }
+    return render(request, "news.html", context)
