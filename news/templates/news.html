@@ -1,1 +1,76 @@
-{{news}}
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berita Terkini</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <div class="bg-gray-800 h-64 rounded-2xl mb-8"></div>
+        <h2 class="text-2xl font-semibold mb-4">Berita Terkini</h2>
+
+        <div class="flex items-center space-x-4 mb-6">
+            <select id="categoryFilter" 
+                    onchange="applyFilterSort()" 
+                    class="bg-gray-800 text-white px-4 py-2 rounded-lg cursor-pointer focus:outline-none">
+                <option value="all">Kategori (Semua)</option>
+                {% for code, label in category_choices %}
+                    <option value="{{ code }}" 
+                            {% if code == current_category %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <select id="sortOrder" 
+                    onchange="applyFilterSort()" 
+                    class="bg-gray-800 text-white px-4 py-2 rounded-lg cursor-pointer focus:outline-none">
+                <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Terbaru</option>
+                <option value="views_desc" {% if current_sort == 'views_desc' %}selected{% endif %}>Views Terbanyak</option>
+                <option value="views_asc" {% if current_sort == 'views_asc' %}selected{% endif %}>Views Tersedikit</option>
+            </select>
+        </div>
+        <div id="newsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {% for news in news_items %}
+            <div class="bg-gray-800 rounded-xl p-4 flex flex-col justify-between">
+                <div>
+                    {% if news.thumbnail %}
+                        <img src="{{ news.thumbnail }}" class="rounded-xl mb-4">
+                    {% endif %}
+                    <span class="bg-gray-700 text-sm px-3 py-1 rounded-md">{{ news.category|title }}</span> 
+                    <p class="text-gray-400 text-sm mt-1">{{ news.created_at|date:"d M Y" }} • {{ news.news_views }} Views</p>
+                    <h3 class="text-lg font-semibold mt-2">{{ news.title }}</h3>
+                    <p class="text-gray-400 text-sm mt-1 line-clamp-2">{{ news.content|truncatechars:60 }}</p>
+                </div>
+                <div class="mt-4 flex justify-between">
+                   <a href="{% url 'news_detail' pk=news.id %}" class="bg-blue-600 px-4 py-2 rounded-lg text-sm hover:bg-blue-700">Baca Selengkapnya</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+    function applyFilterSort() {
+        const category = document.getElementById('categoryFilter').value;
+        const sort = document.getElementById('sortOrder').value;
+        let url = new URL(window.location.href);
+        url.searchParams.delete('category');
+        url.searchParams.delete('sort');
+
+       
+        if (category && category !== 'all') {
+            url.searchParams.set('category', category);
+        }
+
+        if (sort && sort !== '-created_at') {
+            url.searchParams.set('sort', sort);
+        }
+        window.location.href = url.toString();
+    }
+    </script>
+</body>
+</html>
