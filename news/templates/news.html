@@ -1,12 +1,7 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Berita Terkini</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
+{% block content %}
+{% include 'navbar.html'%}
 <body class="bg-gray-900 text-white min-h-screen">
     <div class="max-w-7xl mx-auto p-6">
         <div class="bg-gray-800 h-64 rounded-2xl mb-8"></div>
@@ -46,7 +41,7 @@
                     <p class="text-gray-400 text-sm mt-1 line-clamp-2">{{ news.content|truncatechars:60 }}</p>
                 </div>
                 <div class="mt-4 flex justify-between">
-                   <a href="{% url 'news_detail' pk=news.id %}" class="bg-blue-600 px-4 py-2 rounded-lg text-sm hover:bg-blue-700">Baca Selengkapnya</a>
+                   <a href="{% url 'news:news_detail' pk=news.id %}" class="bg-blue-600 px-4 py-2 rounded-lg text-sm hover:bg-blue-700">Baca Selengkapnya</a>
                 </div>
             </div>
             {% endfor %}
@@ -73,4 +68,4 @@
     }
     </script>
 </body>
-</html>
+{% endblock content %}
