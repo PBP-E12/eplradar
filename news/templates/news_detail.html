@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ news_item.title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <div class="max-w-4xl mx-auto p-6">
+        
+        <a href="{% url 'news_list' %}" class="text-blue-400 hover:text-blue-500 mb-6 flex items-center">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back to News
+        </a>
+
+        <div class="mb-8">
+            <div class="flex items-center space-x-2 mb-3">
+                <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase">{{ news_item.category|title }}</span>
+                
+                {% if news_item.is_featured %}
+                    <span class="bg-yellow-500 text-white text-xs font-semibold px-3 py-1 rounded-full">Featured</span>
+                {% endif %}
+            </div>
+
+            <h1 class="text-4xl font-bold mb-3">{{ news_item.title }}</h1>
+            
+            <p class="text-gray-400 text-sm">
+                {{ news_item.created_at|date:"F d, Y" }} at {{ news_item.created_at|date:"h:i A" }} 
+                <span class="mx-2">•</span> 
+                {{ news_item.news_views }} views 
+            </p>
+        </div>
+
+        {% if news_item.thumbnail %}
+            <img src="{{ news_item.thumbnail }}" alt="{{ news_item.title }}" class="w-full rounded-xl mb-8 object-cover">
+        {% endif %}
+
+        <div class="text-lg text-gray-300 leading-relaxed whitespace-pre-wrap">
+            {{ news_item.content }}
+        </div>
+        
+    </div>
+</body>
+</html>
