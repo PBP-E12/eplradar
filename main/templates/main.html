@@ -1,1 +1,19 @@
-<h1>{{ title }}</h1>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title> {{ title }} </title>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="bg-zinc-900 w-full pt-16 min-h-screen">
+    <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
+        <div class="mt-24 bg-zinc-800 rounded-lg h-[560px]">
+
+        </div>
+
+    </div>
+</div>
+{% endblock content %}
