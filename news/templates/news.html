@@ -1,71 +1,103 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-{% include 'navbar.html'%}
+{% include 'navbar.html' %}
+{% include 'modal.html' %}
+{% include 'toast.html' %}
+
 <body class="bg-gray-900 text-white min-h-screen">
-    <div class="max-w-7xl mx-auto p-6">
-        <div class="bg-gray-800 h-64 rounded-2xl mb-8"></div>
-        <h2 class="text-2xl font-semibold mb-4">Berita Terkini</h2>
-
-        <div class="flex items-center space-x-4 mb-6">
-            <select id="categoryFilter" 
-                    onchange="applyFilterSort()" 
-                    class="bg-gray-800 text-white px-4 py-2 rounded-lg cursor-pointer focus:outline-none">
-                <option value="all">Kategori (Semua)</option>
-                {% for code, label in category_choices %}
-                    <option value="{{ code }}" 
-                            {% if code == current_category %}selected{% endif %}>
-                        {{ label }}
-                    </option>
-                {% endfor %}
-            </select>
-
-            <select id="sortOrder" 
-                    onchange="applyFilterSort()" 
-                    class="bg-gray-800 text-white px-4 py-2 rounded-lg cursor-pointer focus:outline-none">
-                <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Terbaru</option>
-                <option value="views_desc" {% if current_sort == 'views_desc' %}selected{% endif %}>Views Terbanyak</option>
-                <option value="views_asc" {% if current_sort == 'views_asc' %}selected{% endif %}>Views Tersedikit</option>
-            </select>
-        </div>
-        <div id="newsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {% for news in news_items %}
-            <div class="bg-gray-800 rounded-xl p-4 flex flex-col justify-between">
-                <div>
-                    {% if news.thumbnail %}
-                        <img src="{{ news.thumbnail }}" class="rounded-xl mb-4">
-                    {% endif %}
-                    <span class="bg-gray-700 text-sm px-3 py-1 rounded-md">{{ news.category|title }}</span> 
-                    <p class="text-gray-400 text-sm mt-1">{{ news.created_at|date:"d M Y" }} • {{ news.news_views }} Views</p>
-                    <h3 class="text-lg font-semibold mt-2">{{ news.title }}</h3>
-                    <p class="text-gray-400 text-sm mt-1 line-clamp-2">{{ news.content|truncatechars:60 }}</p>
-                </div>
-                <div class="mt-4 flex justify-between">
-                   <a href="{% url 'news:news_detail' pk=news.id %}" class="bg-blue-600 px-4 py-2 rounded-lg text-sm hover:bg-blue-700">Baca Selengkapnya</a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+  <div class="max-w-7xl mx-auto p-6">
+    <div class="bg-gray-800 h-64 rounded-2xl mb-8"></div>
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold">Berita Terkini</h2>
+      <button onclick="showModal()"
+        class="bg-blue-600 hover:bg-black text-white px-4 py-2 rounded-lg shadow-md transition-all">
+        Add News
+      </button>
     </div>
 
-    <script>
-    function applyFilterSort() {
-        const category = document.getElementById('categoryFilter').value;
-        const sort = document.getElementById('sortOrder').value;
-        let url = new URL(window.location.href);
-        url.searchParams.delete('category');
-        url.searchParams.delete('sort');
+    <!-- Filter & Sort -->
+    <div class="flex items-center space-x-4 mb-6">
+      <select id="categoryFilter" onchange="loadNews()"
+        class="bg-gray-800 text-white px-4 py-2 rounded-lg cursor-pointer focus:outline-none">
+        <option value="all">Kategori (Semua)</option>
+        {% for code, label in category_choices %}
+        <option value="{{ code }}" {% if code == current_category %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
 
-       
-        if (category && category !== 'all') {
-            url.searchParams.set('category', category);
-        }
+      <select id="sortOrder" onchange="loadNews()"
+        class="bg-gray-800 text-white px-4 py-2 rounded-lg cursor-pointer focus:outline-none">
+        <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Terbaru</option>
+        <option value="views_desc" {% if current_sort == 'views_desc' %}selected{% endif %}>Views Terbanyak</option>
+        <option value="views_asc" {% if current_sort == 'views_asc' %}selected{% endif %}>Views Tersedikit</option>
+      </select>
+    </div>
 
-        if (sort && sort !== '-created_at') {
-            url.searchParams.set('sort', sort);
-        }
-        window.location.href = url.toString();
+    <!-- Container News -->
+    <div id="newsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for item in news_items %}
+      <div class="bg-gray-800 rounded-xl p-4 shadow-md hover:bg-gray-700 transition">
+        {% if item.thumbnail %}
+        <img src="{{ item.thumbnail }}" class="rounded-xl mb-4 w-full">
+        {% endif %}
+        <div class="text-sm text-gray-400">{{ item.get_category_display }} • {{ item.created_at|date:"d M Y" }}</div>
+        <h3 class="text-lg font-semibold text-white mt-1">{{ item.title }}</h3>
+        <p class="text-gray-300 text-sm mt-2 line-clamp-2">{{ item.content|truncatechars:80 }}</p>
+        <div class="mt-3">
+          <a href="{% url 'news:news_detail' item.id %}" class="text-blue-400 hover:underline text-sm">
+            Baca selengkapnya →
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script>
+    // Fungsi load news dengan AJAX
+    async function loadNews() {
+      const category = document.getElementById('categoryFilter').value;
+      const sort = document.getElementById('sortOrder').value;
+
+      const response = await fetch(`?category=${category}&sort=${sort}`, {
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+      });
+
+      const data = await response.json();
+      const container = document.getElementById('newsContainer');
+      container.innerHTML = '';
+
+      // Efek visual (fade saat reload)
+      container.classList.add('opacity-50', 'transition', 'duration-300');
+      setTimeout(() => container.classList.remove('opacity-50'), 300);
+
+    
+      data.news_items.forEach((item, index) => {
+        const delay = index * 100;
+        setTimeout(() => {
+          container.insertAdjacentHTML('beforeend', `
+            <div class="bg-gray-800 rounded-xl p-4 shadow-md hover:bg-gray-700 transition transform opacity-0 translate-y-2">
+              ${item.thumbnail ? `<img src="${item.thumbnail}" class="rounded-xl mb-4 w-full">` : ''}
+              <div class="text-sm text-gray-400">${item.category_display} • ${item.created_at}</div>
+              <h3 class="text-lg font-semibold text-white mt-1">${item.title}</h3>
+              <p class="text-gray-300 text-sm mt-2 line-clamp-2">${item.content.substring(0, 80)}...</p>
+              <div class="mt-3">
+                <a href="/news/${item.id}/" class="text-blue-400 hover:underline text-sm">Baca selengkapnya →</a>
+              </div>
+            </div>
+          `);
+
+          const lastCard = container.lastElementChild;
+          requestAnimationFrame(() => {
+            lastCard.classList.remove('opacity-0', 'translate-y-2');
+            lastCard.classList.add('opacity-100', 'translate-y-0', 'transition-all', 'duration-500');
+          });
+        }, delay);
+      });
     }
-    </script>
+    document.addEventListener('newsAdded', loadNews);
+    document.addEventListener('DOMContentLoaded', loadNews);
+  </script>
 </body>
 {% endblock content %}
