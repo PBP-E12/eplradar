@@ -1,70 +1,52 @@
 {% load static %}
 
-<nav class="fixed top-0 left-0 w-full bg-zinc-950 z-50 p-3">
-  <div class="mx-auto px-6 lg:px-20">
-    <div class="flex items-center justify-between h-16">
-      <!-- Logo -->
-      <div class="flex items-center">
-        <h1 class="text-xl font-semibold text-gray-700">
-          <a href="">
-            <img src="{% static 'img/logo.png' %}" alt="Logo" class="h-8 w-auto">
-          </a>
-        </h1>
-      </div>
-      
-      <!-- Desktop Navigation -->
-      <div class="hidden md:flex items-center space-x-12">
-        <a href="" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors">
-          Home
-        </a>
-        <a href="" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors">
-          Match
-        </a>
-        <a href="" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors">
-          Statistik
-        </a>
-        <a href="" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors">
-          Pemain
-        </a>
-        <a href="" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors">
-          Klub
-        </a>
-        <a href="{% url 'news:news_list'%}" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors">
-          Berita
-        </a>
-      </div>
-      
-      <!-- Desktop User Section -->
-      <div class="hidden md:flex items-center space-x-6">
-        {% comment %} {% if user.is_authenticated %} 
-          <div class="text-right">
-            <div class="text-sm font-medium text-gray-900">{{ name|default:user.username }}</div>
-            <div class="text-xs text-gray-500">{{ npm|default:"Student" }} - {{ class|default:"Class" }}</div>
-          </div>
-          <a href="{% url 'main:logout' %}" class="text-red-600 hover:text-red-700 font-medium transition-colors">
-            Logout
-          </a>
-        {% else %} {% endcomment %}
-          <a href="login/" class="text-neutral-50 hover:bg-zinc-900 border font-medium transition-colors rounded-xl px-6 py-3 border-1 border-gray-300">
-            Login
-          </a>
-          <a href="register/" class="bg-blue-600 hover:bg-blue-800 text-white px-6 py-3 rounded-xl font-medium transition-colors">
-            Sign Up
-          </a>
-        {% comment %} {% endif %} {% endcomment %}
-      </div>
-      
-      <!-- Mobile Menu Button -->
-      <div class="md:hidden flex items-center">
-        <button class="mobile-menu-button p-2 text-gray-600 hover:text-gray-900 transition-colors">
-          <span class="sr-only">Open menu</span>
-          <div class="w-6 h-6 flex flex-col justify-center items-center">
-            <span class="bg-current block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm"></span>
-            <span class="bg-current block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm my-0.5"></span>
-            <span class="bg-current block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm"></span>
-          </div>
-        </button>
-      </div>
+<nav class="fixed top-0 left-0 w-full bg-zinc-950 z-50">
+    <div class="mx-auto px-4 sm:px-6 lg:px-20">
+        <div class="flex items-center justify-between h-24">
+            
+            <div class="flex-shrink-0">
+                <a href=""> <img src="{% static 'img/logo.png' %}" alt="Logo" class="h-8 w-auto">
+                </a>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-6 lg:space-x-14">
+                <a href="#" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Home</a>
+                <a href="#" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Match</a>
+                <a href="#" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Statistik</a>
+                <a href="#" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Pemain</a>
+                <a href="#" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Klub</a>
+                <a href="#" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Berita</a>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
+                {% if user.is_authenticated %} 
+                    <div class="flex items-center space-x-4">
+                        <div class="font-medium text-neutral-50">{{ name|default:user.username }}</div>
+                        <a href="" class="px-3 py-1.5 text-red-400 hover:text-red-500 border border-red-400 rounded-lg text-sm font-medium transition-colors">
+                            Logout
+                        </a>
+                    </div>
+                {% else %}
+                    <a href="" class="text-neutral-50 hover:bg-zinc-800 border border-gray-600 px-6 py-3 rounded-xl font-medium transition-colors text-sm">
+                        Login
+                    </a>
+                    <a href="" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-colors flex items-center text-sm">
+                        <img src= "{% static "img/signup.svg" %}" alt="Signup Icon" class="inline h-4 w-4 mr-2">
+                        Sign Up
+                    </a>
+                {% endif %}
+            </div>
+            
+        
+            <div class="md:hidden flex items-center">
+                <button class="mobile-menu-button p-2 text-neutral-50 hover:text-gray-300 transition-colors">
+                    <span class="sr-only">Open menu</span>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
 
     <div class="mobile-menu hidden md:hidden bg-zinc-900 border-t border-zinc-800"> <div class="px-4 py-4 space-y-2"> <div class="space-y-1">
@@ -118,4 +100,4 @@
             menu.classList.toggle("hidden");
         });
     </script>
-</nav>
+</nav>  
