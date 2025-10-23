@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Register - EPLRadar</title>
+{% endblock meta %}
+
+{% block content %}
+<body class="bg-gradient-to-b from-gray-900 to-gray-800 text-white min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-md p-8">
+    <div class="bg-gray-900/60 backdrop-blur-md border border-blue-500/20 shadow-2xl rounded-2xl p-8">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-blue-400 mb-2 tracking-wide">Create Account</h2>
+        <p class="text-gray-400">Buat akun EPL Radar kamu sekarang</p>
+      </div>
+
+      <!-- Form Errors -->
+      {% if form.non_field_errors %}
+        <div class="mb-6">
+          {% for error in form.non_field_errors %}
+            <div class="px-4 py-3 rounded-md text-sm border border-red-400/40 bg-red-900/30 text-red-200">
+              {{ error }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if form.errors %}
+        <div class="mb-6">
+          {% for field, errors in form.errors.items %}
+            {% if field != '__all__' %}
+              {% for error in errors %}
+                <div class="px-4 py-3 rounded-md text-sm border border-red-400/40 bg-red-900/30 text-red-200 mb-2">
+                  <strong>{{ field|title }}:</strong> {{ error }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="POST" action="" class="space-y-6">
+        {% csrf_token %}
+
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+          <input 
+            id="username" 
+            name="username" 
+            type="text" 
+            required 
+            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500" 
+            placeholder="Enter your username">
+        </div>
+
+        <div>
+          <label for="password1" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+          <input 
+            id="password1" 
+            name="password1" 
+            type="password" 
+            required 
+            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500" 
+            placeholder="Create your password">
+        </div>
+
+        <div>
+          <label for="password2" class="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
+          <input 
+            id="password2" 
+            name="password2" 
+            type="password" 
+            required 
+            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500" 
+            placeholder="Confirm your password">
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-500/50 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-lg shadow-blue-900/30">
+          Buat Akun
+        </button>
+      </form>
+
+      <!-- Messages -->
+      {% if messages %}
+        <div class="mt-6">
+          {% for message in messages %}
+            <div 
+              class="px-4 py-3 rounded-md text-sm border 
+              {% if message.tags == 'success' %}
+                border-blue-400/40 bg-blue-900/30 text-blue-200
+              {% elif message.tags == 'error' %}
+                border-red-400/40 bg-red-900/30 text-red-200
+              {% else %}
+                border-gray-600 bg-gray-800 text-gray-200
+              {% endif %}
+              ">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="mt-8 text-center border-t border-gray-700 pt-6">
+        <p class="text-gray-400 text-sm">
+          Sudah punya akun? 
+          <a href="{% url 'main:login' %}" class="text-blue-400 hover:text-blue-300 font-medium transition">
+            Sign In
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+{% endblock content %}
