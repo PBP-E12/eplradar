@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title> {{ title }} </title>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+
+<div class="bg-zinc-900 w-full pt-16 min-h-screen text-white">
+    <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
+        <div class="my-24 bg-zinc-800 rounded-lg h-[560px]">
+            </div>
+
+    <section id="top-score">
+        <h2>Top Scorer Pemain</h2>
+        <ul id="top-scorer-players"></ul>
+
+        <h2>Top Scorer Klub</h2>
+        <ul id="top-scorer-clubs"></ul>
+    </section>
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white">Top Assist</h2>
+        </div>
+
+    <section id="clean-sheet">
+        <h2>Clean Sheet Pemain</h2>
+        <ul id="top-cleansheet-players"></ul>
+
+        <h2>Clean Sheet Klub</h2>
+        <ul id="top-cleansheet-clubs"></ul>
+    </section>
+
+    </div>
+</div>
+
+{% include 'footer.html' %}
+{% endblock content %}
