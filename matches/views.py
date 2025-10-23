@@ -6,4 +6,4 @@ def show_matches(request):
         "name" : "Oscar",
     }
     
-    return render(request, "show_matches.html", context)
+    return render(request, "show_detail.html", context)

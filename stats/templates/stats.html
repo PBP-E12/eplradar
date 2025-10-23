@@ -9,9 +9,9 @@
 {% include 'navbar.html' %}
 
 
-<div class="bg-zinc-900 w-full pt-16 min-h-screen text-white">
+<div class="bg-gray-900 w-full pt-16 min-h-screen text-white">
     <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
-        <div class="my-24 bg-zinc-800 rounded-lg h-[560px]">
+        <div class="my-24 bg-gray-800 rounded-lg h-[560px]">
         </div>
 
         <!-- Filter Section -->
@@ -45,6 +45,82 @@
 </div>
 
     <script>
+        
+const dummyClubs = [
+  {
+    "name": "Arsenal",
+    "rank": 1,
+    "matches_played": 9,
+    "wins": 8,
+    "draws": 1,
+    "losses": 0,
+    "goals_scored": 25,
+    "goals_conceded": 7,
+    "points": 25,
+    "logo": "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"
+  },
+  {
+    "name": "Manchester City",
+    "rank": 2,
+    "matches_played": 9,
+    "wins": 7,
+    "draws": 1,
+    "losses": 1,
+    "goals_scored": 22,
+    "goals_conceded": 8,
+    "points": 22,
+    "logo": "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg"
+  },
+  {
+    "name": "Liverpool",
+    "rank": 3,
+    "matches_played": 9,
+    "wins": 6,
+    "draws": 2,
+    "losses": 1,
+    "goals_scored": 20,
+    "goals_conceded": 10,
+    "points": 20,
+    "logo": "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg"
+  },
+  {
+    "name": "Tottenham Hotspur",
+    "rank": 4,
+    "matches_played": 9,
+    "wins": 6,
+    "draws": 2,
+    "losses": 1,
+    "goals_scored": 18,
+    "goals_conceded": 12,
+    "points": 20,
+    "logo": "https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg"
+  },
+  {
+    "name": "Chelsea",
+    "rank": 5,
+    "matches_played": 9,
+    "wins": 5,
+    "draws": 3,
+    "losses": 1,
+    "goals_scored": 17,
+    "goals_conceded": 10,
+    "points": 18,
+    "logo": "https://upload.wikimedia.org/wikipedia/en/7/71/Chelsea_FC.svg"
+  },
+  {
+    "name": "Newcastle United",
+    "rank": 6,
+    "matches_played": 9,
+    "wins": 5,
+    "draws": 2,
+    "losses": 2,
+    "goals_scored": 19,
+    "goals_conceded": 14,
+    "points": 17,
+    "logo": "https://upload.wikimedia.org/wikipedia/en/5/56/Newcastle_United_FC_logo.svg"
+  }
+];
+
 const grid = document.getElementById("grid");
 const loading = document.getElementById("loading");
 const error = document.getElementById("error");
@@ -98,11 +174,11 @@ if (mode === "klub") {
 
     el.innerHTML = `
       <img src="${club.logo || '/static/img/no-image.png'}" 
-           alt="${club.club_name}" 
+           alt="${club.name}" 
            class="h-[100px] w-[100px] object-contain mr-6">
 
       <div class="flex-1 text-left">
-        <h1 class="text-lg font-semibold text-white">${club.club_name}</h1>
+        <h1 class="text-lg font-semibold text-white">${club.name}</h1>
       </div>
 
       <div class="text-right">
@@ -112,7 +188,7 @@ if (mode === "klub") {
     grid.appendChild(el);
   });
 } else {
-  data.forEach((player) => {
+  /*data.forEach((player) => {
     const el = document.createElement("div");
     el.className =
       "flex items-center justify-between rounded-xl py-4 px-6 bg-gray-800 hover:ring hover:ring-blue-500/50 transition duration-300";
@@ -137,7 +213,7 @@ if (mode === "klub") {
       </div>
     `;
     grid.appendChild(el);
-  });
+  });*/
 }
 
 }
@@ -147,19 +223,19 @@ btnKlub.addEventListener("click", () => {
   mode = "klub";
   btnKlub.className = "text-blue-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer";
   btnPemain.className = "text-grey-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer"
-  fetchStats();
+  //fetchStats();
 });
 
 btnPemain.addEventListener("click", () => {
     mode = "pemain";
     btnKlub.className = "text-grey-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer"
     btnPemain.className = "text-blue-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer"
-  fetchStats();
+  //fetchStats();
 });
 
 // Load pertama kali
-fetchStats();
-
+//fetchStats();
+renderCards(dummyClubs);
 </script>
 
 
