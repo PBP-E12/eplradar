@@ -8,13 +8,19 @@
 <body class="bg-gray-900 text-white min-h-screen">
   <div class="max-w-7xl mx-auto p-6">
     <div class="bg-gray-800 h-64 rounded-2xl mb-8"></div>
+
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-semibold">Berita Terkini</h2>
+      {% if user.is_authenticated %}
       <button onclick="showModal()"
         class="bg-blue-600 hover:bg-black text-white px-4 py-2 rounded-lg shadow-md transition-all">
         Add News
       </button>
+      {% else %}
+      <p class="text-gray-400 text-sm">Login untuk menambahkan berita.</p>
+      {% endif %}
     </div>
+
     <div class="flex items-center space-x-4 mb-6">
       <select id="categoryFilter" onchange="loadNews()"
         class="bg-gray-800 text-white px-4 py-2 rounded-lg cursor-pointer focus:outline-none">
@@ -45,18 +51,24 @@
           <a href="{% url 'news:news_detail' item.id %}" class="text-blue-400 hover:underline text-sm">
             Baca selengkapnya →
           </a>
+          {% if user.is_authenticated and item.user == user %}
           <div class="flex gap-2">
             <button onclick="editNews({{ item.id }})" class="text-yellow-400 hover:text-yellow-500 transition">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                </path>
               </svg>
             </button>
             <button onclick="deleteNews({{ item.id }})" class="text-red-400 hover:text-red-500 transition">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                </path>
               </svg>
             </button>
           </div>
+          {% endif %}
         </div>
       </div>
       {% endfor %}
@@ -64,7 +76,7 @@
   </div>
 
   <script>
-    // Fungsi load news dengan AJAX
+    // Fungsi memuat berita secara AJAX
     async function loadNews() {
       const category = document.getElementById('categoryFilter').value;
       const sort = document.getElementById('sortOrder').value;
@@ -77,13 +89,12 @@
       const container = document.getElementById('newsContainer');
       container.innerHTML = '';
 
-      
-      container.classList.add('opacity-50', 'transition', 'duration-300');
-      setTimeout(() => container.classList.remove('opacity-50'), 300);
+      const currentUserId = data.current_user_id;
 
-    
       data.news_items.forEach((item, index) => {
-        const delay = index * 100;
+        const isOwner = currentUserId && item.user_id === currentUserId;
+        const delay = index * 80;
+
         setTimeout(() => {
           container.insertAdjacentHTML('beforeend', `
             <div class="bg-gray-800 rounded-xl p-4 shadow-md hover:bg-gray-700 transition transform opacity-0 translate-y-2" data-news-id="${item.id}">
@@ -93,106 +104,95 @@
               <p class="text-gray-300 text-sm mt-2 line-clamp-2">${item.content.substring(0, 80)}...</p>
               <div class="mt-3 flex justify-between items-center">
                 <a href="/news/${item.id}/" class="text-blue-400 hover:underline text-sm">Baca selengkapnya →</a>
+                ${isOwner ? `
                 <div class="flex gap-2">
                   <button onclick="editNews(${item.id})" class="text-yellow-400 hover:text-yellow-500 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                     </svg>
                   </button>
                   <button onclick="deleteNews(${item.id})" class="text-red-400 hover:text-red-500 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                     </svg>
                   </button>
-                </div>
+                </div>` : ''}
               </div>
             </div>
           `);
 
-          const lastCard = container.lastElementChild;
+          const card = container.lastElementChild;
           requestAnimationFrame(() => {
-            lastCard.classList.remove('opacity-0', 'translate-y-2');
-            lastCard.classList.add('opacity-100', 'translate-y-0', 'transition-all', 'duration-500');
+            card.classList.remove('opacity-0', 'translate-y-2');
+            card.classList.add('opacity-100', 'translate-y-0', 'transition-all', 'duration-500');
           });
         }, delay);
       });
     }
 
-    // Edit News Function
     async function editNews(newsId) {
       try {
-        // ambil data
-        const card = document.querySelector(`[data-news-id="${newsId}"]`);
-        const title = card.querySelector('h3').textContent;
-        const content = card.querySelector('p').textContent.replace('...', '');
-        
         const response = await fetch(`?category=all&sort=-created_at`, {
           headers: { "X-Requested-With": "XMLHttpRequest" }
         });
         const data = await response.json();
-        const newsItem = data.news_items.find(item => item.id === newsId);
-        
+        const newsItem = data.news_items.find(n => n.id === newsId);
+
         if (newsItem) {
-          // Isi form dengan data yang ada
           document.getElementById('title').value = newsItem.title;
           document.getElementById('content').value = newsItem.content;
           document.getElementById('category').value = newsItem.category;
           document.getElementById('thumbnail').value = newsItem.thumbnail || '';
           document.getElementById('is_featured').checked = newsItem.is_featured;
+
           document.querySelector('#crudModal h3').textContent = 'Edit News';
-          document.querySelector('#submitNews').textContent = 'Update News';  
+          document.querySelector('#submitNews').textContent = 'Update News';
           document.getElementById('newsForm').setAttribute('data-edit-id', newsId);
-          
+
           showModal();
         }
       } catch (error) {
-        console.error('Error:', error);
-        showToast('Error', 'Failed to load news data', 'error');
+        console.error(error);
+        showToast('Error', 'Gagal memuat data berita', 'error');
       }
     }
 
-    // Delete News Function
     async function deleteNews(newsId) {
-      if (!confirm('Apakah Anda yakin ingin menghapus berita ini?')) {
-        return;
-      }
+      if (!confirm('Apakah Anda yakin ingin menghapus berita ini?')) return;
 
       try {
         const response = await fetch(`/news/delete-news-ajax/${newsId}/`, {
           method: 'POST',
           headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-          }
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+          body: new URLSearchParams({ '_method': 'DELETE' })
         });
 
         const data = await response.json();
-
-        if (response.ok && data.success) {
+        if (data.status === 'success') {
           const card = document.querySelector(`[data-news-id="${newsId}"]`);
-          card.classList.add('opacity-0', 'scale-95');
-          setTimeout(() => {
-            card.remove();
-          }, 300);
-          
+          card.classList.add('opacity-0', 'scale-90');
+          setTimeout(() => card.remove(), 300);
           showToast('Success', data.message, 'success');
         } else {
-          showToast('Error', data.message || 'Failed to delete news', 'error');
+          showToast('Error', data.message || 'Gagal menghapus berita', 'error');
         }
       } catch (error) {
-        console.error('Error:', error);
-        showToast('Error', 'An error occurred while deleting', 'error');
+        console.error(error);
+        showToast('Error', 'Terjadi kesalahan saat menghapus', 'error');
       }
     }
 
-    // Get CSRF Token
     function getCookie(name) {
       let cookieValue = null;
       if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-          const cookie = cookies[i].trim();
-          if (cookie.substring(0, name.length + 1) === (name + '=')) {
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        for (const cookie of document.cookie.split(';')) {
+          const c = cookie.trim();
+          if (c.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(c.substring(name.length + 1));
             break;
           }
         }
@@ -204,5 +204,6 @@
     document.addEventListener('DOMContentLoaded', loadNews);
   </script>
 </body>
+
 {% include 'footer.html' %}
 {% endblock content %}

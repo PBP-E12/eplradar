@@ -1,19 +1,21 @@
-# views.py
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from .models import News
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_http_methods
 from django.contrib.auth.decorators import login_required
+from .models import News
+
 
 def news_list(request):
-    #filter kategory
     category = request.GET.get('category')
     sort_by = request.GET.get('sort', '-created_at')
+    
+    # Filter kategori
     news_items = News.objects.all()
     if category and category != 'all':
         news_items = news_items.filter(category=category)
-    # sort
+
+    # Sorting
     if sort_by == 'views_asc':
         order_field = 'news_views'
     elif sort_by == 'views_desc':
@@ -23,6 +25,7 @@ def news_list(request):
     
     news_items = news_items.order_by(order_field)
     
+    # Jika request AJAX → kirim JSON
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data = []
         for n in news_items:
@@ -36,9 +39,15 @@ def news_list(request):
                 "created_at": n.created_at.strftime("%d %b %Y"),
                 "views": n.news_views,
                 "is_featured": n.is_featured,
+                "user_id": n.user.id if n.user else None,
+                "username": n.user.username if n.user else "Anonymous",
             })
-        return JsonResponse({"news_items": data}, status=200)
+        return JsonResponse({
+            "news_items": data,
+            "current_user_id": request.user.id if request.user.is_authenticated else None
+        }, status=200)
     
+    # Render biasa (non-AJAX)
     context = {
         'news_items': news_items,
         'category_choices': News.CATEGORY_CHOICES,
@@ -47,12 +56,14 @@ def news_list(request):
     }
     return render(request, 'news.html', context)
 
+
 def news_detail(request, pk):
     news_item = get_object_or_404(News, pk=pk)
     news_item.increment_views()
     return render(request, 'news_detail.html', {'news_item': news_item})
 
-@csrf_exempt
+
+@login_required
 @require_POST
 def add_news_ajax(request):
     title = request.POST.get("title")
@@ -64,7 +75,9 @@ def add_news_ajax(request):
     if not title or not content or not category:
         return JsonResponse({"success": False, "message": "Semua field wajib diisi."}, status=400)
     
+    # Tambahkan user pembuat berita
     news = News.objects.create(
+        user=request.user,
         title=title,
         content=content,
         category=category,
@@ -77,6 +90,8 @@ def add_news_ajax(request):
         "message": "Berita berhasil ditambahkan!",
         "news": {
             "id": news.id,
+            "user_id": news.user.id,
+            "username": news.user.username,
             "title": news.title,
             "content": news.content,
             "category": news.get_category_display(),
@@ -87,10 +102,15 @@ def add_news_ajax(request):
         }
     }, status=201)
 
+
+@login_required
 @csrf_exempt
 @require_http_methods(["PUT", "POST"])
 def update_news_ajax(request, pk):
-    news = get_object_or_404(News, pk=pk)
+    try:
+        news = News.objects.get(pk=pk, user=request.user)
+    except News.DoesNotExist:
+        return JsonResponse({"success": False, "message": "Berita tidak ditemukan atau bukan milik Anda."}, status=404)
     
     title = request.POST.get("title")
     content = request.POST.get("content")
@@ -110,7 +130,7 @@ def update_news_ajax(request, pk):
     
     return JsonResponse({
         "success": True,
-        "message": "Berita berhasil diperbarui!",
+        "message": f"Berita '{news.title}' berhasil diperbarui!",
         "news": {
             "id": news.id,
             "title": news.title,
@@ -123,12 +143,19 @@ def update_news_ajax(request, pk):
         }
     }, status=200)
 
+
+@login_required
 @csrf_exempt
 @require_http_methods(["DELETE", "POST"])
 def delete_news_ajax(request, pk):
-    news = get_object_or_404(News, pk=pk)
-    news.delete()
-    
-    return JsonResponse({
-        "success": True,
-    }, status=200)
+    try:
+        news = News.objects.get(pk=pk, user=request.user)
+    except News.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Berita tidak ditemukan atau bukan milik Anda.'}, status=404)
+
+    if request.method == 'DELETE' or request.POST.get('_method') == 'DELETE':
+        title = news.title
+        news.delete()
+        return JsonResponse({'status': 'success', 'message': f'Berita "{title}" telah dihapus.'}, status=200)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=400)
