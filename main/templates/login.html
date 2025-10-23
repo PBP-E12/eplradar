@@ -6,19 +6,19 @@
 {% endblock meta %}
 
 {% block content %}
-<div id="form-style" class="bg-gray-50 w-full min-h-screen flex items-center justify-center p-8">
-  <div class="max-w-md w-full">
-    <div class="bg-white rounded-lg border border-gray-200 p-6 sm:p-8 form-style">
+<body class="bg-gradient-to-b from-gray-900 to-gray-800 text-white min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-md p-8">
+    <div class="bg-gray-900/60 backdrop-blur-md border border-blue-500/20 shadow-2xl rounded-2xl p-8">
       <div class="text-center mb-8">
-        <h1 class="text-2xl font-bold text-gray-900 mb-2">Sign In</h1>
-        <p class="text-gray-600">Selamat datang di EPL Radar</p>
+        <h1 class="text-3xl font-bold text-blue-400 mb-2 tracking-wide">Welcome Back</h1>
+        <p class="text-gray-400">Sign in to continue to <span class="text-blue-300 font-semibold">EPL Radar</span></p>
       </div>
 
-      <!-- Form Errors Display -->
+      <!-- Form Errors -->
       {% if form.non_field_errors %}
         <div class="mb-6">
           {% for error in form.non_field_errors %}
-            <div class="px-4 py-3 rounded-md text-sm border bg-red-50 border-red-200 text-red-700">
+            <div class="px-4 py-3 rounded-md text-sm border border-red-400/40 bg-red-900/30 text-red-200">
               {{ error }}
             </div>
           {% endfor %}
@@ -30,7 +30,7 @@
           {% for field, errors in form.errors.items %}
             {% if field != '__all__' %}
               {% for error in errors %}
-                <div class="px-4 py-3 rounded-md text-sm border bg-red-50 border-red-200 text-red-700 mb-2">
+                <div class="px-4 py-3 rounded-md text-sm border border-red-400/40 bg-red-900/30 text-red-200 mb-2">
                   <strong>{{ field|title }}:</strong> {{ error }}
                 </div>
               {% endfor %}
@@ -43,48 +43,47 @@
         {% csrf_token %}
         
         <div>
-          <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+          <label for="username" class="block text-sm font-medium text-gray-300 mb-2">Username</label>
           <input 
             id="username" 
             name="username" 
             type="text" 
             required 
-            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 transition-colors" 
+            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500" 
             placeholder="Enter your username">
         </div>
 
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+          <label for="password" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
           <input 
             id="password" 
             name="password" 
             type="password" 
             required 
-            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 transition-colors" 
+            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500" 
             placeholder="Enter your password">
         </div>
 
         <button 
           type="submit" 
-          class="w-full bg-green-600 text-white font-medium py-3 px-4 rounded-md hover:bg-green-700 transition-colors">
+          class="w-full bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-500/50 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-lg shadow-blue-900/30">
           Sign In
         </button>
       </form>
 
-      <!-- Messages Display -->
+      <!-- Messages -->
       {% if messages %}
         <div class="mt-6">
           {% for message in messages %}
             <div 
-              class="
-                px-4 py-3 rounded-md text-sm border
-                {% if message.tags == 'success' %}
-                  bg-green-50 border-green-200 text-green-700
-                {% elif message.tags == 'error' %}
-                  bg-red-50 border-red-200 text-red-700
-                {% else %}
-                  bg-gray-50 border-gray-200 text-gray-700
-                {% endif %}
+              class="px-4 py-3 rounded-md text-sm border 
+              {% if message.tags == 'success' %}
+                border-blue-400/40 bg-blue-900/30 text-blue-200
+              {% elif message.tags == 'error' %}
+                border-red-400/40 bg-red-900/30 text-red-200
+              {% else %}
+                border-gray-600 bg-gray-800 text-gray-200
+              {% endif %}
               ">
               {{ message }}
             </div>
@@ -92,15 +91,15 @@
         </div>
       {% endif %}
 
-      <div class="mt-6 text-center pt-6 border-t border-gray-200">
-        <p class="text-gray-500 text-sm">
-          Belum memiliki akun? 
-          <a href="{% url 'main:register' %}" class="text-green-600 hover:text-green-700 font-medium">
+      <div class="mt-8 text-center border-t border-gray-700 pt-6">
+        <p class="text-gray-400 text-sm">
+          Belum punya akun? 
+          <a href="{% url 'main:register' %}" class="text-blue-400 hover:text-blue-300 font-medium transition">
             Register Sekarang
           </a>
         </p>
       </div>
     </div>
   </div>
-</div>
+</body>
 {% endblock content %}
