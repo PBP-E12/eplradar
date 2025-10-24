@@ -12,20 +12,33 @@
     {% block content %}
     {% include 'navbar.html' %}
     
-    <div class="bg-[#1d1f22] w-full pt-10 min-h-screen">
+    <div class="bg-[#1d1f22] w-full pt-10 min-h-screen scroll-smooth">
         <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
-            <!-- Hero Banner Section -->
-            <div class="my-24 bg-[#333438] rounded-2xl h-[400px] sm:h-[480px] lg:h-[560px]">
-                <!-- Content untuk banner -->
-            </div>
-
-            <!-- Main Content Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 lg:gap-4">
-                <!-- Left Column: League Table -->
+            <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex flex-col items-center justify-center text-center p-4" 
+     style="background-image: url('{% static "img/match.png" %}')">
+    
+  <div class="text-white">
+    <h1 class="text-6xl font-bold text-white mb-4">
+      Match
+    </h1>
+    <p class="text-xl text-gray-200 max-w-lg mb-8">
+      Dapatkan informasi terkait pertandingan dan klasemen tim favoritmu di musim ini!
+    </p>
+    
+    <a href="#jadwal-pertandingan" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
+      <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
+      </svg>
+      Lihat Jadwal Pertandingan
+    </a>
+  </div>
+  
+</div>
+            <div id="jadwal-pertandingan" class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 lg:gap-4 pt-12">
+                
                 <div class="bg-[#333438] rounded-2xl px-6 sm:px-8 lg:px-12 py-6 lg:py-9 overflow-x-auto">
                     <div class="min-w-[600px]">
                         <div class="flex items-end justify-between">
-                            <!-- Team Rankings -->
                             <div class="flex flex-col items-start justify-end gap-5 lg:gap-7 flex-1">
                                 {% for i in "12345678901234567890" %}
                                 <div class="flex items-center justify-start gap-4 w-full">
@@ -38,9 +51,7 @@
                                 {% endfor %}
                             </div>
                             
-                            <!-- Stats Columns -->
                             <div class="flex items-center justify-end gap-4 lg:gap-6">
-                                <!-- MP Column -->
                                 <div class="flex flex-col items-center justify-start gap-4 lg:gap-6">
                                     <p class="text-lg lg:text-xl text-[#b0b0b0]">MP</p>
                                     <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
@@ -50,7 +61,6 @@
                                     </div>
                                 </div>
                                 
-                                <!-- W Column -->
                                 <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-5">
                                     <p class="text-lg lg:text-xl text-[#b0b0b0]">W</p>
                                     <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
@@ -60,7 +70,6 @@
                                     </div>
                                 </div>
                                 
-                                <!-- D Column -->
                                 <div class="flex flex-col items-center justify-start gap-4 lg:gap-6">
                                     <p class="text-lg lg:text-xl text-[#b0b0b0]">D</p>
                                     <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
@@ -70,7 +79,6 @@
                                     </div>
                                 </div>
                                 
-                                <!-- L Column -->
                                 <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-3">
                                     <p class="text-lg lg:text-xl text-[#b0b0b0]">L</p>
                                     <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
@@ -80,7 +88,6 @@
                                     </div>
                                 </div>
                                 
-                                <!-- P Column -->
                                 <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-6">
                                     <p class="text-lg lg:text-xl font-semibold text-[#b0b0b0]">P</p>
                                     <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
@@ -94,9 +101,7 @@
                     </div>
                 </div>
                 
-                <!-- Right Column: Match Cards -->
                 <div class="flex flex-col items-start justify-start gap-6 lg:gap-8 w-full lg:w-[524px]">
-                    <!-- Upcoming Match -->
                     <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-full">
                         <p class="text-xl lg:text-2xl font-semibold text-white text-center">Match Terdekat</p>
                         <div class="flex flex-col items-center justify-start gap-2.5 rounded-2xl bg-[#333438] px-6 lg:px-8 py-5 lg:py-6 w-full">
@@ -119,7 +124,6 @@
                         </div>
                     </div>
                     
-                    <!-- Today's Matches -->
                     <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-full">
                         <p class="text-xl lg:text-2xl font-semibold text-white text-center">Match Hari Ini</p>
                         <div class="flex flex-col items-start justify-start gap-3 lg:gap-4 w-full">
@@ -149,11 +153,9 @@
                 </div>
             </div>
             
-            <!-- All Matches Section -->
             <div class="flex flex-col items-center justify-start gap-6 lg:gap-8 mt-12 lg:mt-16 mb-16 lg:mb-24">
                 <p class="text-2xl lg:text-[28px] font-semibold text-white text-center">Semua Match Musim Ini</p>
                 
-                <!-- Week Navigation -->
                 <div class="flex items-center justify-center gap-8 lg:gap-[60px]">
                     <button class="flex items-center justify-center rounded-[100px] bg-[#333438] p-3 lg:px-4 lg:py-2.5 hover:bg-[#404348] transition-colors">
                         <svg width="12" height="24" viewBox="0 0 12 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-6 w-3">
@@ -171,9 +173,7 @@
                     </button>
                 </div>
                 
-                <!-- Match Results Container -->
                 <div class="flex flex-col items-center justify-start gap-8 lg:gap-10 w-full rounded-2xl bg-[#333438] px-6 sm:px-10 lg:px-20 py-8 lg:py-12">
-                    <!-- Saturday Matches -->
                     <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-full">
                         <p class="text-lg lg:text-xl text-white text-center">Sabtu, 18 Oktober 2025</p>
                         <div class="flex flex-col items-center justify-start gap-4 lg:gap-5 w-full max-w-4xl">
@@ -195,7 +195,6 @@
                         </div>
                     </div>
                     
-                    <!-- Monday Matches -->
                     <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-full">
                         <p class="text-lg lg:text-xl text-white text-center">Senin, 20 Oktober 2025</p>
                         <div class="flex flex-col items-center justify-start gap-4 lg:gap-5 w-full max-w-4xl">
