@@ -7,6 +7,7 @@ class Match(models.Model):
      away_team = models.ForeignKey(Club, related_name='away_matches', on_delete=models.CASCADE)
      home_score = models.PositiveIntegerField(default=0)
      away_score = models.PositiveIntegerField(default=0)
+     week = models.PositiveIntegerField(default=0)
      match_date = models.DateTimeField()
      status = models.CharField(
          max_length=10,
