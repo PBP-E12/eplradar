@@ -10,14 +10,14 @@ from clubs.models import Club
 
 
 class Command(BaseCommand):
-    help = 'Import data pemain dari CSV dan gambar profil dari static/img/player/'
+    help = 'Import data pemain dari CSV dan salin foto dari static/img/player/ ke media/player_thumbnails/'
 
     def handle(self, *args, **options):
         csv_path = os.path.join(settings.BASE_DIR, 'data', 'players.csv')
         photo_static_dir = os.path.join(settings.BASE_DIR, 'static', 'img', 'player')
         photo_media_dir = os.path.join(settings.MEDIA_ROOT, 'player_thumbnails')
 
-        # Pastikan folder media untuk pemain tersedia
+        # Pastikan folder media tersedia
         os.makedirs(photo_media_dir, exist_ok=True)
 
         if not os.path.exists(csv_path):
@@ -25,26 +25,26 @@ class Command(BaseCommand):
             return
 
         with open(csv_path, newline='', encoding='utf-8') as csvfile:
-            reader = csv.DictReader(csvfile)
+            reader = csv.DictReader(csvfile, delimiter='\t')  # pakai tab (karena contoh kamu tab-separated)
             for row in reader:
-                name = row['Name'].strip()
-                position = row.get('Position', '').strip()
-                team_name = row.get('Team', '').strip()
-                citizenship = row.get('Citizenship', '').strip()
-                age = int(row.get('Age', 0) or 0)
-                goals = int(row.get('Goals', 0) or 0)
-                assists = int(row.get('Assists', 0) or 0)
-                matches = int(row.get('Matches', 0) or 0)
-                cleansheet = int(row.get('Cleansheet', 0) or 0)
+                name = row['name'].strip()
+                position = row['position'].strip()
+                team_name = row['team'].strip()
+                citizenship = row['citizenship'].strip()
+                age = int(row['age'] or 0)
+                goals = int(row['curr_goals'] or 0)
+                assists = int(row['curr_assists'] or 0)
+                matches = int(row['match_played'] or 0)
+                cleansheet = int(row['curr_cleansheet'] or 0)
 
-                # --- 🏟️ Cari klub ---
+                # --- 🏟️ cari klub ---
                 try:
                     club = Club.objects.get(nama_klub=team_name)
                 except Club.DoesNotExist:
                     self.stdout.write(self.style.WARNING(f"⚠️ Klub '{team_name}' tidak ditemukan untuk {name}."))
                     continue
 
-                # --- 🔍 Cari foto pemain ---
+                # --- 🔍 cari foto pemain ---
                 normalized_name = re.sub(r'\s+', '_', name)
                 photo_source_path = None
 
@@ -58,7 +58,7 @@ class Command(BaseCommand):
                         photo_source_path = candidate_lower
                         break
 
-                # --- 🧱 Simpan ke database ---
+                # --- 🧱 simpan ke database ---
                 player, created = Player.objects.get_or_create(
                     name=name,
                     team=club,
@@ -82,12 +82,11 @@ class Command(BaseCommand):
                     player.match_played = matches
                     player.curr_cleansheet = cleansheet
 
-                # --- 📸 Salin foto ke media/player_thumbnails ---
+                # --- 📸 salin foto ke media/player_thumbnails ---
                 if photo_source_path:
                     photo_filename = os.path.basename(photo_source_path)
                     photo_destination = os.path.join(photo_media_dir, photo_filename)
 
-                    # Salin jika belum ada
                     if not os.path.exists(photo_destination):
                         shutil.copy(photo_source_path, photo_destination)
 
