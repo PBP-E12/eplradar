@@ -7,9 +7,235 @@
 
 {% block content %}
 {% include 'navbar.html' %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Players Section -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-white text-2xl font-semibold">Profil Pemain Muslim Ini</h2>
+            <div class="relative">
+                <button id="filterButton" class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
+                    Filter
+                    <svg class="w-4 h-4 transition-transform" id="filterArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-gray-800 rounded-lg shadow-lg z-10 max-h-80 overflow-y-auto">
+                    <div class="p-2">
+                        <button data-team="all" class="filter-option w-full text-left px-4 py-2 text-white hover:bg-gray-700 rounded transition">
+                            All Teams
+                        </button>
+                        {% for club in clubs %}
+                        <button data-team="{{ club.id }}" class="filter-option w-full text-left px-4 py-2 text-white hover:bg-gray-700 rounded transition flex items-center gap-2">
+                            {% if club.logo %}
+                            <img src="{{ club.logo.url }}" alt="{{ club.nama_klub }}" class="w-5 h-5 object-contain">
+                            {% endif %}
+                            <span>{{ club.nama_klub }}</span>
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Players Grid -->
+        <div id="playersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% include 'player_cards.html' %}
+        </div>
+    </div>
+</div>
 
+<!-- Player Detail Modal -->
+<div id="playerModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+    <div class="bg-gray-800 rounded-lg max-w-4xl w-full mx-4 overflow-hidden relative">
+        <!-- Close Button -->
+        <button onclick="closeModal()" class="absolute top-4 left-4 bg-gray-700 hover:bg-gray-600 text-white w-10 h-10 rounded-full flex items-center justify-center transition z-10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
 
+        <div class="grid grid-cols-1 md:grid-cols-2">
+            <!-- Left Side - Player Info -->
+            <div class="p-8 md:p-12">
+                <!-- Player Name -->
+                <div class="mb-8">
+                    <h2 id="playerName" class="text-white text-4xl font-bold"></h2>
+                </div>
 
+                <!-- Player Details -->
+                <div class="space-y-4 mb-8">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Klub Saat Ini</span>
+                        <span id="playerTeam" class="text-white font-semibold"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Posisi</span>
+                        <span id="playerPosition" class="text-white font-semibold"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Usia</span>
+                        <span id="playerAge" class="text-white font-semibold"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Kewarganegaraan</span>
+                        <span id="playerCitizenship" class="text-white font-semibold"></span>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div>
+                    <h3 class="text-white text-xl font-semibold mb-4">Statistik Musim Ini</h3>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="text-gray-400 text-sm mb-1">Gol</div>
+                            <div class="text-white text-2xl font-bold" id="playerGoals">0</div>
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="text-gray-400 text-sm mb-1">Assist</div>
+                            <div class="text-white text-2xl font-bold" id="playerAssists">0</div>
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="text-gray-400 text-sm mb-1">Match</div>
+                            <div class="text-white text-2xl font-bold" id="playerMatches">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side - Player Image -->
+            <div class="bg-gradient-to-br from-gray-700 to-gray-800 flex items-end justify-center p-8">
+                <img id="playerImage" src="" alt="Player" class="max-h-96 object-contain">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButton = document.getElementById('filterButton');
+    const filterDropdown = document.getElementById('filterDropdown');
+    const filterArrow = document.getElementById('filterArrow');
+    const playersGrid = document.getElementById('playersGrid');
+    const filterOptions = document.querySelectorAll('.filter-option');
+
+    // Toggle dropdown
+    filterButton.addEventListener('click', function() {
+        filterDropdown.classList.toggle('hidden');
+        filterArrow.classList.toggle('rotate-180');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!filterButton.contains(event.target) && !filterDropdown.contains(event.target)) {
+            filterDropdown.classList.add('hidden');
+            filterArrow.classList.remove('rotate-180');
+        }
+    });
+
+    // Filter players
+    filterOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const teamId = this.getAttribute('data-team');
+            
+            playersGrid.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-gray-400">Loading...</p></div>';
+            
+            fetch(`?team=${teamId}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                playersGrid.innerHTML = html;
+                filterDropdown.classList.add('hidden');
+                filterArrow.classList.remove('rotate-180');
+                attachPlayerClickHandlers();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                playersGrid.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-red-400">Error loading players</p></div>';
+            });
+        });
+    });
+
+    // Attach click handlers to player cards
+    function attachPlayerClickHandlers() {
+        document.querySelectorAll('.player-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                const playerId = this.getAttribute('data-player-id');
+                loadPlayerDetail(playerId);
+            });
+        });
+    }
+
+    // Initial attachment
+    attachPlayerClickHandlers();
+});
+
+// Load player detail via AJAX
+function loadPlayerDetail(playerId) {
+    fetch(`/players/${playerId}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        showPlayerDetail(data);
+    })
+    .catch(error => {
+        console.error('Error loading player details:', error);
+    });
+}
+
+// Populate and show modal
+function showPlayerDetail(player) {
+    document.getElementById('playerName').textContent = player.name;
+    document.getElementById('playerTeam').textContent = player.team_name;
+    document.getElementById('playerPosition').textContent = player.position;
+    document.getElementById('playerAge').textContent = player.age;
+    document.getElementById('playerCitizenship').textContent = player.citizenship;
+    document.getElementById('playerGoals').textContent = player.curr_goals;
+    document.getElementById('playerAssists').textContent = player.curr_assists;
+    document.getElementById('playerMatches').textContent = player.match_played;
+    
+    const playerImage = document.getElementById('playerImage');
+    if (player.profile_picture_url) {
+        playerImage.src = player.profile_picture_url;
+        playerImage.alt = player.name;
+    } else {
+        playerImage.src = '';
+        playerImage.alt = 'No image available';
+    }
+    
+    openModal();
+}
+
+function openModal() {
+    document.getElementById('playerModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    document.getElementById('playerModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside
+document.getElementById('playerModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+</script>
 {% endblock content %}
 
 {% include 'footer.html' %}
