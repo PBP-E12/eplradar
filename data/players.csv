@@ -1,1 +1,41 @@
-name,position,team,profile_picture_url,citizenship,age,curr_goals,curr_assists,match_played,curr_cleansheet
+name,position,team,citizenship,age,curr_goals,curr_assists,match_played,curr_cleansheet
+Bukayo Saka,Forward,Arsenal,English,22,4,3,10,3
+Gabriel Martinelli,Forward,Arsenal,Brazilian,23,3,2,10,3
+Mohammed Salah,Forward,Liverpool,Egyptian,31,6,2,10,0
+Darwin Núñez,Forward,Liverpool,Uruguayan,25,5,1,10,0
+Tyler Adams,Midfielder,Bournemouth,American,24,1,2,10,0
+Marcus Tavernier,Midfielder,Bournemouth,English,27,2,1,10,0
+James Maddison,Midfielder,Tottenham,English,28,5,3,10,1
+Son Heung-min,Forward,Tottenham,Korean,31,7,1,10,1
+Erling Haaland,Forward,Man City,Norwegian,24,8,4,10,2
+Kevin De Bruyne,Midfielder,Man City,Belgian,32,2,6,10,2
+Eberechi Eze,Midfielder,Crystal Palace,English,25,3,3,10,1
+Wilfried Zaha,Forward,Crystal Palace,Ivorian,31,4,2,10,1
+Jermain Defoe,Forward,Sunderland,English,32,2,0,10,1
+Tirrell Drennan,Midfielder,Sunderland,English,22,1,1,10,1
+Raheem Sterling,Forward,Chelsea,English,30,3,3,10,0
+Enzo Fernandez,Midfielder,Chelsea,Argentinian,23,2,4,10,0
+Jordan Pickford,Goalkeeper,Everton,English,29,0,0,10,1
+Dominic Calvert-Lewin,Forward,Everton,English,27,1,1,10,1
+Bruno Fernandes,Midfielder,Man United,Portuguese,30,5,4,10,2
+Marcus Rashford,Forward,Man United,English,26,4,3,10,2
+Ollie Watkins,Forward,Aston Villa,English,28,6,2,10,1
+Tyrone Mings,Defender,Aston Villa,English,30,1,0,10,1
+Alexander Isak,Forward,Newcastle,Swedish,26,4,3,10,2
+Bruno Guimarães,Midfielder,Newcastle,Brazilian,25,2,5,10,2
+Danny Welbeck,Forward,Brighton,English,33,2,2,10,1
+Pascal Groß,Midfielder,Brighton,German,32,3,3,10,1
+Andreas Pereira,Midfielder,Fulham,Brazilian,27,4,2,10,0
+Aleksandar Mitrović,Forward,Fulham,Serbian,30,1,1,10,0
+Wilfried Gnonto,Forward,Leeds United,Italian,20,2,2,10,0
+Brenden Aaronson,Midfielder,Leeds United,American,24,3,1,10,0
+Bryan Mbeumo,Forward,Brentford,Cameroonian,25,4,2,10,1
+Ivan Toney,Forward,Brentford,English,27,5,1,10,1
+Danilo,Midfielder,Nottm Forest,Brazilian,22,3,1,10,1
+Taiwo Awoniyi,Forward,Nottm Forest,Nigerian,26,2,2,10,1
+Declan Rice,Midfielder,West Ham,English,26,2,3,10,0
+Jarrod Bowen,Forward,West Ham,English,27,4,2,10,0
+James Ward-Prowse,Midfielder,Burnley,English,29,2,4,10,0
+Lyle Foster,Forward,Burnley,South African,23,1,1,10,0
+Ruben Neves,Midfielder,Wolves,Portuguese,26,4,2,10,1
+Pedro Neto,Forward,Wolves,Portuguese,23,3,3,10,1
