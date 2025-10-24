@@ -8,13 +8,30 @@
 {% block content %}
 {% include 'navbar.html' %}
 
-<div class="bg-[#1d1f22] w-full pt-10 min-h-screen">
+<div class="bg-[#1d1f22] w-full pt-10 min-h-screen scroll-smooth">
     <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
-        <div class="my-24 bg-[#333438] rounded-2xl h-[560px]">
-        </div>
+        <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex items-center pl-24" 
+     style="background-image: url('{% static "img/stats.png" %}')">
+    
+  <div class="text-white">
+    <h1 class="text-6xl font-bold text-white mb-4">
+      Statistik
+    </h1>
+    <p class="text-xl text-gray-200 max-w-md mb-8">
+      Dapatkan informasi terkait gol, assist, dan cleansheet para pemain di liga inggris
+    </p>
+    
+    <a href="#statistik-content" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
+      <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
+      </svg>
+      Lihat Statistik
+    </a>
+  </div>
+  
+</div>
 
-        <!-- Filter Section -->
-        <div class="flex flex-col items-center mb-8 p-4">
+        <div id="statistik-content" class="flex flex-col items-center mb-8 p-4 pt-12">
             <div class="flex space-x-8">
                 <a id="filter-klub" class="text-blue-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer">
                 Klub
@@ -25,7 +42,6 @@
             </div>
         </div>
 
-        <!-- Loading State -->
         <div id="loading" class="bg-gray-500 rounded-lg p-20 text-center hidden">
         <svg class="animate-spin h-8 w-8 text-gray-300 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -34,17 +50,19 @@
         <p class="text-gray-900 mt-3">Loading stat ...</p>
         </div>
 
-        <!-- Error -->
         <div id="error" class="hidden text-center text-red-600 font-medium"></div>
 
-        <!-- Grid -->
         <div id="grid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
 
     </div>
 </div>
 
     <script>
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> master
 const grid = document.getElementById("grid");
 const loading = document.getElementById("loading");
 const error = document.getElementById("error");
@@ -115,7 +133,7 @@ if (mode === "klub") {
   data.forEach((player) => {
     const el = document.createElement("div");
     el.className =
-      "flex items-center justify-between rounded-xl py-4 px-6 bg-gray-800 hover:ring hover:ring-blue-500/50 transition duration-300";
+      "flex items-center justify-between rounded-xl py-4 px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300";
 
     el.innerHTML = `
       <img src="${player.photo || '/static/img/no-image.png'}" 
@@ -146,20 +164,24 @@ if (mode === "klub") {
 btnKlub.addEventListener("click", () => {
   mode = "klub";
   btnKlub.className = "text-blue-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer";
-  btnPemain.className = "text-grey-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer"
+  btnPemain.className = "text-gray-500 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-white cursor-pointer";
   fetchStats();
 });
 
 btnPemain.addEventListener("click", () => {
     mode = "pemain";
-    btnKlub.className = "text-grey-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer"
-    btnPemain.className = "text-blue-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer"
+    btnKlub.className = "text-gray-500 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-white cursor-pointer";
+    btnPemain.className = "text-blue-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer";
   fetchStats();
 });
 
 // Load pertama kali
 fetchStats();
+<<<<<<< HEAD
 // renderCards(dummyClubs);
+=======
+//renderCards(dummyClubs);
+>>>>>>> master
 </script>
 
 
