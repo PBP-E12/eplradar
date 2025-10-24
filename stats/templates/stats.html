@@ -44,81 +44,6 @@
 </div>
 
     <script>
-        
-const dummyClubs = [
-  {
-    "name": "Arsenal",
-    "rank": 1,
-    "matches_played": 9,
-    "wins": 8,
-    "draws": 1,
-    "losses": 0,
-    "goals_scored": 25,
-    "goals_conceded": 7,
-    "points": 25,
-    "logo": "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"
-  },
-  {
-    "name": "Manchester City",
-    "rank": 2,
-    "matches_played": 9,
-    "wins": 7,
-    "draws": 1,
-    "losses": 1,
-    "goals_scored": 22,
-    "goals_conceded": 8,
-    "points": 22,
-    "logo": "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg"
-  },
-  {
-    "name": "Liverpool",
-    "rank": 3,
-    "matches_played": 9,
-    "wins": 6,
-    "draws": 2,
-    "losses": 1,
-    "goals_scored": 20,
-    "goals_conceded": 10,
-    "points": 20,
-    "logo": "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg"
-  },
-  {
-    "name": "Tottenham Hotspur",
-    "rank": 4,
-    "matches_played": 9,
-    "wins": 6,
-    "draws": 2,
-    "losses": 1,
-    "goals_scored": 18,
-    "goals_conceded": 12,
-    "points": 20,
-    "logo": "https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg"
-  },
-  {
-    "name": "Chelsea",
-    "rank": 5,
-    "matches_played": 9,
-    "wins": 5,
-    "draws": 3,
-    "losses": 1,
-    "goals_scored": 17,
-    "goals_conceded": 10,
-    "points": 18,
-    "logo": "https://upload.wikimedia.org/wikipedia/en/7/71/Chelsea_FC.svg"
-  },
-  {
-    "name": "Newcastle United",
-    "rank": 6,
-    "matches_played": 9,
-    "wins": 5,
-    "draws": 2,
-    "losses": 2,
-    "goals_scored": 19,
-    "goals_conceded": 14,
-    "points": 17,
-    "logo": "https://upload.wikimedia.org/wikipedia/en/5/56/Newcastle_United_FC_logo.svg"
-  }
-];
 
 const grid = document.getElementById("grid");
 const loading = document.getElementById("loading");
@@ -233,8 +158,8 @@ btnPemain.addEventListener("click", () => {
 });
 
 // Load pertama kali
-//fetchStats();
-renderCards(dummyClubs);
+fetchStats();
+// renderCards(dummyClubs);
 </script>
 
 
