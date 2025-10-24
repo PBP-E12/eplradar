@@ -10,11 +10,11 @@
             </div>
             
             <div class="hidden md:flex items-center space-x-6 lg:space-x-14">
-                <a href="#" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Home</a>
-                <a href="#" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Match</a>
-                <a href="#" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Statistik</a>
-                <a href="#" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Pemain</a>
-                <a href="#" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Klub</a>
+                <a href="{% url 'main:show_main' %}" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Home</a>
+                <a href="{% url 'matches:show_matches' %}" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Match</a>
+                <a href="{% url 'stats:show_stats' %}" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Statistik</a>
+                <a href="{% url 'main:show_main' %}" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Pemain</a>
+                <a href="{% url 'main:show_main' %}" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Klub</a>
                 <a href="{%url 'news:news_list'%}" class="text-neutral-500 hover:text-neutral-50 font-medium transition-colors text-sm lg:text-base">Berita</a>
             </div>
             
@@ -50,19 +50,20 @@
     </div>
 
     <div class="mobile-menu hidden md:hidden bg-zinc-900 border-t border-zinc-800"> <div class="px-4 py-4 space-y-2"> <div class="space-y-1">
-                <a href="#" class="block text-neutral-50 hover:text-neutral-300 font-medium py-2 transition-colors border-b border-zinc-800">
+                <a href="{% url 'main:show_main' %}" class="block text-neutral-50 hover:text-neutral-300 font-medium py-2 transition-colors border-b border-zinc-800">
                     Home
                 </a>
                 <a href="{% url 'matches:show_matches' %}" class="block text-neutral-50 hover:text-neutral-300 font-medium py-2 transition-colors border-b border-zinc-800">
+                <a href="{% url 'main:show_main' %}" class="block text-neutral-50 hover:text-neutral-300 font-medium py-2 transition-colors border-b border-zinc-800">
                     Match
                 </a>
-                <a href="#" class="block text-neutral-50 hover:text-neutral-300 font-medium py-2 transition-colors border-b border-zinc-800">
+                <a href="{% url 'stats:show_stats' %}" class="block text-neutral-50 hover:text-neutral-300 font-medium py-2 transition-colors border-b border-zinc-800">
                     Statistik
                 </a>
-                <a href="#" class="block text-neutral-50 hover:text-neutral-300 font-medium py-2 transition-colors border-b border-zinc-800">
+                <a href="{% url 'main:show_main' %}" class="block text-neutral-50 hover:text-neutral-300 font-medium py-2 transition-colors border-b border-zinc-800">
                     Pemain
                 </a>
-                <a href="#" class="block text-neutral-50 hover:text-neutral-300 font-medium py-2 transition-colors border-b border-zinc-800">
+                <a href="{% url 'main:show_main' %}" class="block text-neutral-50 hover:text-neutral-300 font-medium py-2 transition-colors border-b border-zinc-800">
                     Klub
                 </a>
                 <a href="{% url 'news:news_list' %}" class="block text-neutral-50 hover:text-neutral-300 font-medium py-2 transition-colors">
