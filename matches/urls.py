@@ -5,4 +5,5 @@ app_name = 'matches'
 
 urlpatterns = [
     path('', show_matches, name='show_matches'),
+    path('', show_matches, name='show_matches'),
 ]
