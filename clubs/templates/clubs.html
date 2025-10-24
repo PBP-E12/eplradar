@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title> {{ title }} </title>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="bg-[#1d1f22] w-full pt-10 min-h-screen">
+    <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
+        <div class="my-24 bg-[#333438] rounded-2xl h-[560px]"></div>
+
+    </div>
+</div>
+
+{% endblock content %}
+
+{% include 'footer.html' %}

@@ -5,9 +5,11 @@
 {% include 'modal.html' %}
 {% include 'toast.html' %}
 
-<body class="bg-gray-900 text-white min-h-screen">
+<div class="bg-[#1d1f22] w-full pt-20 min-h-screen text-white">
+
   <div class="max-w-7xl mx-auto p-6">
-    <div class="bg-gray-800 h-64 rounded-2xl mb-8"></div>
+    
+    <div class="bg-[#333438] h-[560px] rounded-2xl mb-8"></div>
 
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-semibold">Berita Terkini</h2>
@@ -76,7 +78,6 @@
   </div>
 
   <script>
-    // Fungsi memuat berita secara AJAX
     async function loadNews() {
       const category = document.getElementById('categoryFilter').value;
       const sort = document.getElementById('sortOrder').value;
@@ -155,7 +156,7 @@
         }
       } catch (error) {
         console.error(error);
-        showToast('Error', 'Gagal memuat data berita', 'error');
+        showToast('Error', 'Gagal mengambil data berita', 'error');
       }
     }
 
@@ -182,7 +183,7 @@
         }
       } catch (error) {
         console.error(error);
-        showToast('Error', 'Terjadi kesalahan saat menghapus', 'error');
+        showToast('Error', 'Terjadi error saat menghapus', 'error');
       }
     }
 
@@ -203,7 +204,8 @@
     document.addEventListener('newsAdded', loadNews);
     document.addEventListener('DOMContentLoaded', loadNews);
   </script>
-</body>
+
+</div>
 
 {% include 'footer.html' %}
 {% endblock content %}

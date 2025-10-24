@@ -22,10 +22,8 @@ def news_list(request):
         order_field = '-news_views'
     else:
         order_field = '-created_at'
-    
     news_items = news_items.order_by(order_field)
-    
-    # Jika request AJAX → kirim JSON
+
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data = []
         for n in news_items:
@@ -47,7 +45,6 @@ def news_list(request):
             "current_user_id": request.user.id if request.user.is_authenticated else None
         }, status=200)
     
-    # Render biasa (non-AJAX)
     context = {
         'news_items': news_items,
         'category_choices': News.CATEGORY_CHOICES,
