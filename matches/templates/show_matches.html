@@ -48,7 +48,22 @@
                                         <p class="text-xl lg:text-2xl text-white">Arsenal</p>
                                     </div>
                                 </div>
-                                {% endfor %}
+                                
+                                    {% for club in clubs %}
+                                    <div class="flex items-center justify-start gap-4 w-full h-[52px] lg:h-[56px]">
+                                        <p class="text-xl lg:text-2xl font-semibold text-white min-w-[2rem]">
+                                            {{ forloop.counter }}
+                                        </p>
+                                        
+                                        <div class="flex items-center justify-start gap-3 lg:gap-4">
+                                            <img src="/static/img/club-matches/{{ club.nama_klub }}.png" alt="{{ club.nama_klub }}" class="h-6 w-5 lg:h-7 lg:w-6 object-cover" />
+                                            
+                                            <p class="text-xl lg:text-2xl text-white">
+                                                {{ club.nama_klub }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
                             </div>
                             
                             <div class="flex items-center justify-end gap-4 lg:gap-6">
@@ -56,7 +71,7 @@
                                     <p class="text-lg lg:text-xl text-[#b0b0b0]">MP</p>
                                     <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
                                         {% for i in "12345678901234567890" %}
-                                        <p class="text-lg lg:text-xl text-white">7</p>
+                                        <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">7</p>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -65,7 +80,7 @@
                                     <p class="text-lg lg:text-xl text-[#b0b0b0]">W</p>
                                     <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
                                         {% for i in "12345678901234567890" %}
-                                        <p class="text-lg lg:text-xl text-white">5</p>
+                                        <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">5</p>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -74,7 +89,7 @@
                                     <p class="text-lg lg:text-xl text-[#b0b0b0]">D</p>
                                     <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
                                         {% for i in "12345678901234567890" %}
-                                        <p class="text-lg lg:text-xl text-white">1</p>
+                                        <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">1</p>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -83,7 +98,7 @@
                                     <p class="text-lg lg:text-xl text-[#b0b0b0]">L</p>
                                     <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
                                         {% for i in "12345678901234567890" %}
-                                        <p class="text-lg lg:text-xl text-white">1</p>
+                                        <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">1</p>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -92,7 +107,7 @@
                                     <p class="text-lg lg:text-xl font-semibold text-[#b0b0b0]">P</p>
                                     <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
                                         {% for i in "12345678901234567890" %}
-                                        <p class="text-lg lg:text-xl font-semibold text-white">16</p>
+                                        <p class="text-lg lg:text-xl font-semibold text-white h-[52px] lg:h-[56px] flex items-center">16</p>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -211,10 +226,14 @@
                                     <img src="logo-arsenal-3.png" class="h-10 w-8 lg:h-12 lg:w-[41px] object-contain" />
                                     <p class="text-xl lg:text-2xl font-medium text-white">Chelsea</p>
                                 </div>
+                                {% endfor %}
                             </div>
-                            {% endfor %}
                         </div>
-                    </div>
+                        {% endfor %}
+
+                    {% else %}
+                        <p class="text-xl text-white">Tidak ada pertandingan terjadwal untuk Pekan ke-{{ current_week }}.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
