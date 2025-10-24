@@ -1,5 +1,5 @@
 {% for player in player_list %}
-<a href="{% url 'show_player_detail' player.id %}" class="bg-gray-800 rounded-lg p-4 hover:bg-gray-750 transition block">
+<a href="#" class="player-card bg-gray-800 rounded-lg p-4 hover:bg-gray-750 transition block" data-player-id="{{ player.id }}">
     <div class="flex items-center gap-4">
         <!-- Player Image -->
         <div class="w-20 h-20 flex-shrink-0">
@@ -17,9 +17,9 @@
             <h3 class="text-white font-semibold text-lg truncate">{{ player.name }}</h3>
             <div class="flex items-center gap-2 mt-1">
                 {% if player.team.logo %}
-                <img src="{{ player.team.logo.url }}" alt="{{ player.team.name }}" class="w-5 h-5 object-contain">
+                <img src="{{ player.team.logo.url }}" alt="{{ player.team.nama_klub }}" class="w-5 h-5 object-contain">
                 {% endif %}
-                <span class="text-gray-400 text-sm">{{ player.team.name }}</span>
+                <span class="text-gray-400 text-sm">{{ player.team.nama_klub }}</span>
             </div>
         </div>
     </div>
