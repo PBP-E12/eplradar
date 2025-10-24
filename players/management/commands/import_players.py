@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         csv_path = os.path.join(settings.BASE_DIR, 'data', 'players.csv')
-        img_dir = os.path.join(settings.BASE_DIR, 'static', 'img', 'players')
+        img_dir = os.path.join(settings.BASE_DIR, 'static', 'img', 'player')
 
         if not os.path.exists(csv_path):
             self.stderr.write(self.style.ERROR(f"❌ File {csv_path} tidak ditemukan."))
