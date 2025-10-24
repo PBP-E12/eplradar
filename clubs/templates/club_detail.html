@@ -1,0 +1,369 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="container-custom">
+    <!-- Back Button -->
+    <a href="{% url 'clubs:club_list' %}" class="back-button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+    </a>
+
+    <!-- Club Header -->
+    <div class="club-header">
+        <div class="club-header-content">
+            <div class="club-header-info">
+                <h1 class="club-title">{{ club.nama_klub }}</h1>
+                
+                <div class="club-stats-row flex flex-col gap-2 mt-4">
+                    <div class="stat-item flex justify-between w-48">
+                    <span class="stat-label-small">Jumlah Match</span>
+                    <span class="stat-value-small">{{ club.total_matches }}</span>
+                    </div>
+                    <div class="stat-item flex justify-between w-48">
+                    <span class="stat-label-small">Win</span>
+                    <span class="stat-value-small stat-win-text">{{ club.jumlah_win }}</span>
+                    </div>
+                    <div class="stat-item flex justify-between w-48">
+                    <span class="stat-label-small">Lose</span>
+                    <span class="stat-value-small stat-lose-text">{{ club.jumlah_lose }}</span>
+                    </div>
+                    <div class="stat-item flex justify-between w-48">
+                    <span class="stat-label-small">Draw</span>
+                    <span class="stat-value-small stat-draw-text">{{ club.jumlah_draw }}</span>
+                    </div>
+                </div>
+                </div>
+
+            
+            <div class="club-logo-large">
+                <img src="{% static 'img/club/' %}{{ club.logo_filename }}.png" 
+                     alt="{{ club.nama_klub }}"
+                     >
+            </div>
+        </div>
+    </div>
+
+    <!-- Players Section -->
+    <div class="section-container">
+        <h2 class="section-title">Pemain Club Ini</h2>
+        
+        <div class="players-grid">
+            {% for player in players %}
+            <div class="player-card">
+                <div class="player-avatar">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="1.5">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <div class="player-info">
+                    <h3 class="player-name">{{ player.name }}</h3>
+                    <div class="player-team">
+                        <img src="{% static 'img/club/' %}{{ club.logo_filename }}.png" 
+                             alt="{{ club.nama_klub }}"
+                             class="player-team-logo"
+                             onerror="this.style.display='none'">
+                        <span>{{ club.nama_klub }}</span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-data-message">
+                <p>Belum ada data pemain untuk klub ini.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #18181b;
+        color: #fafafa;
+        min-height: 100vh;
+    }
+    
+    .container-custom {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 140px 20px 60px;
+        position: relative;
+    }
+    
+    /* Back Button */
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        background: #27272a;
+        border: 1px solid #3f3f46;
+        border-radius: 50%;
+        color: #fafafa;
+        margin-bottom: 30px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    
+    .back-button:hover {
+        background: #3f3f46;
+        border-color: #52525b;
+        transform: translateX(-3px);
+        color: #fafafa;
+    }
+    
+    /* Club Header */
+    .club-header {
+        background: linear-gradient(135deg, #27272a 0%, #1f1f23 100%);
+        border-radius: 20px;
+        padding: 40px;
+        margin-bottom: 40px;
+        border: 1px solid #3f3f46;
+    }
+    
+    .club-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 40px;
+    }
+    
+    .club-header-info {
+        flex: 1;
+    }
+    
+    .club-title {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #fafafa;
+        margin-bottom: 30px;
+        line-height: 1.2;
+    }
+    
+    .club-stats-row {
+        display: flex;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+    
+    .stat-item {
+    display: flex;
+    flex-direction: row; /* from column → row */
+    justify-content: space-between;
+    align-items: center;
+    width: 180px; /* optional: controls how far apart label and value are */
+    gap: 12px; /* optional: adds a bit of space between them */
+}
+
+    
+    .stat-label-small {
+        font-size: 0.875rem;
+        color: #a1a1aa;
+        font-weight: 500;
+    }
+    
+    .stat-value-small {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #fafafa;
+    }
+    
+    .stat-win-text {
+        color: #22c55e;
+    }
+    
+    .stat-lose-text {
+        color: #ef4444;
+    }
+    
+    .stat-draw-text {
+        color: #eab308;
+    }
+    
+    .club-logo-large {
+        width: 200px;
+        height: 200px;
+        background: #3f3f46;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        flex-shrink: 0;
+    }
+    
+    .club-logo-large img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    
+    /* Section Container */
+    .section-container {
+        margin-top: 40px;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #fafafa;
+        margin-bottom: 30px;
+    }
+    
+    /* Players Grid */
+    .players-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    
+    .player-card {
+        background: #27272a;
+        border: 1px solid #3f3f46;
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .player-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        border-color: #52525b;
+    }
+    
+    .player-avatar {
+        width: 64px;
+        height: 64px;
+        background: #3f3f46;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .player-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .player-name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #fafafa;
+        margin-bottom: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .player-team {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.875rem;
+        color: #a1a1aa;
+    }
+    
+    .player-team-logo {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+    }
+    
+    .no-data-message {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        background: #27272a;
+        border-radius: 16px;
+        color: #a1a1aa;
+        font-size: 1.125rem;
+        border: 1px solid #3f3f46;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .players-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .club-header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .club-stats-row {
+            justify-content: center;
+        }
+        
+        .club-logo-large {
+            width: 160px;
+            height: 160px;
+        }
+        
+        .club-title {
+            font-size: 2.5rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .container-custom {
+            padding-top: 120px;
+        }
+        
+        .club-header {
+            padding: 30px 20px;
+        }
+        
+        .club-title {
+            font-size: 2rem;
+        }
+        
+        .club-stats-row {
+            gap: 24px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 640px) {
+        .players-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .club-header-content {
+            gap: 24px;
+        }
+        
+        .club-logo-large {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .club-title {
+            font-size: 1.75rem;
+            margin-bottom: 20px;
+        }
+        
+        .club-stats-row {
+            gap: 16px;
+            width: 100%;
+        }
+        
+        .stat-item {
+            flex: 1;
+            min-width: calc(50% - 8px);
+        }
+    }
+</style>
+{% endblock %}
