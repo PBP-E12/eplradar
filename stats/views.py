@@ -4,9 +4,6 @@ from clubs.models import Club
 
 
 def show_stats(request):
-    """
-    Halaman utama statistik (render template Tailwind yang kamu tulis di atas).
-    """
     context = {
         'title': 'Statistik Klub',
     }
