@@ -1,8 +1,9 @@
 from django.urls import path
-from clubs.views import show_clubs
+from . import views
 
 app_name = 'clubs'
 
 urlpatterns = [
-    path('', show_clubs, name='show_clubs'),
+    path('', views.club_list, name='club_list'),
+    path('<str:nama_klub>/', views.club_detail, name='club_detail'),
 ]
