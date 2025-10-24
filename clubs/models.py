@@ -17,8 +17,12 @@ class Club(models.Model):
     @property
     def points(self):
         return (self.jumlah_win * 3) + self.jumlah_draw
-    
-    class Meta:
-        verbose_name = 'Club'
-        verbose_name_plural = 'Clubs'
-        ordering = ['-jumlah_win'] 
+
+class Meta:
+    verbose_name = 'Club'
+    verbose_name_plural = 'Clubs'
+    ordering = ['-jumlah_win'] 
+#    class Meta:
+#         verbose_name = 'Club'
+#         verbose_name_plural = 'Clubs'
+#         # ordering = ['-points', '-jumlah_win']
