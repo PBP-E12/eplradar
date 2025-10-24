@@ -8,13 +8,276 @@
 {% block content %}
 {% include 'navbar.html' %}
 
-<div class="bg-zinc-900 w-full pt-16 min-h-screen">
+<div class="bg-[#1d1f22] w-full pt-10 min-h-screen">
     <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
-        <div class="mt-24 bg-zinc-800 rounded-lg h-[560px]">
+        <div class="my-24 bg-[#333438] rounded-2xl h-[560px]">
 
         </div>
 
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white">Klasemen & Match</h2>
+            <a href="#" class="text-sm text-gray-400 hover:text-white transition duration-200 flex items-center">
+                Lihat Semua Klasemen
+                <svg class="w-4 ml-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                </svg>
+            </a>
+
+        </div>
+        
+        <section id="stats">
+            <div class="flex justify-between items-center mt-24 mb-6">
+                <h2 class="text-xl font-semibold text-white">Statistik Terbaru</h2>
+                <a href="{% url 'stats:show_stats' %}" class="text-sm text-gray-400 hover:text-white transition duration-200 flex items-center">Lihat Semua Statistik
+                    <svg class="w-4 ml-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+            
+            <div class="flex space-x-6">
+                <div class="w-40 flex-shrink-0">
+                    <nav class="bg-[#333438] p-1.5 rounded-lg shadow-lg space-y-1">
+                    <button id="btn-top-scorer" class="w-full text-left px-4 py-2.5 rounded-md bg-indigo-600 text-white font-medium shadow-md transition duration-200">
+                        Top Scorer
+                    </button>
+                    <button id="btn-top-assist" class="w-full text-left px-4 py-2.5 rounded-md text-gray-300 hover:bg-gray-700 transition duration-200">
+                        Top Assist
+                    </button>
+                    <button id="btn-cleansheet" class="w-full text-left px-4 py-2.5 rounded-md text-gray-300 hover:bg-gray-700 transition duration-200">
+                        Cleansheet
+                    </button>
+                    </nav>
+                </div>
+
+                <div class="flex-grow">
+                    <div class="grid grid-cols-2 gap-4 mb-3">
+                    <span class="pl-4 text-lg font-semibold text-gray-400">Klub</span>
+                    <span class="pl-4 text-lg font-semibold text-gray-400">Pemain</span>
+                    </div>
+
+                    <!-- Loading -->
+                    <div id="top-loading" class="hidden text-center py-6 text-gray-400">Loading...</div>
+
+                    <!-- Error -->
+                    <div id="top-error" class="hidden text-center text-red-600 font-medium py-4"></div>
+
+                    <!-- Grid hasil AJAX -->
+                    <div id="top-grid" class="grid grid-cols-2 gap-4"></div>
+                </div>
+            </div>
+        </section>
+
+
+        <div class="flex justify-between items-center mt-24">
+            <h2 class="text-xl font-semibold text-white">Profil Klub</h2>
+            <a href="#" class="text-sm text-gray-400 hover:text-white transition duration-200 flex items-center">Lihat Semua Profil
+                <svg class="w-4 ml-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+
+              <div class="flex justify-between items-center mt-24">
+        <h2 class="text-xl font-semibold text-white">Berita Terbaru</h2>
+        <a href="{% url 'news:news_list' %}" class="text-sm text-gray-400 hover:text-white transition duration-200 flex items-center">
+          Lihat Semua Berita
+          <svg class="w-4 ml-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {% for news in news_terbaru %}
+        <div class="bg-[#333438] rounded-xl p-4 shadow-md hover:bg-[#3a3c40] transition duration-300">
+          {% if news.thumbnail %}
+            <img src="{{ news.thumbnail }}" alt="{{ news.title }}" class="rounded-xl mb-4 w-full h-40 object-cover">
+          {% endif %}
+          <div class="text-sm text-gray-400">{{ news.get_category_display }} • {{ news.created_at|date:"d M Y" }}</div>
+          <h3 class="text-lg font-semibold text-white mt-1">{{ news.title }}</h3>
+          <p class="text-gray-300 text-sm mt-2 line-clamp-2">{{ news.content|truncatechars:80 }}</p>
+          <div class="mt-3">
+            <a href="{% url 'news:news_detail' news.id %}" class="text-blue-400 hover:underline text-sm">Baca selengkapnya →</a>
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-gray-400">Belum ada berita tersedia.</p>
+        {% endfor %}
+      </div>
+
     </div>
 </div>
+
+
+<script>
+
+
+// section stats
+const topGrid = document.getElementById("top-grid");
+const topLoading = document.getElementById("top-loading");
+const topError = document.getElementById("top-error");
+
+const btnTopScorer = document.getElementById("btn-top-scorer");
+const btnTopAssist = document.getElementById("btn-top-assist");
+const btnCleansheet = document.getElementById("btn-cleansheet");
+
+let currentMode = "scorer"; // default
+
+// Fungsi untuk ambil data
+/*async function fetchTopStats() {
+  topGrid.innerHTML = "";
+  topError.classList.add("hidden");
+  topLoading.classList.remove("hidden");
+
+  // Tentukan URL API sesuai mode
+  let url = "";
+  if (currentMode === "scorer") url = "/stats/api/top/scorer/";
+  else if (currentMode === "assist") url = "/stats/api/top/assist/";
+  else if (currentMode === "cleansheet") url = "/stats/api/top/cleansheet/";
+
+  try {
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!res.ok) throw new Error("Gagal memuat data");
+    const data = await res.json();
+    renderTopCards(data);
+  } catch (err) {
+    console.error(err);
+    topError.textContent = "Gagal memuat data. Coba lagi nanti.";
+    topError.classList.remove("hidden");
+  } finally {
+    topLoading.classList.add("hidden");
+  }
+}*/
+
+// Fungsi render data ke card
+function renderTopCards(data) {
+  topGrid.innerHTML = "";
+
+  // Misal data = { clubs: [...], players: [...] }
+  const clubs = data.clubs?.slice(0, 3) || [];
+  const players = data.players?.slice(0, 3) || [];
+
+  if (clubs.length === 0 && players.length === 0) {
+    topGrid.innerHTML = `<p class="col-span-2 text-gray-400 text-center">Tidak ada data tersedia.</p>`;
+    return;
+  }
+
+  for (let i = 0; i < 3; i++) {
+    const club = clubs[i];
+    const player = players[i];
+
+    const clubCard = club
+      ? `
+      <div class="flex items-center justify-between rounded-xl py-4 px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300">
+        <img src="${club.logo || '/static/img/no-image.png'}" alt="${club.name}" class="h-[85px] w-[85px] object-contain mr-6">
+        <div class="flex-1 text-left">
+            <h1 class="text-lg font-semibold text-white">${club.name}</h1>
+        </div>
+        <div class="text-right">
+            <p class="text-xl font-semibold text-white">${club.value}</p>
+        </div>
+      </div>
+      `
+      : `<div></div>`;
+
+    const playerCard = player
+      ? `
+      <div class="flex items-center justify-between rounded-xl py-4 px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300">
+        <img src="${player.logo || '/static/img/no-image.png'}" alt="${player.name}" class="h-[85px] w-[85px] object-contain mr-6">
+        <div class="flex-1 text-left">
+            <h1 class="text-lg font-semibold text-white">${player.name}</h1>
+        </div>
+        <div class="text-right">
+            <p class="text-xl font-semibold text-white">${player.value}</p>
+        </div>
+      </div>
+      `
+      : `<div></div>`;
+
+    topGrid.insertAdjacentHTML("beforeend", clubCard + playerCard);
+  }
+}
+
+// Event tombol
+btnTopScorer.addEventListener("click", () => {
+  setActiveButton(btnTopScorer);
+  currentMode = "scorer";
+  // fetchTopStats();
+  const data = dummyData[currentMode];
+  renderTopCards(data);
+});
+
+btnTopAssist.addEventListener("click", () => {
+  setActiveButton(btnTopAssist);
+  currentMode = "assist";
+  // fetchTopStats();
+  const data = dummyData[currentMode];
+  renderTopCards(data);
+});
+
+btnCleansheet.addEventListener("click", () => {
+  setActiveButton(btnCleansheet);
+  currentMode = "cleansheet";
+  // fetchTopStats();
+  const data = dummyData[currentMode];
+  renderTopCards(data);
+});
+
+// Helper: ubah style tombol aktif
+function setActiveButton(activeBtn) {
+  [btnTopScorer, btnTopAssist, btnCleansheet].forEach((btn) => {
+    btn.classList.remove("bg-indigo-600", "text-white");
+    btn.classList.add("text-gray-300");
+  });
+  activeBtn.classList.add("bg-indigo-600", "text-white");
+  activeBtn.classList.remove("text-gray-300");
+}
+
+// Jalankan pertama kali
+//fetchTopStats();
+const dummyData = {
+  "scorer": {
+    "clubs": [
+      { "name": "Arsenal", "logo": "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg", "value": "30 Gol" },
+      { "name": "Manchester City", "logo": "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg", "value": "28 Gol" },
+      { "name": "Liverpool", "logo": "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg", "value": "26 Gol" }
+    ],
+    "players": [
+      { "name": "Erling Haaland", "photo": "https://upload.wikimedia.org/wikipedia/commons/9/93/Erling_Haaland_2023_%28cropped%29.jpg", "value": "18 Gol" },
+      { "name": "Mohamed Salah", "photo": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mohamed_Salah_2022.jpg", "value": "16 Gol" },
+      { "name": "Bukayo Saka", "photo": "https://upload.wikimedia.org/wikipedia/commons/3/38/Bukayo_Saka_2022.jpg", "value": "14 Gol" }
+    ]
+  },
+  "assist": {
+    "clubs": [
+      { "name": "Manchester City", "logo": "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg", "value": "22 Assist" },
+      { "name": "Liverpool", "logo": "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg", "value": "19 Assist" },
+      { "name": "Chelsea", "logo": "https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg", "value": "18 Assist" }
+    ],
+    "players": [
+      { "name": "Kevin De Bruyne", "photo": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Kevin_De_Bruyne_2021.jpg", "value": "12 Assist" },
+      { "name": "Trent Alexander-Arnold", "photo": "https://upload.wikimedia.org/wikipedia/commons/3/38/Trent_Alexander-Arnold_2021.jpg", "value": "10 Assist" },
+      { "name": "Martin Ødegaard", "photo": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Martin_%C3%98degaard_2021.jpg", "value": "8 Assist" }
+    ]
+  },
+  "cleansheet": {
+    "clubs": [
+      { "name": "Arsenal", "logo": "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg", "value": "14 Cleansheet" },
+      { "name": "Newcastle United", "logo": "https://upload.wikimedia.org/wikipedia/en/5/56/Newcastle_United_Logo.svg", "value": "12 Cleansheet" },
+      { "name": "Manchester United", "logo": "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg", "value": "10 Cleansheet" }
+    ],
+    "players": [
+      { "name": "David Raya", "photo": "https://upload.wikimedia.org/wikipedia/commons/2/2d/David_Raya_2023.jpg", "value": "10 Cleansheet" },
+      { "name": "Nick Pope", "photo": "https://upload.wikimedia.org/wikipedia/commons/5/59/Nick_Pope_2021.jpg", "value": "9 Cleansheet" },
+      { "name": "André Onana", "photo": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Andr%C3%A9_Onana_2023.jpg", "value": "8 Cleansheet" }
+    ]
+  }
+}
+const data = dummyData[currentMode];
+renderTopCards(data);
+
+</script>
 {% include 'footer.html' %}
 {% endblock content %}

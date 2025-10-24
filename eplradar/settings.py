@@ -31,7 +31,7 @@ PRODUCTION = os.getenv('PRODUCTION', 'False').lower() == 'true'
 DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "raihan-maulana41-eplradar.pbp.cs.ui.ac.id"]
-CSRF_TRUSTED_ORIGINS = ["https://raihan-maulana41-tendhang.pbp.cs.ui.ac.id"]
+CSRF_TRUSTED_ORIGINS = ["https://raihan-maulana41-eplradar.pbp.cs.ui.ac.id"]
 
 # Application definition
 

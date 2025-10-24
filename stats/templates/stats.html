@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title> {{ title }} </title>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="bg-[#1d1f22] w-full pt-10 min-h-screen">
+    <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
+        <div class="my-24 bg-[#333438] rounded-2xl h-[560px]">
+        </div>
+
+        <!-- Filter Section -->
+        <div class="flex flex-col items-center mb-8 p-4">
+            <div class="flex space-x-8">
+                <a id="filter-klub" class="text-blue-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer">
+                Klub
+            </a>
+                <a id="filter-pemain" class="text-gray-500 px-4 py-2 font-medium text-lg transition-colors hover:text-white">
+                Pemain
+                </a>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="bg-gray-500 rounded-lg p-20 text-center hidden">
+        <svg class="animate-spin h-8 w-8 text-gray-300 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+        </svg>
+        <p class="text-gray-900 mt-3">Loading stat ...</p>
+        </div>
+
+        <!-- Error -->
+        <div id="error" class="hidden text-center text-red-600 font-medium"></div>
+
+        <!-- Grid -->
+        <div id="grid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+
+    </div>
+</div>
+
+    <script>
+        
+const dummyClubs = [
+  {
+    "name": "Arsenal",
+    "rank": 1,
+    "matches_played": 9,
+    "wins": 8,
+    "draws": 1,
+    "losses": 0,
+    "goals_scored": 25,
+    "goals_conceded": 7,
+    "points": 25,
+    "logo": "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"
+  },
+  {
+    "name": "Manchester City",
+    "rank": 2,
+    "matches_played": 9,
+    "wins": 7,
+    "draws": 1,
+    "losses": 1,
+    "goals_scored": 22,
+    "goals_conceded": 8,
+    "points": 22,
+    "logo": "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg"
+  },
+  {
+    "name": "Liverpool",
+    "rank": 3,
+    "matches_played": 9,
+    "wins": 6,
+    "draws": 2,
+    "losses": 1,
+    "goals_scored": 20,
+    "goals_conceded": 10,
+    "points": 20,
+    "logo": "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg"
+  },
+  {
+    "name": "Tottenham Hotspur",
+    "rank": 4,
+    "matches_played": 9,
+    "wins": 6,
+    "draws": 2,
+    "losses": 1,
+    "goals_scored": 18,
+    "goals_conceded": 12,
+    "points": 20,
+    "logo": "https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg"
+  },
+  {
+    "name": "Chelsea",
+    "rank": 5,
+    "matches_played": 9,
+    "wins": 5,
+    "draws": 3,
+    "losses": 1,
+    "goals_scored": 17,
+    "goals_conceded": 10,
+    "points": 18,
+    "logo": "https://upload.wikimedia.org/wikipedia/en/7/71/Chelsea_FC.svg"
+  },
+  {
+    "name": "Newcastle United",
+    "rank": 6,
+    "matches_played": 9,
+    "wins": 5,
+    "draws": 2,
+    "losses": 2,
+    "goals_scored": 19,
+    "goals_conceded": 14,
+    "points": 17,
+    "logo": "https://upload.wikimedia.org/wikipedia/en/5/56/Newcastle_United_FC_logo.svg"
+  }
+];
+
+const grid = document.getElementById("grid");
+const loading = document.getElementById("loading");
+const error = document.getElementById("error");
+const btnKlub = document.getElementById("filter-klub");
+const btnPemain = document.getElementById("filter-pemain");
+
+let mode = "klub"; // default
+
+//  fungsi untuk ambil data dari API
+async function fetchStats() {
+  grid.innerHTML = "";
+  error.classList.add("hidden");
+  loading.classList.remove("hidden");
+  grid.classList.add("hidden");
+
+  const url =
+    mode === "klub"
+      ? "/stats/api/stats/clubs/"
+      : "/stats/api/stats/players/";
+
+  try {
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!res.ok) throw new Error("Gagal mengambil data");
+
+    const data = await res.json();
+    renderCards(data);
+  } catch (err) {
+    console.error(err);
+    error.textContent = "Terjadi kesalahan saat memuat data.";
+    error.classList.remove("hidden");
+  } finally {
+    loading.classList.add("hidden");
+  }
+}
+
+// render data ke card
+function renderCards(data) {
+  grid.innerHTML = "";
+  grid.classList.remove("hidden");
+
+  if (data.length === 0) {
+    grid.innerHTML = `<p class="text-gray-500 col-span-full text-center">Tidak ada data tersedia.</p>`;
+    return;
+  }
+
+if (mode === "klub") {
+  data.forEach((club) => {
+    const el = document.createElement("div");
+    el.className =
+      "flex items-center justify-between rounded-xl py-4 px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300";
+
+    el.innerHTML = `
+      <img src="${club.logo || '/static/img/no-image.png'}" 
+           alt="${club.name}" 
+           class="h-[100px] w-[100px] object-contain mr-6">
+
+      <div class="flex-1 text-left">
+        <h1 class="text-lg font-semibold text-white">${club.name}</h1>
+      </div>
+
+      <div class="text-right">
+        <p class="text-xl font-semibold text-white">${club.points} Poin</p>
+      </div>
+    `;
+    grid.appendChild(el);
+  });
+} else {
+  data.forEach((player) => {
+    const el = document.createElement("div");
+    el.className =
+      "flex items-center justify-between rounded-xl py-4 px-6 bg-gray-800 hover:ring hover:ring-blue-500/50 transition duration-300";
+
+    el.innerHTML = `
+      <img src="${player.photo || '/static/img/no-image.png'}" 
+           alt="${player.name}" 
+           class="h-[100px] w-[100px] object-contain mr-6">
+
+      <div class="flex-1 text-left">
+        <h1 class="text-lg font-semibold text-white mb-1">${player.name}</h1>
+        <div class="flex items-center space-x-2">
+          <img src="${player.club_logo || '/static/img/no-image.png'}" 
+               alt="${player.club}" 
+               class="h-6 w-6 object-contain">
+          <p class="text-sm text-gray-300">${player.club}</p>
+        </div>
+      </div>
+
+      <div class="text-right">
+        <p class="text-xl font-semibold text-white">${player.goals} Gol</p>
+      </div>
+    `;
+    grid.appendChild(el);
+  });
+}
+
+}
+
+// Event handler tombol filter
+btnKlub.addEventListener("click", () => {
+  mode = "klub";
+  btnKlub.className = "text-blue-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer";
+  btnPemain.className = "text-grey-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer"
+  fetchStats();
+});
+
+btnPemain.addEventListener("click", () => {
+    mode = "pemain";
+    btnKlub.className = "text-grey-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer"
+    btnPemain.className = "text-blue-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer"
+  fetchStats();
+});
+
+// Load pertama kali
+//fetchStats();
+renderCards(dummyClubs);
+</script>
+
+
+{% include 'footer.html' %}
+{% endblock content %}
