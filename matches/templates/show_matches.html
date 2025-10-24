@@ -12,8 +12,8 @@
     {% block content %}
     {% include 'navbar.html' %}
 
-    <div class="relative h-[3248px] w-[1440px] overflow-hidden bg-[#1d1f22]">
-        <div class="absolute top-[780px] left-20 flex w-[1280px] flex-col items-start justify-start gap-20">
+    <div class="bg-[#1d1f22] w-full pt-10 min-h-screen justify-center">
+        <div class="absolute top-[780px] mx-20 mx-auto flex w-[1280px] flex-col items-start justify-start gap-20">
             <div class="relative flex flex-shrink-0 flex-grow-0 flex-col items-start justify-start gap-6 self-stretch">
             <p class="w-[1280px] flex-shrink-0 flex-grow-0 self-stretch text-left text-[28px] font-semibold text-white">Klasemen</p>
             <div class="flex flex-shrink-0 flex-grow-0 items-start justify-start gap-4 self-stretch">
@@ -421,7 +421,7 @@
             </div>
             </div>
             <div class="relative flex flex-shrink-0 flex-grow-0 flex-col items-center justify-start gap-8 self-stretch">
-            <p class="w-[1280px] flex-shrink-0 flex-grow-0 self-stretch text-center text-[28px] font-semibold text-white">Semua Match Musim Ini</p>
+            <p class="flex-shrink-0 flex-grow-0 self-stretch text-center text-[28px] font-semibold text-white">Semua Match Musim Ini</p>
             <div class="flex flex-shrink-0 flex-grow-0 items-center justify-start gap-[60px]">
                 <div class="relative flex flex-shrink-0 flex-grow-0 items-center justify-start gap-2.5 rounded-[100px] bg-[#333438] px-4 py-2.5">
                 <svg width="12" height="24" viewBox="0 0 12 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="relative h-6 w-3 flex-shrink-0 flex-grow-0" preserveAspectRatio="xMidYMid meet">
@@ -541,9 +541,11 @@
             </div>
             </div>
         </div>
-        <div class="absolute top-[159px] left-[79px] h-[560px] w-[1280px] rounded-2xl bg-[#333438]"></div>
+        <div class="absolute top-[159px] h-[560px] w-[1280px] mx-20 mx-auto items-center rounded-2xl bg-[#333438]"></div>
+        <div style="height: 3248px;"></div>
     </div>
 
+    {% include 'footer.html' %}
     {% endblock content %}
 </body>
 </html>

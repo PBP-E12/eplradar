@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 
 class News(models.Model):
     CATEGORY_CHOICES = [
@@ -10,6 +10,7 @@ class News(models.Model):
         ('rumor', 'Rumor'),
         ('analysis', 'Analysis'),
     ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     title = models.CharField(max_length=255)
     content = models.TextField()
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='update')
