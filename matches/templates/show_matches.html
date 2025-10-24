@@ -12,19 +12,41 @@
     {% block content %}
     {% include 'navbar.html' %}
     
-    <div class="bg-[#1d1f22] w-full pt-10 min-h-screen">
+    <div class="bg-[#1d1f22] w-full pt-10 min-h-screen scroll-smooth">
         <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
-            <div class="my-24 bg-[#333438] rounded-2xl h-[400px] sm:h-[480px] lg:h-[560px]">
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 lg:gap-4">
+            <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex flex-col items-center justify-center text-center p-4" 
+     style="background-image: url('{% static "img/match.png" %}')">
+    
+  <div class="text-white">
+    <h1 class="text-6xl font-bold text-white mb-4">
+      Match
+    </h1>
+    <p class="text-xl text-gray-200 max-w-lg mb-8">
+      Dapatkan informasi terkait pertandingan dan klasemen tim favoritmu di musim ini!
+    </p>
+    
+    <a href="#jadwal-pertandingan" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
+      <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
+      </svg>
+      Lihat Jadwal Pertandingan
+    </a>
+  </div>
+  
+</div>
+            <div id="jadwal-pertandingan" class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 lg:gap-4 pt-12">
+                
                 <div class="bg-[#333438] rounded-2xl px-6 sm:px-8 lg:px-12 py-6 lg:py-9 overflow-x-auto">
                     <div class="min-w-[600px]">
-                        
-                        <div class="flex items-start justify-between">
-                            <div class="flex flex-col items-start flex-1">
-                                <div class="h-[60px] lg:h-[68px] flex items-center">
-                                    <p class="text-lg lg:text-xl text-[#b0b0b0]">Klasemen</p>
+                        <div class="flex items-end justify-between">
+                            <div class="flex flex-col items-start justify-end gap-5 lg:gap-7 flex-1">
+                                {% for i in "12345678901234567890" %}
+                                <div class="flex items-center justify-start gap-4 w-full">
+                                    <p class="text-xl lg:text-2xl font-semibold text-white min-w-[2rem]">{{ forloop.counter }}</p>
+                                    <div class="flex items-center justify-start gap-3 lg:gap-4">
+                                        <img src="logo-arsenal-2.png" class="h-6 w-5 lg:h-7 lg:w-6 object-cover" />
+                                        <p class="text-xl lg:text-2xl text-white">Arsenal</p>
+                                    </div>
                                 </div>
                                 
                                     {% for club in clubs %}
@@ -44,47 +66,46 @@
                                     {% endfor %}
                             </div>
                             
-                            <div class="flex items-center justify-end gap-10 lg:gap-12">
-                                
-                                <div class="flex flex-col items-end justify-start">
-                                    <p class="text-lg lg:text-xl text-[#b0b0b0] h-[60px] lg:h-[68px] flex items-center">MP</p>
-                                    <div class="flex flex-col items-end">
+                            <div class="flex items-center justify-end gap-4 lg:gap-6">
+                                <div class="flex flex-col items-center justify-start gap-4 lg:gap-6">
+                                    <p class="text-lg lg:text-xl text-[#b0b0b0]">MP</p>
+                                    <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
                                         {% for i in "12345678901234567890" %}
                                         <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">7</p>
                                         {% endfor %}
                                     </div>
                                 </div>
                                 
-                                <div class="flex flex-col items-end justify-start w-8">
-                                    <p class="text-lg lg:text-xl text-[#b0b0b0] h-[60px] lg:h-[68px] flex items-center">W</p>
-                                    <div class="flex flex-col items-end">
+                                <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-5">
+                                    <p class="text-lg lg:text-xl text-[#b0b0b0]">W</p>
+                                    <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
                                         {% for i in "12345678901234567890" %}
                                         <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">5</p>
                                         {% endfor %}
                                     </div>
                                 </div>
                                 
-                                <div class="flex flex-col items-end justify-start">
-                                    <p class="text-lg lg:text-xl text-[#b0b0b0] h-[60px] lg:h-[68px] flex items-center">D</p>
-                                    <div class="flex flex-col items-end">
+                                <div class="flex flex-col items-center justify-start gap-4 lg:gap-6">
+                                    <p class="text-lg lg:text-xl text-[#b0b0b0]">D</p>
+                                    <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
                                         {% for i in "12345678901234567890" %}
                                         <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">1</p>
                                         {% endfor %}
                                     </div>
                                 </div>
                                 
-                                <div class="flex flex-col items-end justify-start w-8">
-                                    <p class="text-lg lg:text-xl text-[#b0b0b0] h-[60px] lg:h-[68px] flex items-center">L</p>
-                                    <div class="flex flex-col items-end">
+                                <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-3">
+                                    <p class="text-lg lg:text-xl text-[#b0b0b0]">L</p>
+                                    <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
                                         {% for i in "12345678901234567890" %}
                                         <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">1</p>
                                         {% endfor %}
                                     </div>
                                 </div>
                                 
-                                <div class="flex flex-col items-end justify-start w-10">
-                                    <p class="text-lg lg:text-xl font-semibold text-[#b0b0b0] h-[60px] lg:h-[68px] flex items-center">P</p>
-                                    <div class="flex flex-col items-end">
+                                <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-6">
+                                    <p class="text-lg lg:text-xl font-semibold text-[#b0b0b0]">P</p>
+                                    <div class="flex flex-col items-center justify-center gap-7 lg:gap-9">
                                         {% for i in "12345678901234567890" %}
                                         <p class="text-lg lg:text-xl font-semibold text-white h-[52px] lg:h-[56px] flex items-center">16</p>
                                         {% endfor %}
@@ -94,65 +115,116 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="flex flex-col items-start justify-start gap-6 lg:gap-8 w-full lg:w-[524px]">
+                    <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-full">
+                        <p class="text-xl lg:text-2xl font-semibold text-white text-center">Match Terdekat</p>
+                        <div class="flex flex-col items-center justify-start gap-2.5 rounded-2xl bg-[#333438] px-6 lg:px-8 py-5 lg:py-6 w-full">
+                            <div class="flex flex-col items-start justify-start gap-4 lg:gap-6 w-full">
+                                <p class="text-sm lg:text-base font-medium text-white">Sabtu, 18 Oktober 2025</p>
+                                <div class="flex items-center justify-between w-full">
+                                    <div class="flex flex-col items-center justify-start gap-3 lg:gap-4">
+                                        <img src="logo-arsenal-2.png" class="h-12 w-10 lg:h-[60px] lg:w-[51px] object-cover" />
+                                        <p class="text-sm lg:text-base font-medium text-white text-center">Arsenal</p>
+                                    </div>
+                                    <div class="flex flex-col items-center justify-start gap-1">
+                                        <p class="text-3xl lg:text-5xl font-semibold text-white">VS</p>
+                                    </div>
+                                    <div class="flex flex-col items-center justify-start gap-3 lg:gap-4">
+                                        <img src="logo-fulham-1.png" class="h-12 w-9 lg:h-[60px] lg:w-[45px] object-cover" />
+                                        <p class="text-sm lg:text-base font-medium text-white text-center">Fulham</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-full">
+                        <p class="text-xl lg:text-2xl font-semibold text-white text-center">Match Hari Ini</p>
+                        <div class="flex flex-col items-start justify-start gap-3 lg:gap-4 w-full">
+                            {% for i in "12345" %}
+                            <div class="flex items-center justify-between rounded-2xl bg-[#333438] px-5 lg:px-6 py-3 lg:py-4 w-full">
+                                <div class="flex flex-col items-start justify-start gap-2">
+                                    <div class="flex items-center justify-start gap-4 lg:gap-6">
+                                        <img src="logo-arsenal-4.png" class="h-6 w-3 lg:h-7 lg:w-[13px] object-cover" />
+                                        <p class="text-lg lg:text-xl text-white">Nottm Forrest</p>
+                                    </div>
+                                    <div class="flex items-center justify-start gap-3">
+                                        <img src="logo-arsenal-3.png" class="h-6 w-6 lg:h-7 lg:w-7 object-cover" />
+                                        <p class="text-lg lg:text-xl text-white">Chelsea</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-start gap-1 rounded-lg bg-[#e3e7fc] p-1">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5">
+                                        <path d="M2.5 10C2.5 10.9849 2.69399 11.9602 3.0709 12.8701C3.44781 13.7801 4.00026 14.6069 4.6967 15.3033C5.39314 15.9997 6.21993 16.5522 7.12987 16.9291C8.03982 17.306 9.01509 17.5 10 17.5C10.9849 17.5 11.9602 17.306 12.8701 16.9291C13.7801 16.5522 14.6069 15.9997 15.3033 15.3033C15.9997 14.6069 16.5522 13.7801 16.9291 12.8701C17.306 11.9602 17.5 10.9849 17.5 10C17.5 8.01088 16.7098 6.10322 15.3033 4.6967C13.8968 3.29018 11.9891 2.5 10 2.5C8.01088 2.5 6.10322 3.29018 4.6967 4.6967C3.29018 6.10322 2.5 8.01088 2.5 10Z" stroke="#172153" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path d="M10 5.83337V10L12.5 12.5" stroke="#172153" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>
+                                    <p class="text-sm lg:text-base text-[#172153]">22.00 WIB</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <div class="flex flex-col justify-start items-start w-full relative mt-10 gap-4">
-                <p class="self-stretch flex-grow-0 flex-shrink-0 w-full text-[28px] font-semibold text-left text-white">
-                    Semua Match Musim Ini
-                </p>
-                <div class="flex items-center space-x-4 mb-6">
-                    <select id="weekFilter" 
-                        onchange="window.location.href = '?week=' + this.value;"
-                        class="flex-grow-0 flex-shrink-0 relative bg-[#333438] text-white px-8 py-3 rounded-2xl border border-white text-xl font-medium cursor-pointer focus:outline-none"
-                    >
-                        {% for week in week_range %}
-                            <option value="{{ week }}" {% if week == current_week %}selected{% endif %}>
-                                Pekan ke-{{ week }}
-                            </option>
-                        {% endfor %}
-                    </select>
+            <div class="flex flex-col items-center justify-start gap-6 lg:gap-8 mt-12 lg:mt-16 mb-16 lg:mb-24">
+                <p class="text-2xl lg:text-[28px] font-semibold text-white text-center">Semua Match Musim Ini</p>
+                
+                <div class="flex items-center justify-center gap-8 lg:gap-[60px]">
+                    <button class="flex items-center justify-center rounded-[100px] bg-[#333438] p-3 lg:px-4 lg:py-2.5 hover:bg-[#404348] transition-colors">
+                        <svg width="12" height="24" viewBox="0 0 12 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-6 w-3">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M1.84294 12.7109L7.49994 18.3679L8.91394 16.9539L3.96394 12.0039L8.91394 7.05389L7.49994 5.63989L1.84294 11.2969C1.65547 11.4844 1.55015 11.7387 1.55015 12.0039C1.55015 12.2691 1.65547 12.5234 1.84294 12.7109Z" fill="white"></path>
+                        </svg>
+                    </button>
+                    <div class="flex flex-col items-center justify-start gap-2">
+                        <p class="text-lg lg:text-xl font-medium text-white text-center">Pekan Match ke-8</p>
+                        <p class="text-sm lg:text-base text-[#b0b0b0] text-center">18 Okt - 21 Okt</p>
+                    </div>
+                    <button class="flex items-center justify-center rounded-[100px] bg-[#333438] p-3 lg:px-4 lg:py-2.5 hover:bg-[#404348] transition-colors">
+                        <svg width="12" height="24" viewBox="0 0 12 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-6 w-3">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10.1569 12.7109L4.49994 18.3679L3.08594 16.9539L8.03594 12.0039L3.08594 7.05389L4.49994 5.63989L10.1569 11.2969C10.3444 11.4844 10.4497 11.7387 10.4497 12.0039C10.4497 12.2691 10.3444 12.5234 10.1569 12.7109Z" fill="white"></path>
+                        </svg>
+                    </button>
                 </div>
-
-                <div class="flex flex-col justify-start items-center self-stretch flex-grow-0 flex-shrink-0 gap-10 px-6 sm:px-10 lg:px-20 py-8 lg:py-12 rounded-2xl bg-[#333438]">
+                
+                <div class="flex flex-col items-center justify-start gap-8 lg:gap-10 w-full rounded-2xl bg-[#333438] px-6 sm:px-10 lg:px-20 py-8 lg:py-12">
+                    <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-full">
+                        <p class="text-lg lg:text-xl text-white text-center">Sabtu, 18 Oktober 2025</p>
+                        <div class="flex flex-col items-center justify-start gap-4 lg:gap-5 w-full max-w-4xl">
+                            {% for i in "12345" %}
+                            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 lg:gap-[120px] w-full">
+                                <div class="flex items-center justify-end gap-3 w-full sm:w-auto min-w-[145px]">
+                                    <p class="text-xl lg:text-2xl font-medium text-white">Arsenal</p>
+                                    <img src="logo-arsenal-4.png" class="h-10 w-8 lg:h-12 lg:w-[41px] object-contain" />
+                                </div>
+                                <div class="flex items-center justify-center rounded-2xl bg-[#3247b1] px-6 lg:px-8 py-2 lg:py-3 min-w-[104px]">
+                                    <p class="text-lg lg:text-xl font-medium text-white">0 : 3</p>
+                                </div>
+                                <div class="flex items-center justify-start gap-3 w-full sm:w-auto min-w-[153px]">
+                                    <img src="logo-arsenal-3.png" class="h-10 w-8 lg:h-12 lg:w-[41px] object-contain" />
+                                    <p class="text-xl lg:text-2xl font-medium text-white">Chelsea</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                     
-                    {% if matches %}
-                        {% regroup matches by match_date|date:"Ymd" as matches_by_date %}
-                        
-                        {% for group in matches_by_date %}
-                        <div class="flex flex-col justify-start items-center self-stretch flex-grow-0 flex-shrink-0 relative gap-6 w-full">
-                            <p class="self-stretch flex-grow-0 flex-shrink-0 w-full text-xl text-center text-white">
-                                {{ group.list.0.match_date|date:"l, d F Y" }}
-                            </p>
-                            
-                            <div class="flex flex-col justify-center items-center w-full gap-5">
-                                {% for match in group.list %}
-                                <div class="flex justify-between items-center w-full max-w-2xl lg:max-w-4xl">
-                                    
-                                    <div class="flex justify-end items-end flex-grow-0 flex-shrink-0 w-[145px] gap-3">
-                                        <p class="flex-grow-0 flex-shrink-0 text-xl lg:text-2xl font-medium text-right text-white">
-                                            {{ match.home_team }}
-                                        </p>
-                                        <img
-                                            src="/static/img/club-matches/{{ match.home_team }}.png"
-                                            class="flex-grow-0 flex-shrink-0 w-10 lg:w-[41px] h-10 lg:h-12 object-contain"
-                                        />
-                                    </div>
-                                    
-                                    <div class="flex justify-center items-center flex-grow-0 flex-shrink-0 w-[104px] px-8 py-3 rounded-2xl bg-[#3247b1]">
-                                        <p class="flex-grow-0 flex-shrink-0 text-xl font-medium text-left text-white">
-                                            VS
-                                        </p>
-                                    </div>
-                                    
-                                    <div class="flex justify-start items-end flex-grow-0 flex-shrink-0 w-[153px] gap-3">
-                                        <img
-                                            src="/static/img/club-matches/{{ match.away_team }}.png"
-                                            class="flex-grow-0 flex-shrink-0 w-10 lg:w-[41px] h-10 lg:h-12 object-contain"
-                                        />
-                                        <p class="flex-grow-0 flex-shrink-0 text-xl lg:text-2xl font-medium text-left text-white">
-                                            {{ match.away_team }}
-                                        </p>
-                                    </div>
+                    <div class="flex flex-col items-center justify-start gap-4 lg:gap-6 w-full">
+                        <p class="text-lg lg:text-xl text-white text-center">Senin, 20 Oktober 2025</p>
+                        <div class="flex flex-col items-center justify-start gap-4 lg:gap-5 w-full max-w-4xl">
+                            {% for i in "12" %}
+                            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 lg:gap-[120px] w-full">
+                                <div class="flex items-center justify-end gap-3 w-full sm:w-auto min-w-[145px]">
+                                    <p class="text-xl lg:text-2xl font-medium text-white">Arsenal</p>
+                                    <img src="logo-arsenal-4.png" class="h-10 w-8 lg:h-12 lg:w-[41px] object-contain" />
+                                </div>
+                                <div class="flex items-center justify-center rounded-2xl bg-[#3247b1] px-6 lg:px-8 py-2 lg:py-3 min-w-[104px]">
+                                    <p class="text-lg lg:text-xl font-medium text-white">{% if forloop.counter == 1 %}20.00{% else %}21.00{% endif %}</p>
+                                </div>
+                                <div class="flex items-center justify-start gap-3 w-full sm:w-auto min-w-[153px]">
+                                    <img src="logo-arsenal-3.png" class="h-10 w-8 lg:h-12 lg:w-[41px] object-contain" />
+                                    <p class="text-xl lg:text-2xl font-medium text-white">Chelsea</p>
                                 </div>
                                 {% endfor %}
                             </div>
