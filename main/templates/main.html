@@ -78,14 +78,34 @@
             </a>
         </div>
 
-        <div class="flex justify-between items-center mt-24">
-            <h2 class="text-xl font-semibold text-white">Berita Terbaru</h2>
-            <a href="#" class="text-sm text-gray-400 hover:text-white transition duration-200 flex items-center">Lihat Semua Berita
-                <svg class="w-4 ml-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
-                </svg>
-            </a>
+              <div class="flex justify-between items-center mt-24">
+        <h2 class="text-xl font-semibold text-white">Berita Terbaru</h2>
+        <a href="{% url 'news:news_list' %}" class="text-sm text-gray-400 hover:text-white transition duration-200 flex items-center">
+          Lihat Semua Berita
+          <svg class="w-4 ml-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {% for news in news_terbaru %}
+        <div class="bg-[#333438] rounded-xl p-4 shadow-md hover:bg-[#3a3c40] transition duration-300">
+          {% if news.thumbnail %}
+            <img src="{{ news.thumbnail }}" alt="{{ news.title }}" class="rounded-xl mb-4 w-full h-40 object-cover">
+          {% endif %}
+          <div class="text-sm text-gray-400">{{ news.get_category_display }} • {{ news.created_at|date:"d M Y" }}</div>
+          <h3 class="text-lg font-semibold text-white mt-1">{{ news.title }}</h3>
+          <p class="text-gray-300 text-sm mt-2 line-clamp-2">{{ news.content|truncatechars:80 }}</p>
+          <div class="mt-3">
+            <a href="{% url 'news:news_detail' news.id %}" class="text-blue-400 hover:underline text-sm">Baca selengkapnya →</a>
+          </div>
         </div>
+        {% empty %}
+        <p class="text-gray-400">Belum ada berita tersedia.</p>
+        {% endfor %}
+      </div>
 
     </div>
 </div>

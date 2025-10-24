@@ -5,13 +5,14 @@ from django.urls import reverse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
 import datetime
-
+from news.models import News
 # Create your views here.
 def show_main(request):
+    news_terbaru = News.objects.order_by('-created_at')[:3]
     context = {
-        'title': 'EPLRadar'
+        'title': 'EPLRadar',
+        'news_terbaru': news_terbaru,
     }
-
     return render(request, "main.html", context)
 
 def register(request):
