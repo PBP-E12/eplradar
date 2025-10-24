@@ -22,23 +22,17 @@
                     <div class="min-w-[600px]">
                         
                         <div class="flex items-start justify-between">
+                            
                             <div class="flex flex-col items-start flex-1">
                                 <div class="h-[60px] lg:h-[68px] flex items-center">
                                     <p class="text-lg lg:text-xl text-[#b0b0b0]">Klasemen</p>
                                 </div>
-                                
                                     {% for club in clubs %}
                                     <div class="flex items-center justify-start gap-4 w-full h-[52px] lg:h-[56px]">
-                                        <p class="text-xl lg:text-2xl font-semibold text-white min-w-[2rem]">
-                                            {{ forloop.counter }}
-                                        </p>
-                                        
+                                        <p class="text-xl lg:text-2xl font-semibold text-white min-w-[2rem]">{{ forloop.counter }}</p>
                                         <div class="flex items-center justify-start gap-3 lg:gap-4">
-                                            <img src="/static/img/club-matches/{{ club.nama_klub }}.png" alt="{{ club.nama_klub }}" class="h-6 w-5 lg:h-7 lg:w-6 object-cover" />
-                                            
-                                            <p class="text-xl lg:text-2xl text-white">
-                                                {{ club.nama_klub }}
-                                            </p>
+                                            <img src="/static/img/club-matches/{{ club.nama_klub }}.png" class="h-6 w-5 lg:h-7 lg:w-6 object-cover" /> 
+                                            <p class="text-xl lg:text-2xl text-white">{{ club.nama_klub }}</p>
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -143,7 +137,6 @@
                                             VS
                                         </p>
                                     </div>
-                                    
                                     
                                     <div class="flex justify-start items-end flex-grow-0 flex-shrink-0 w-[153px] gap-3">
                                         <img

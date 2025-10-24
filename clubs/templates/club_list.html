@@ -5,8 +5,27 @@
 
 <div class="container-custom bg-[]">
     <h1 class="page-title">Profil Klub Musim Ini</h1>
+
+        <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex items-center justify-end" 
+             style="background-image: url('{% static "img/clubs.png" %}')">
+            
+            <div class="text-white pr-20 lg:pr-24">
+                <h1 class="text-6xl font-bold text-white mb-4">
+                    Klub
+                </h1>
+                <p class="text-xl text-gray-200 max-w-md mb-8">
+                    Temukan info terlengkap terkait tim favoritmu di liga inggris musim ini
+                </p>
+                <a href="#klub-list" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
+                    <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
+                    </svg>
+                    Lihat Club
+                </a>
+            </div>
+        </div>
     
-    <div class="clubs-grid">
+    <div id="klub-list" class="clubs-grid">
         {% for club in clubs %}
         <a href="{% url 'clubs:club_detail' club.nama_klub %}" class="club-card-link">
             <div class="club-card">
@@ -53,6 +72,7 @@
     body {
         background-color: #18181b;
         color: #fafafa;
+        scroll-behavior: smooth;
     }
     
     .container-custom {
@@ -200,7 +220,6 @@
         font-size: 1.125rem;
     }
     
-    /* Responsive */
     @media (max-width: 1024px) {
         .clubs-grid {
             grid-template-columns: repeat(2, 1fr);
