@@ -5,7 +5,7 @@
 {% include 'modal.html' %}
 {% include 'toast.html' %}
 
-<div class="bg-[#1d1f22] w-full pt-32 min-h-screen text-white scroll-smooth">
+<div class="bg-[#1d1f22] w-full pt-20 min-h-screen text-white scroll-smooth">
 
   <div class="max-w-7xl mx-auto p-6">
     
@@ -39,7 +39,7 @@
 
     <div class="flex items-center space-x-4 mb-6">
       <select id="categoryFilter" onchange="loadNews()"
-        class="bg-[#333438] text-white px-4 py-2 rounded-lg cursor-pointer focus:outline-none">
+        class="bg-gray-800 text-white px-4 py-2 rounded-lg cursor-pointer focus:outline-none">
         <option value="all">Kategori (Semua)</option>
         {% for code, label in category_choices %}
         <option value="{{ code }}" {% if code == current_category %}selected{% endif %}>{{ label }}</option>
