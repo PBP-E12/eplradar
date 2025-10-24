@@ -8,7 +8,7 @@ class Player(models.Model):
     name = models.CharField(max_length=100)
     position = models.CharField(max_length=20)
     team = models.ForeignKey(Club, on_delete=models.CASCADE)
-    profile_picture_url = models.URLField(blank=True, null=True)
+    profile_picture_url = models.ImageField(upload_to='player_thumbnails/', blank=True, null=True)
     citizenship = models.CharField(max_length=50)
     age = models.PositiveIntegerField(default=0)
     curr_goals = models.PositiveIntegerField(default=0)
