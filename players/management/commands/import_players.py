@@ -24,7 +24,7 @@ class Command(BaseCommand):
 
             for row in reader:
                 # Normalisasi data
-                name = row['name'].strip()
+                name = row['player_name'].strip()
                 position = row['position'].strip()
                 team_name = row['team'].strip()
                 citizenship = row['citizenship'].strip()
