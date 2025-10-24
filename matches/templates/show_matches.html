@@ -10,13 +10,31 @@
 
 <body>
     {% block content %}
+    
     {% include 'navbar.html' %}
     
     <div class="bg-[#1d1f22] w-full pt-10 min-h-screen">
+        
         <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
-            <div class="my-24 bg-[#333438] rounded-2xl h-[400px] sm:h-[480px] lg:h-[560px]">
+            
+            <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex flex-col items-center justify-center text-center p-4" 
+                style="background-image: url('{% static "img/match.png" %}')" id="hero-section">
+                <div class="text-white">
+                    <h1 class="text-6xl font-bold text-white mb-4">
+                        Match
+                    </h1>
+                    <p class="text-xl text-gray-200 max-w-lg mb-8">
+                        Dapatkan informasi terkait pertandingan dan klasemen tim favoritmu di musim ini!
+                    </p>
+                    <a href="#jadwal-pertandingan" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
+                        <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
+                        </svg>
+                        Lihat Jadwal Pertandingan
+                    </a>
+                </div>
             </div>
-
+            
             <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 lg:gap-4">
                 <div class="bg-[#333438] rounded-2xl px-6 sm:px-8 lg:px-12 py-6 lg:py-9 overflow-x-auto">
                     <div class="min-w-[600px]">
@@ -27,15 +45,15 @@
                                 <div class="h-[60px] lg:h-[68px] flex items-center">
                                     <p class="text-lg lg:text-xl text-[#b0b0b0]">Klasemen</p>
                                 </div>
-                                    {% for club in clubs %}
-                                    <div class="flex items-center justify-start gap-4 w-full h-[52px] lg:h-[56px]">
-                                        <p class="text-xl lg:text-2xl font-semibold text-white min-w-[2rem]">{{ forloop.counter }}</p>
-                                        <div class="flex items-center justify-start gap-3 lg:gap-4">
-                                            <img src="/static/img/club-matches/{{ club.nama_klub }}.png" class="h-6 w-5 lg:h-7 lg:w-6 object-cover" /> 
-                                            <p class="text-xl lg:text-2xl text-white">{{ club.nama_klub }}</p>
-                                        </div>
+                                {% for club in clubs %}
+                                <div class="flex items-center justify-start gap-4 w-full h-[52px] lg:h-[56px]">
+                                    <p class="text-xl lg:text-2xl font-semibold text-white min-w-[2rem]">{{ forloop.counter }}</p>
+                                    <div class="flex items-center justify-start gap-3 lg:gap-4">
+                                        <img src="/static/img/club-matches/{{ club.nama_klub }}.png" class="h-6 w-5 lg:h-7 lg:w-6 object-cover" /> 
+                                        <p class="text-xl lg:text-2xl text-white">{{ club.nama_klub }}</p>
                                     </div>
-                                    {% endfor %}
+                                </div>
+                                {% endfor %}
                             </div>
                             
                             <div class="flex items-center justify-end gap-10 lg:gap-12">
@@ -43,17 +61,17 @@
                                 <div class="flex flex-col items-end justify-start">
                                     <p class="text-lg lg:text-xl text-[#b0b0b0] h-[60px] lg:h-[68px] flex items-center">MP</p>
                                     <div class="flex flex-col items-end">
-                                        {% for i in "12345678901234567890" %}
-                                        <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">7</p>
+                                        {% for club in clubs %}
+                                        <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">{{ club.total_matches }}</p>
                                         {% endfor %}
                                     </div>
                                 </div>
                                 
-                                <div class="flex flex-col items-end justify-start w-8">
+                                <div class="flex flex-col items-end justify-start">
                                     <p class="text-lg lg:text-xl text-[#b0b0b0] h-[60px] lg:h-[68px] flex items-center">W</p>
                                     <div class="flex flex-col items-end">
-                                        {% for i in "12345678901234567890" %}
-                                        <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">5</p>
+                                        {% for club in clubs %}
+                                        <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">{{ club.jumlah_win }}</p>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -61,26 +79,26 @@
                                 <div class="flex flex-col items-end justify-start">
                                     <p class="text-lg lg:text-xl text-[#b0b0b0] h-[60px] lg:h-[68px] flex items-center">D</p>
                                     <div class="flex flex-col items-end">
-                                        {% for i in "12345678901234567890" %}
-                                        <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">1</p>
+                                        {% for club in clubs %}
+                                        <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">{{ club.jumlah_draw }}</p>
                                         {% endfor %}
                                     </div>
                                 </div>
                                 
-                                <div class="flex flex-col items-end justify-start w-8">
+                                <div class="flex flex-col items-end justify-start">
                                     <p class="text-lg lg:text-xl text-[#b0b0b0] h-[60px] lg:h-[68px] flex items-center">L</p>
                                     <div class="flex flex-col items-end">
-                                        {% for i in "12345678901234567890" %}
-                                        <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">1</p>
+                                        {% for club in clubs %}
+                                        <p class="text-lg lg:text-xl text-white h-[52px] lg:h-[56px] flex items-center">{{ club.jumlah_lose }}</p>
                                         {% endfor %}
                                     </div>
                                 </div>
                                 
-                                <div class="flex flex-col items-end justify-start w-10">
+                                <div class="flex flex-col items-end justify-start">
                                     <p class="text-lg lg:text-xl font-semibold text-[#b0b0b0] h-[60px] lg:h-[68px] flex items-center">P</p>
                                     <div class="flex flex-col items-end">
-                                        {% for i in "12345678901234567890" %}
-                                        <p class="text-lg lg:text-xl font-semibold text-white h-[52px] lg:h-[56px] flex items-center">16</p>
+                                        {% for club in clubs %}
+                                        <p class="text-lg lg:text-xl font-semibold text-white h-[52px] lg:h-[56px] flex items-center">{{ club.points }}</p>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -90,7 +108,7 @@
                 </div>
             </div>
             
-            <div class="flex flex-col justify-start items-start w-full relative mt-10 gap-4">
+            <div class="flex flex-col justify-start items-start w-full relative mt-10 gap-4" id="jadwal-pertandingan">
                 <p class="self-stretch flex-grow-0 flex-shrink-0 w-full text-[28px] font-semibold text-left text-white">
                     Semua Match Musim Ini
                 </p>
@@ -122,7 +140,7 @@
                                 {% for match in group.list %}
                                 <div class="flex justify-between items-center w-full max-w-2xl lg:max-w-4xl">
                                     
-                                    <div class="flex justify-end items-end flex-grow-0 flex-shrink-0 w-[145px] gap-3">
+                                    <div class="flex justify-end items-center flex-grow-0 flex-shrink-0 w-[145px] gap-3">
                                         <p class="flex-grow-0 flex-shrink-0 text-xl lg:text-2xl font-medium text-right text-white">
                                             {{ match.home_team }}
                                         </p>
@@ -132,13 +150,13 @@
                                         />
                                     </div>
                                     
-                                    <div class="flex justify-center items-center flex-grow-0 flex-shrink-0 w-[104px] px-8 py-3 rounded-2xl bg-[#3247b1]">
+                                    <div class="flex justify-center items-center flex-grow-0 flex-shrink-0 px-8 py-3 rounded-2xl bg-[#3247b1] self-stretch">
                                         <p class="flex-grow-0 flex-shrink-0 text-xl font-medium text-left text-white">
                                             VS
                                         </p>
                                     </div>
                                     
-                                    <div class="flex justify-start items-end flex-grow-0 flex-shrink-0 w-[153px] gap-3">
+                                    <div class="flex justify-start items-center flex-grow-0 flex-shrink-0 w-[153px] gap-3">
                                         <img
                                             src="/static/img/club-matches/{{ match.away_team }}.png"
                                             class="flex-grow-0 flex-shrink-0 w-10 lg:w-[41px] h-10 lg:h-12 object-contain"
