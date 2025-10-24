@@ -76,7 +76,6 @@
   </div>
 
   <script>
-    // Fungsi memuat berita secara AJAX
     async function loadNews() {
       const category = document.getElementById('categoryFilter').value;
       const sort = document.getElementById('sortOrder').value;
@@ -155,7 +154,7 @@
         }
       } catch (error) {
         console.error(error);
-        showToast('Error', 'Gagal memuat data berita', 'error');
+        showToast('Error', 'Gagal mengambil data berita', 'error');
       }
     }
 
@@ -182,7 +181,7 @@
         }
       } catch (error) {
         console.error(error);
-        showToast('Error', 'Terjadi kesalahan saat menghapus', 'error');
+        showToast('Error', 'Terjadi error saat menghapus', 'error');
       }
     }
 
