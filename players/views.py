@@ -22,12 +22,6 @@ def show_player_detail(request, id):
             'curr_cleansheet': player.curr_cleansheet,
         }
         return JsonResponse(data)
-    
-    # Otherwise return the full page (if you still need it)
-    context = {
-        'player': player
-    }
-    return render(request, 'playerprofilepage.html', context)
 
 def show_player_main(request):
     team_id = request.GET.get('team')

@@ -4,7 +4,7 @@
         <!-- Player Image -->
         <div class="w-20 h-20 flex-shrink-0">
             {% if player.profile_picture_url %}
-            <img src="{{ player.profile_picture_url }}" alt="{{ player.name }}" class="w-full h-full object-cover rounded">
+            <img src="{{ player.profile_picture_url.url }}" alt="{{ player.name }}" class="w-full h-full object-cover rounded">
             {% else %}
             <div class="w-full h-full bg-gray-700 rounded flex items-center justify-center">
                 <span class="text-gray-500 text-2xl">?</span>
