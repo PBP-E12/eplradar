@@ -5,13 +5,27 @@
 {% include 'modal.html' %}
 {% include 'toast.html' %}
 
-<div class="bg-[#1d1f22] w-full pt-20 min-h-screen text-white">
+<div class="bg-[#1d1f22] w-full pt-20 min-h-screen text-white scroll-smooth">
 
   <div class="max-w-7xl mx-auto p-6">
     
-    <div class="bg-[#333438] h-[560px] rounded-2xl mb-8"></div>
-
-    <div class="flex justify-between items-center mb-6">
+    <div class="h-[560px] rounded-2xl mb-8 bg-cover bg-center flex items-center pr-20" 
+         style="background-image: url('{% static "img/Rectangle 2.png" %}')">
+      
+      <div class="ml-auto text-white">
+        <h1 class="text-5xl font-bold text-white mb-4">
+          Berita
+        </h1>
+        <p class="text-lg text-gray-200 max-w-md mb-6">
+          Temukan berita terpercaya terkait bursa transfer, hasil pertandingan, dan berbagai berita menarik lainnya
+        </p>
+        <a href="#berita-terkini" class="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition-all">
+          Lihat Berita
+        </a>
+      </div>
+      
+    </div>
+    <div id="berita-terkini" class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-semibold">Berita Terkini</h2>
       {% if user.is_authenticated %}
       <button onclick="showModal()"
@@ -206,6 +220,5 @@
   </script>
 
 </div>
-
 {% include 'footer.html' %}
 {% endblock content %}
