@@ -15,6 +15,8 @@ def safe_strip(value):
     if value is None:
         return ""
     return str(value).strip()
+# Pilih user default (misal admin)
+default_user = User.objects.get(username='daniel')
 
 with open(csv_path, newline='', encoding='utf-8') as csvfile:
     reader = csv.DictReader(csvfile)
@@ -30,6 +32,14 @@ with open(csv_path, newline='', encoding='utf-8') as csvfile:
         if not title and not content:
             continue
 
+        # Ambil data dari setiap kolom
+        title = row['title'].strip()
+        content = row['content'].strip()
+        category = row['category'].strip()
+        thumbnail = row['thumbnail'].strip()
+        is_featured = row['is_featured'].strip().lower() in ['true', '1', 'yes']
+
+        # Buat objek News
         News.objects.create(
             user=default_user,
             title=title,
