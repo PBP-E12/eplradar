@@ -3,8 +3,8 @@ from clubs.models import Club
 #Create your models here.
  
 class Match(models.Model):
-     home_team = models.ForeignKey(Club, related_name='home_matches', on_delete=models.CASCADE)
-     away_team = models.ForeignKey(Club, related_name='away_matches', on_delete=models.CASCADE)
+     home_team = models.CharField(max_length=100)
+     away_team = models.CharField(max_length=100)
      home_score = models.PositiveIntegerField(default=0)
      away_score = models.PositiveIntegerField(default=0)
      week = models.PositiveIntegerField(default=0)
