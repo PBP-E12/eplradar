@@ -21,4 +21,4 @@ class Club(models.Model):
     class Meta:
         verbose_name = 'Club'
         verbose_name_plural = 'Clubs'
-        ordering = ['-points', '-jumlah_win'] 
+        ordering = ['-jumlah_win'] 
