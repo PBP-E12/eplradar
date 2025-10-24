@@ -7,27 +7,94 @@
 
 {% block content %}
 {% include 'navbar.html' %}
-
-<div class="container mx-auto px-4">
-        <div class="flex items-center justify-between mt-6">
-            <h1>Profil Pemain Musim Ini</h1>
-            <div>
-                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" href="TODO">
+<div class="container mx-auto px-4 py-8">
+    <!-- Players Section -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-white text-2xl font-semibold">Profil Pemain Muslim Ini</h2>
+            <div class="relative">
+                <button id="filterButton" class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
                     Filter
+                    <svg class="w-4 h-4 transition-transform" id="filterArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
                 </button>
+                <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-gray-800 rounded-lg shadow-lg z-10 max-h-80 overflow-y-auto">
+                    <div class="p-2">
+                        <button data-team="all" class="filter-option w-full text-left px-4 py-2 text-white hover:bg-gray-700 rounded transition">
+                            All Teams
+                        </button>
+                        {% for club in clubs %}
+                        <button data-team="{{ club.id }}" class="filter-option w-full text-left px-4 py-2 text-white hover:bg-gray-700 rounded transition flex items-center gap-2">
+                            {% if club.logo %}
+                            <img src="{{ club.logo.url }}" alt="{{ club.name }}" class="w-5 h-5 object-contain">
+                            {% endif %}
+                            <span>{{ club.name }}</span>
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
-            {% for player in players %}
-                <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
-                    <img src="{{ player.image_url }}" alt="{{ player.name }}" class="w-full h-32 object-cover rounded-md">
-                    <h2 class="text-xl font-semibold mt-2">{{ player.name }}</h2>
-                    <p class="text-gray-400">{{ player.team }}</p>
-                </div>
-            {% endfor %}
+        
+        <!-- Players Grid -->
+        <div id="playersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% include 'player_cards.html' %}
         </div>
     </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButton = document.getElementById('filterButton');
+    const filterDropdown = document.getElementById('filterDropdown');
+    const filterArrow = document.getElementById('filterArrow');
+    const playersGrid = document.getElementById('playersGrid');
+    const filterOptions = document.querySelectorAll('.filter-option');
+
+    // Toggle dropdown
+    filterButton.addEventListener('click', function() {
+        filterDropdown.classList.toggle('hidden');
+        filterArrow.classList.toggle('rotate-180');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!filterButton.contains(event.target) && !filterDropdown.contains(event.target)) {
+            filterDropdown.classList.add('hidden');
+            filterArrow.classList.remove('rotate-180');
+        }
+    });
+
+    // Filter players
+    filterOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const teamId = this.getAttribute('data-team');
+            
+            // Add loading state
+            playersGrid.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-gray-400">Loading...</p></div>';
+            
+            // AJAX request
+            fetch(`?team=${teamId}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                playersGrid.innerHTML = html;
+                filterDropdown.classList.add('hidden');
+                filterArrow.classList.remove('rotate-180');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                playersGrid.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-red-400">Error loading players</p></div>';
+            });
+        });
+    });
+});
+</script>
+
 
 {% endblock content %}
 
