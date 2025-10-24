@@ -1,11 +1,10 @@
 from django.urls import path
-from stats.views import show_stats
-# player_stats, club_stats
+from . import views
 
 app_name = 'stats'
 
 urlpatterns = [
-    path('', show_stats, name='show_stats'),
-    # path('api/stats/players/', player_stats, name='player_stats'),
-    # path('api/stats/clubs/', club_stats, name='club_stats'),
+    path('', views.show_stats, name='show_stats'),
+    path('api/stats/clubs/', views.club_stats_api, name='club_stats_api'),
+    # nanti bisa tambah: path('api/stats/players/', views.player_stats_api, ...)
 ]
