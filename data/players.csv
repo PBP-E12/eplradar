@@ -1,4 +1,4 @@
-player_name,position,team,citizenship,age,curr_goals,curr_assists,match_played,curr_cleansheet
+name,position,team,citizenship,age,curr_goals,curr_assists,match_played,curr_cleansheet
 Bukayo Saka,Forward,Arsenal,English,22,4,3,10,3
 Gabriel Martinelli,Forward,Arsenal,Brazilian,23,3,2,10,3
 Mohammed Salah,Forward,Liverpool,Egyptian,31,6,2,10,0
