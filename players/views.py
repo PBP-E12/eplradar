@@ -22,6 +22,8 @@ def show_player_detail(request, id):
             'curr_cleansheet': player.curr_cleansheet,
         }
         return JsonResponse(data)
+    
+    
 
 def show_player_main(request):
     team_id = request.GET.get('team')
