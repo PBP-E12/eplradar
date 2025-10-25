@@ -71,8 +71,7 @@ def add_news_ajax(request):
     
     if not title or not content or not category:
         return JsonResponse({"success": False, "message": "Semua field wajib diisi."}, status=400)
-    
-    # Tambahkan user pembuat berita
+
     news = News.objects.create(
         user=request.user,
         title=title,
