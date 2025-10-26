@@ -1,10 +1,10 @@
 {% for player in player_list %}
-<a href="#" class="player-card bg-gray-800 rounded-lg p-4 hover:bg-gray-750 transition block" data-player-id="{{ player.id }}">
+<a href="{% url 'players:show_player_detail' player.id %}" class="player-card bg-gray-800 rounded-lg p-4 hover:bg-gray-750 transition block" data-player-id="{{ player.id }}">
     <div class="flex items-center gap-4">
         <!-- Player Image -->
         <div class="w-20 h-20 flex-shrink-0">
             {% if player.profile_picture_url %}
-            <img src="{{ player.profile_picture_url.url }}" alt="{{ player.name }}" class="w-full h-full object-cover rounded">
+            <img src="{{ player.profile_picture_url }}" alt="{{ player.name }}" class="w-full h-full object-cover rounded">
             {% else %}
             <div class="w-full h-full bg-gray-700 rounded flex items-center justify-center">
                 <span class="text-gray-500 text-2xl">?</span>
