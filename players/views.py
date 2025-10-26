@@ -25,6 +25,8 @@ def show_player_detail(request, id):
     
     
 
+    
+
 def show_player_main(request):
     team_id = request.GET.get('team')
     
