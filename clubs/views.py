@@ -1,11 +1,10 @@
 from django.shortcuts import render
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from players.models import Player
 import csv
 import os
 from django.conf import settings
 
-# Import Match defensively
 try:
     from matches.models import Match
     MATCH_AVAILABLE = True
@@ -16,6 +15,11 @@ except Exception:
 
 def club_list(request):
     """Display list of all clubs"""
+    return render(request, 'club_list.html')
+
+
+def club_list_api(request):
+    """API endpoint untuk data clubs"""
     clubs = []
     csv_path = os.path.join(settings.BASE_DIR, 'data', 'clubs.csv')
     
@@ -43,11 +47,12 @@ def club_list(request):
                 clubs.append(club_data)
                 
     except FileNotFoundError:
-        print(f"CSV file not found at: {csv_path}")
+        return JsonResponse({'error': 'CSV file not found'}, status=404)
     except Exception as e:
-        print(f"Error reading CSV: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
     
-    return render(request, 'club_list.html', {'clubs': clubs})
+    return JsonResponse({'data': clubs}, safe=False)
+
 
 def club_detail(request, nama_klub):
     """Display detail for a specific club"""
@@ -81,29 +86,12 @@ def club_detail(request, nama_klub):
     
     if not club:
         raise Http404("Club not found")
-
-    # Get players for this club
-    players_queryset = Player.objects.filter(team__nama_klub=nama_klub)
     
-    # MODIFIKASI: Tambahkan player_filename ke setiap objek player
-    players_list = []
-    for player in players_queryset:
-        # Konversi nama pemain menjadi format filename: lowercase dan ganti spasi dengan underscore
-        player_filename = player.name.lower().replace(' ', '_')
-        
-        # Asumsikan 'player' adalah model instance, tambahkan atribut baru
-        player.image_filename = player_filename 
-        players_list.append(player)
+    players = Player.objects.filter(team__nama_klub=nama_klub)
     
-    # Di sini, variabel 'players' akan menjadi players_list yang sudah di-annotate dengan image_filename
-    players = players_list
-    
-    # Get matches if available
     if MATCH_AVAILABLE and Match is not None:
         date_field = 'date' if hasattr(Match, 'date') else ('match_date' if hasattr(Match, 'match_date') else None)
         
-        # Note: Since club is a dict, not a model instance, you'll need to adjust this
-        # For now, passing empty matches
         matches_ordered = []
         home_matches_count = 0
         away_matches_count = 0

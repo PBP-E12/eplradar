@@ -6,7 +6,6 @@
 <div class="bg-[#18181b] text-white min-h-screen">
     <div class="max-w-[1400px] mx-auto px-5 pt-[140px] pb-[60px]">
         
-        <!-- Hero Banner -->
         <div class="my-10 rounded-2xl h-[560px] bg-cover bg-center flex items-center" 
              style="background-image: url('{% static "img/clubs.png" %}')">
             <div class="text-white pr-5 lg:pl-24">
@@ -23,58 +22,171 @@
             </div>
         </div>
         
-        <!-- Page Title -->
-        <h1 class="text-4xl font-bold text-white mb-10">Profil Klub Musim Ini</h1>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <h1 class="text-4xl font-bold">Profil Klub Musim Ini</h1>
+            
+            <div class="flex gap-3 flex-wrap">
+                <input type="text" 
+                       id="search-club" 
+                       placeholder="Cari klub..." 
+                       class="px-4 py-2 bg-[#27272a] border border-[#3f3f46] rounded-lg text-white placeholder-[#a1a1aa] focus:outline-none focus:border-indigo-500 transition-colors">
+                
+                <select id="sort-club" class="px-4 py-2 bg-[#27272a] border border-[#3f3f46] rounded-lg text-white focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer">
+                    <option value="points-desc">Poin Tertinggi</option>
+                    <option value="points-asc">Poin Terendah</option>
+                    <option value="name-asc">Nama A-Z</option>
+                    <option value="name-desc">Nama Z-A</option>
+                    <option value="wins-desc">Menang Terbanyak</option>
+                </select>
+            </div>
+        </div>
         
-        <!-- Clubs Grid -->
+        <div id="loading" class="hidden text-center py-20">
+            <svg class="animate-spin h-12 w-12 text-indigo-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            <p class="text-[#a1a1aa] mt-4">Loading clubs...</p>
+        </div>
+        
+        <div id="error" class="hidden text-center py-16 bg-[#27272a] rounded-2xl text-red-500 text-lg border border-red-900"></div>
+        
         <div id="klub-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for club in clubs %}
-            <a href="{% url 'clubs:club_detail' club.nama_klub %}" class="block no-underline text-inherit">
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const API_URL = "{% url 'clubs:club_list_api' %}";
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
+    const gridEl = document.getElementById('klub-list');
+    const searchInput = document.getElementById('search-club');
+    const sortSelect = document.getElementById('sort-club');
+    
+    let allClubs = [];
+    
+    function createClubCard(club) {
+        return `
+            <a href="/clubs/${club.nama_klub}/" class="block no-underline text-inherit">
                 <div class="bg-[#333438] rounded-2xl border border-[#3f3f46] overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:border-[#52525b] cursor-pointer h-full">
                     <div class="p-8 text-center">
-                        <!-- Club Logo -->
                         <div class="w-[100px] h-[100px] mx-auto mb-5 bg-[#3f3f46] rounded-full flex items-center justify-center overflow-hidden">
-                            <img src="{% static 'img/club/' %}{{ club.logo_filename }}.png" 
+                            <img src="{% static 'img/club/' %}${club.logo_filename}.png" 
                                  class="w-20 h-20 object-contain" 
-                                 alt="{{ club.nama_klub }}">
+                                 alt="${club.nama_klub}">
                         </div>
                         
-                        <!-- Club Name -->
-                        <h5 class="text-xl font-bold text-white mb-5 min-h-[30px]">{{ club.nama_klub }}</h5>
+                        <h5 class="text-xl font-bold text-white mb-5 min-h-[30px]">${club.nama_klub}</h5>
                         
-                        <!-- Stats Grid -->
                         <div class="grid grid-cols-3 gap-3 mb-5">
                             <div class="bg-[#3f3f46] rounded-xl p-4 transition-colors hover:bg-[#52525b]">
-                                <div class="text-2xl font-bold text-[#22c55e] mb-1">{{ club.jumlah_win }}</div>
+                                <div class="text-2xl font-bold text-[#22c55e] mb-1">${club.jumlah_win}</div>
                                 <div class="text-xs text-[#a1a1aa] uppercase tracking-wide">Menang</div>
                             </div>
                             <div class="bg-[#3f3f46] rounded-xl p-4 transition-colors hover:bg-[#52525b]">
-                                <div class="text-2xl font-bold text-[#eab308] mb-1">{{ club.jumlah_draw }}</div>
+                                <div class="text-2xl font-bold text-[#eab308] mb-1">${club.jumlah_draw}</div>
                                 <div class="text-xs text-[#a1a1aa] uppercase tracking-wide">Seri</div>
                             </div>
                             <div class="bg-[#3f3f46] rounded-xl p-4 transition-colors hover:bg-[#52525b]">
-                                <div class="text-2xl font-bold text-[#ef4444] mb-1">{{ club.jumlah_lose }}</div>
+                                <div class="text-2xl font-bold text-[#ef4444] mb-1">${club.jumlah_lose}</div>
                                 <div class="text-xs text-[#a1a1aa] uppercase tracking-wide">Kalah</div>
                             </div>
                         </div>
                         
-                        <!-- Summary -->
                         <div class="text-sm text-[#a1a1aa] flex items-center justify-center gap-2">
-                            <span>{{ club.total_matches }} pertandingan</span>
+                            <span>${club.total_matches} pertandingan</span>
                             <span class="text-[#52525b]">•</span>
-                            <span class="font-semibold text-white">{{ club.points }} poin</span>
+                            <span class="font-semibold text-white">${club.points} poin</span>
                         </div>
                     </div>
                 </div>
             </a>
-            {% empty %}
-            <div class="col-span-full text-center py-16 bg-[#27272a] rounded-2xl text-[#a1a1aa] text-lg">
-                <p>Belum ada data klub.</p>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
+        `;
+    }
+    
+    function sortClubs(clubs, sortBy) {
+        const sorted = [...clubs];
+        
+        switch(sortBy) {
+            case 'points-desc':
+                return sorted.sort((a, b) => b.points - a.points);
+            case 'points-asc':
+                return sorted.sort((a, b) => a.points - b.points);
+            case 'name-asc':
+                return sorted.sort((a, b) => a.nama_klub.localeCompare(b.nama_klub));
+            case 'name-desc':
+                return sorted.sort((a, b) => b.nama_klub.localeCompare(a.nama_klub));
+            case 'wins-desc':
+                return sorted.sort((a, b) => b.jumlah_win - a.jumlah_win);
+            default:
+                return sorted;
+        }
+    }
+    
+    function filterClubs(clubs, searchTerm) {
+        if (!searchTerm) return clubs;
+        
+        return clubs.filter(club => 
+            club.nama_klub.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }
+    
+    function renderClubs() {
+        const searchTerm = searchInput.value;
+        const sortBy = sortSelect.value;
+        
+        let filteredClubs = filterClubs(allClubs, searchTerm);
+        let sortedClubs = sortClubs(filteredClubs, sortBy);
+        
+        if (sortedClubs.length === 0) {
+            gridEl.innerHTML = `
+                <div class="col-span-full text-center py-16 bg-[#27272a] rounded-2xl text-[#a1a1aa] text-lg">
+                    <p>Tidak ada klub yang ditemukan.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        gridEl.innerHTML = sortedClubs.map(club => createClubCard(club)).join('');
+    }
+    
+    async function loadClubs() {
+        loadingEl.classList.remove('hidden');
+        errorEl.classList.add('hidden');
+        gridEl.innerHTML = '';
+        
+        try {
+            const response = await fetch(API_URL);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            allClubs = result.data || result;
+            
+            if (!allClubs || allClubs.length === 0) {
+                throw new Error('Tidak ada data klub.');
+            }
+            
+            renderClubs();
+            
+        } catch (error) {
+            errorEl.classList.remove('hidden');
+            errorEl.textContent = 'Gagal mengambil data klub: ' + error.message;
+        } finally {
+            loadingEl.classList.add('hidden');
+        }
+    }
+    
+    searchInput.addEventListener('input', renderClubs);
+    sortSelect.addEventListener('change', renderClubs);
+    
+    loadClubs();
+});
+</script>
 
 {% include 'footer.html' %}
 {% endblock %}

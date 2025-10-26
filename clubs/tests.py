@@ -1,4 +1,4 @@
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, Client
 from django.urls import reverse, resolve
 from unittest.mock import patch, Mock
 from clubs import views as club_views
@@ -21,6 +21,7 @@ class MockClub:
         self.logo_filename = logo_filename
         self.logo_url = f'/static/img/club/{logo_filename}.png'
 
+
 class ClubModelTest(TestCase):
     def setUp(self):
         self.club = Club.objects.create(
@@ -35,12 +36,10 @@ class ClubModelTest(TestCase):
         self.assertEqual(self.club.jumlah_win, 10)
         self.assertEqual(self.club.jumlah_draw, 5)
         self.assertEqual(self.club.jumlah_lose, 3)
-        # points dihitung otomatis
         self.assertEqual(self.club.points, 10 * 3 + 5)
 
     def test_club_str_method(self):
         self.assertEqual(str(self.club), 'Arsenal')
-
 
 
 class ClubURLsTest(TestCase):
@@ -51,54 +50,122 @@ class ClubURLsTest(TestCase):
     def test_club_detail_url_resolves(self):
         url = reverse('clubs:club_detail', args=['Arsenal'])
         self.assertEqual(resolve(url).func, club_views.club_detail)
-
+    
+    def test_club_list_api_url_resolves(self):
+        """Test API endpoint URL resolves correctly"""
+        url = reverse('clubs:club_list_api')
+        self.assertEqual(resolve(url).func, club_views.club_list_api)
 
 
 class ClubViewsTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
+        self.client = Client()
         
-        # Buat temporary directory untuk testing
-        self.test_dir = tempfile.mkdtemp()
+        self.test_dir = tempfile.mkdtemp(prefix='club_test_')
         self.csv_path = os.path.join(self.test_dir, 'clubs.csv')
         
-        # Buat CSV untuk testing
         with open(self.csv_path, 'w', encoding='utf-8') as f:
             f.write('Club_name,Win_count,Draw_count,Lose_count\n')
             f.write('Arsenal,10,5,3\n')
             f.write('Chelsea,8,6,4\n')
 
     def tearDown(self):
-        # Hapus seluruh temporary directory
-        shutil.rmtree(self.test_dir)
+        if os.path.exists(self.test_dir):
+            shutil.rmtree(self.test_dir)
 
     def test_club_list_renders_successfully(self):
+        """Test club_list view returns 200 and contains proper HTML structure"""
         request = self.factory.get('/clubs/')
         response = club_views.club_list(request)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Arsenal', response.content)
+        self.assertIn(b'Profil Klub Musim Ini', response.content)
+        self.assertIn(b'id="klub-list"', response.content)
+        self.assertIn(b'search-club', response.content)
+
+    def test_club_list_api_returns_json(self):
+        """Test API endpoint returns correct JSON data"""
+        api_test_dir = tempfile.mkdtemp(prefix='club_api_test_')
+        
+        try:
+            data_dir = os.path.join(api_test_dir, 'data')
+            os.makedirs(data_dir, exist_ok=True)
+            csv_path = os.path.join(data_dir, 'clubs.csv')
+            
+            with open(csv_path, 'w', encoding='utf-8') as f:
+                f.write('Club_name,Win_count,Draw_count,Lose_count\n')
+                f.write('Arsenal,10,5,3\n')
+                f.write('Chelsea,8,6,4\n')
+            
+            with patch('clubs.views.settings.BASE_DIR', api_test_dir):
+                response = self.client.get(reverse('clubs:club_list_api'))
+                self.assertEqual(response.status_code, 200)
+                
+                data = json.loads(response.content)
+                self.assertIn('data', data)
+                self.assertEqual(len(data['data']), 2)
+                
+                arsenal = data['data'][0]
+                self.assertEqual(arsenal['nama_klub'], 'Arsenal')
+                self.assertEqual(arsenal['jumlah_win'], 10)
+                self.assertEqual(arsenal['points'], 35)  # 10*3 + 5
+                
+        finally:
+            if os.path.exists(api_test_dir):
+                shutil.rmtree(api_test_dir)
 
     def test_club_detail_valid_club(self):
-        request = self.factory.get('/clubs/Arsenal/')
-        response = club_views.club_detail(request, 'Arsenal')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Arsenal', response.content)
+        """Test club detail with valid club name"""
+        with patch('clubs.views.settings.BASE_DIR', self.test_dir.replace('/clubs.csv', '')):
+            data_dir = os.path.join(self.test_dir.replace('/clubs.csv', ''), 'data')
+            os.makedirs(data_dir, exist_ok=True)
+            csv_path = os.path.join(data_dir, 'clubs.csv')
+            
+            with open(csv_path, 'w', encoding='utf-8') as f:
+                f.write('Club_name,Win_count,Draw_count,Lose_count\n')
+                f.write('Arsenal,10,5,3\n')
+            
+            request = self.factory.get('/clubs/Arsenal/')
+            response = club_views.club_detail(request, 'Arsenal')
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(b'Arsenal', response.content)
 
     def test_club_detail_invalid_club_raises_404(self):
-        request = self.factory.get('/clubs/UnknownClub/')
-        with self.assertRaises(Exception):
-            club_views.club_detail(request, 'UnknownClub')
+        """Test club detail with invalid club raises 404"""
+        with patch('clubs.views.settings.BASE_DIR', self.test_dir.replace('/clubs.csv', '')):
+            data_dir = os.path.join(self.test_dir.replace('/clubs.csv', ''), 'data')
+            os.makedirs(data_dir, exist_ok=True)
+            csv_path = os.path.join(data_dir, 'clubs.csv')
+            
+            with open(csv_path, 'w', encoding='utf-8') as f:
+                f.write('Club_name,Win_count,Draw_count,Lose_count\n')
+                f.write('Arsenal,10,5,3\n')
+            
+            request = self.factory.get('/clubs/UnknownClub/')
+            with self.assertRaises(Exception):
+                club_views.club_detail(request, 'UnknownClub')
 
     @patch('clubs.views.Player.objects.filter')
     def test_club_detail_calls_player_filter(self, mock_filter):
+        """Test that club detail calls Player.objects.filter correctly"""
         mock_filter.return_value = []
-        request = self.factory.get('/clubs/Arsenal/')
-        response = club_views.club_detail(request, 'Arsenal')
-        mock_filter.assert_called_once_with(team__nama_klub='Arsenal')
-        self.assertEqual(response.status_code, 200)
+        
+        with patch('clubs.views.settings.BASE_DIR', self.test_dir.replace('/clubs.csv', '')):
+            data_dir = os.path.join(self.test_dir.replace('/clubs.csv', ''), 'data')
+            os.makedirs(data_dir, exist_ok=True)
+            csv_path = os.path.join(data_dir, 'clubs.csv')
+            
+            with open(csv_path, 'w', encoding='utf-8') as f:
+                f.write('Club_name,Win_count,Draw_count,Lose_count\n')
+                f.write('Arsenal,10,5,3\n')
+            
+            request = self.factory.get('/clubs/Arsenal/')
+            response = club_views.club_detail(request, 'Arsenal')
+            mock_filter.assert_called_once_with(team__nama_klub='Arsenal')
+            self.assertEqual(response.status_code, 200)
 
     def test_read_clubs_from_csv_structure(self):
-        clubs = []
+        """Test that real CSV file has correct structure"""
         csv_path = os.path.join(os.getcwd(), 'data', 'clubs.csv')
         with open(csv_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
@@ -107,6 +174,7 @@ class ClubViewsTest(TestCase):
 
     @patch('main.views.read_clubs_for_home')
     def test_homepage_loads_clubs(self, mock_read):
+        """Test that homepage loads clubs correctly"""
         mock_read.return_value = [
             {'nama_klub': 'Arsenal', 'logo_url': '/static/img/club/arsenal.png', 'points': 35},
             {'nama_klub': 'Chelsea', 'logo_url': '/static/img/club/chelsea.png', 'points': 30}
@@ -118,4 +186,3 @@ class ClubViewsTest(TestCase):
         self.assertIn(b'Arsenal', response.content)
         self.assertIn(b'Chelsea', response.content)
         mock_read.assert_called_once()
-
