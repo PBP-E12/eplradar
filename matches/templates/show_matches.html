@@ -1,179 +1,169 @@
 {% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    {% block meta %} {% endblock meta %}
-</head>
 
-<body>
-    {% block content %}
+{% block content %}
+
+{% include 'navbar.html' %}
+
+<div class="bg-[#1d1f22] w-full pt-10 min-h-screen">
     
-    {% include 'navbar.html' %}
-    
-    <div class="bg-[#1d1f22] w-full pt-10 min-h-screen">
+    <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
         
-        <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
-            
-            <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex items-center pl-24" 
-                style="background-image: url('{% static "img/match.png" %}')" id="hero-section">
-                <div class="text-white">
-                    <p class="text-lg text-gray-200 mb-2">Selamat datang di</p>
-                    <h1 class="text-6xl font-bold text-white mb-4">
-                        Match
-                    </h1>
-                    <p class="text-xl text-gray-200 max-w-md mb-8">
-                        Dapatkan informasi terkait pertandingan dan klasemen tim favoritmu di musim ini!
-                    </p>
-                    <a href="#jadwal-pertandingan" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
-                        <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
-                        </svg>
-                        Lihat Jadwal Pertandingan
-                    </a>
-                </div>
+        <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex items-center pl-24" 
+            style="background-image: url('{% static "img/match.png" %}')" id="hero-section">
+            <div class="text-white">
+                <p class="text-lg text-gray-200 mb-2">Selamat datang di</p>
+                <h1 class="text-6xl font-bold text-white mb-4">
+                    Match
+                </h1>
+                <p class="text-xl text-gray-200 max-w-md mb-8">
+                    Dapatkan informasi terkait pertandingan dan klasemen tim favoritmu di musim ini!
+                </p>
+                <a href="#jadwal-pertandingan" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
+                    <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
+                    </svg>
+                    Lihat Jadwal Pertandingan
+                </a>
             </div>
-            
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-semibold text-white">Klasemen</h2>
-            </div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 lg:gap-4">
-                <div class="bg-[#333438] rounded-2xl px-4 sm:px-6 lg:px-12 py-4 sm:py-6 lg:py-9 overflow-x-auto">
-                    <div class="min-w-[500px] sm:min-w-[600px]">
+        </div>
+        
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white">Klasemen</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 lg:gap-4">
+            <div class="bg-[#333438] rounded-2xl px-4 sm:px-6 lg:px-12 py-4 sm:py-6 lg:py-9 overflow-x-auto">
+                <div class="min-w-[500px] sm:min-w-[600px]">
+                    
+                    <div class="flex items-start justify-between">
                         
-                        <div class="flex items-start justify-between">
+                        <div class="flex flex-col items-start flex-1">
+                            <div class="h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">
+                                <p class="text-base sm:text-lg lg:text-xl text-[#b0b0b0]">Klasemen</p>
+                            </div>
+                            {% for club in clubs %}
+                            <div class="flex items-center justify-start gap-2 sm:gap-3 lg:gap-4 w-full h-[44px] sm:h-[52px] lg:h-[56px]">
+                                <p class="text-lg sm:text-xl lg:text-2xl font-semibold text-white min-w-[1.5rem] sm:min-w-[2rem]">{{ forloop.counter }}</p>
+                                <div class="flex items-center justify-start gap-2 sm:gap-3 lg:gap-4">
+                                    <img src="/static/img/club-matches/{{ club.nama_klub }}.png" class="h-5 w-4 sm:h-6 sm:w-5 lg:h-7 lg:w-6 object-cover" /> 
+                                    <p class="text-base sm:text-lg lg:text-xl xl:text-2xl text-white truncate max-w-[120px] sm:max-w-none">{{ club.nama_klub }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="flex items-center justify-end gap-4 sm:gap-6 lg:gap-10 xl:gap-12">
                             
-                            <div class="flex flex-col items-start flex-1">
-                                <div class="h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">
-                                    <p class="text-base sm:text-lg lg:text-xl text-[#b0b0b0]">Klasemen</p>
+                            <div class="flex flex-col items-end justify-start">
+                                <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">MP</p>
+                                <div class="flex flex-col items-end">
+                                    {% for club in clubs %}
+                                    <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-white h-[44px] sm:h-[52px] lg:h-[56px] flex items-center">{{ club.total_matches }}</p>
+                                    {% endfor %}
                                 </div>
-                                {% for club in clubs %}
-                                <div class="flex items-center justify-start gap-2 sm:gap-3 lg:gap-4 w-full h-[44px] sm:h-[52px] lg:h-[56px]">
-                                    <p class="text-lg sm:text-xl lg:text-2xl font-semibold text-white min-w-[1.5rem] sm:min-w-[2rem]">{{ forloop.counter }}</p>
-                                    <div class="flex items-center justify-start gap-2 sm:gap-3 lg:gap-4">
-                                        <img src="/static/img/club-matches/{{ club.nama_klub }}.png" class="h-5 w-4 sm:h-6 sm:w-5 lg:h-7 lg:w-6 object-cover" /> 
-                                        <p class="text-base sm:text-lg lg:text-xl xl:text-2xl text-white truncate max-w-[120px] sm:max-w-none">{{ club.nama_klub }}</p>
-                                    </div>
-                                </div>
-                                {% endfor %}
                             </div>
                             
-                            <div class="flex items-center justify-end gap-4 sm:gap-6 lg:gap-10 xl:gap-12">
-                                
-                                <div class="flex flex-col items-end justify-start">
-                                    <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">MP</p>
-                                    <div class="flex flex-col items-end">
-                                        {% for club in clubs %}
-                                        <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-white h-[44px] sm:h-[52px] lg:h-[56px] flex items-center">{{ club.total_matches }}</p>
-                                        {% endfor %}
-                                    </div>
+                            <div class="flex flex-col items-end justify-start">
+                                <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">W</p>
+                                <div class="flex flex-col items-end">
+                                    {% for club in clubs %}
+                                    <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-white h-[44px] sm:h-[52px] lg:h-[56px] flex items-center">{{ club.jumlah_win }}</p>
+                                    {% endfor %}
                                 </div>
-                                
-                                <div class="flex flex-col items-end justify-start">
-                                    <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">W</p>
-                                    <div class="flex flex-col items-end">
-                                        {% for club in clubs %}
-                                        <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-white h-[44px] sm:h-[52px] lg:h-[56px] flex items-center">{{ club.jumlah_win }}</p>
-                                        {% endfor %}
-                                    </div>
+                            </div>
+                            
+                            <div class="flex flex-col items-end justify-start">
+                                <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">D</p>
+                                <div class="flex flex-col items-end">
+                                    {% for club in clubs %}
+                                    <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-white h-[44px] sm:h-[52px] lg:h-[56px] flex items-center">{{ club.jumlah_draw }}</p>
+                                    {% endfor %}
                                 </div>
-                                
-                                <div class="flex flex-col items-end justify-start">
-                                    <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">D</p>
-                                    <div class="flex flex-col items-end">
-                                        {% for club in clubs %}
-                                        <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-white h-[44px] sm:h-[52px] lg:h-[56px] flex items-center">{{ club.jumlah_draw }}</p>
-                                        {% endfor %}
-                                    </div>
+                            </div>
+                            
+                            <div class="flex flex-col items-end justify-start">
+                                <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">L</p>
+                                <div class="flex flex-col items-end">
+                                    {% for club in clubs %}
+                                    <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-white h-[44px] sm:h-[52px] lg:h-[56px] flex items-center">{{ club.jumlah_lose }}</p>
+                                    {% endfor %}
                                 </div>
-                                
-                                <div class="flex flex-col items-end justify-start">
-                                    <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">L</p>
-                                    <div class="flex flex-col items-end">
-                                        {% for club in clubs %}
-                                        <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-white h-[44px] sm:h-[52px] lg:h-[56px] flex items-center">{{ club.jumlah_lose }}</p>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                                
-                                <div class="flex flex-col items-end justify-start">
-                                    <p class="text-sm sm:text-base lg:text-lg xl:text-xl font-semibold text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">P</p>
-                                    <div class="flex flex-col items-end">
-                                        {% for club in clubs %}
-                                        <p class="text-sm sm:text-base lg:text-lg xl:text-xl font-semibold text-white h-[44px] sm:h-[52px] lg:h-[56px] flex items-center">{{ club.points }}</p>
-                                        {% endfor %}
-                                    </div>
+                            </div>
+                            
+                            <div class="flex flex-col items-end justify-start">
+                                <p class="text-sm sm:text-base lg:text-lg xl:text-xl font-semibold text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">P</p>
+                                <div class="flex flex-col items-end">
+                                    {% for club in clubs %}
+                                    <p class="text-sm sm:text-base lg:text-lg xl:text-xl font-semibold text-white h-[44px] sm:h-[52px] lg:h-[56px] flex items-center">{{ club.points }}</p>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="flex justify-between items-center mt-24">
-                <h2 class="text-xl font-semibold text-white">Semua Match Musim Ini</h2>
+        </div>
+        
+        <div class="flex justify-between items-center mt-24">
+            <h2 class="text-xl font-semibold text-white">Semua Match Musim Ini</h2>
+        </div>
+        
+        <div class="flex flex-col justify-start items-start w-full relative mt-6 gap-4" id="jadwal-pertandingan">
+            <div class="flex items-center space-x-4 mb-2">
+                <select id="weekFilter" 
+                    class="bg-gray-800 text-white px-3 sm:px-4 py-2 rounded-lg text-base sm:text-lg lg:text-xl cursor-pointer focus:outline-none"
+                >
+                    {% for week in week_range %}
+                        <option value="{{ week }}" {% if week == current_week %}selected{% endif %}>
+                            Pekan ke-{{ week }}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
-            
-            <div class="flex flex-col justify-start items-start w-full relative mt-6 gap-4" id="jadwal-pertandingan">
-                <div class="flex items-center space-x-4 mb-2">
-                    <select id="weekFilter" 
-                        class="bg-gray-800 text-white px-3 sm:px-4 py-2 rounded-lg text-base sm:text-lg lg:text-xl cursor-pointer focus:outline-none"
-                    >
-                        {% for week in week_range %}
-                            <option value="{{ week }}" {% if week == current_week %}selected{% endif %}>
-                                Pekan ke-{{ week }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
 
-                <div id="matches-container" class="flex flex-col justify-start items-center self-stretch flex-grow-0 flex-shrink-0 gap-6 sm:gap-8 lg:gap-10 px-4 sm:px-6 lg:px-20 py-6 sm:py-8 lg:py-12 rounded-xl bg-[#333438]">
-                    {% include 'show_matches_ajax.html' %}
-                </div>
+            <div id="matches-container" class="flex flex-col justify-start items-center self-stretch flex-grow-0 flex-shrink-0 gap-6 sm:gap-8 lg:gap-10 px-4 sm:px-6 lg:px-20 py-6 sm:py-8 lg:py-12 rounded-xl bg-[#333438]">
+                {% include 'show_matches_ajax.html' %}
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const weekFilter = document.getElementById('weekFilter');
-        const matchContainer = document.getElementById('matches-container');
-        
-        if (!weekFilter || !matchContainer) return;
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const weekFilter = document.getElementById('weekFilter');
+    const matchContainer = document.getElementById('matches-container');
+    
+    if (!weekFilter || !matchContainer) return;
 
-        weekFilter.addEventListener('change', function() {
-            const selectedWeek = this.value;
-            const ajaxUrl = "{% url 'matches:show_matches' %}?week=" + selectedWeek; 
+    weekFilter.addEventListener('change', function() {
+        const selectedWeek = this.value;
+        const ajaxUrl = "{% url 'matches:show_matches' %}?week=" + selectedWeek; 
 
-            matchContainer.innerHTML = '<p class="text-base sm:text-lg lg:text-xl text-white text-center py-10">Memuat pertandingan...</p>'; 
+        matchContainer.innerHTML = '<p class="text-base sm:text-lg lg:text-xl text-white text-center py-10">Memuat pertandingan...</p>'; 
 
-            fetch(ajaxUrl, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.text(); 
-            })
-            .then(html => {
-                matchContainer.innerHTML = html; 
+        fetch(ajaxUrl, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.text(); 
+        })
+        .then(html => {
+            matchContainer.innerHTML = html; 
 
-                const newUrl = window.location.pathname + '?week=' + selectedWeek;
-                window.history.pushState({ path: newUrl }, '', newUrl);
-            })
-            .catch(error => {
-                console.error('Gagal memuat data pertandingan:', error);
-                matchContainer.innerHTML = '<p class="text-base sm:text-lg lg:text-xl text-red-500 text-center py-10">Gagal memuat data pertandingan. Silakan coba lagi.</p>';
-            });
-            });
+            const newUrl = window.location.pathname + '?week=' + selectedWeek;
+            window.history.pushState({ path: newUrl }, '', newUrl);
+        })
+        .catch(error => {
+            console.error('Gagal memuat data pertandingan:', error);
+            matchContainer.innerHTML = '<p class="text-base sm:text-lg lg:text-xl text-red-500 text-center py-10">Gagal memuat data pertandingan. Silakan coba lagi.</p>';
         });
-    </script>
+        });
+    });
+</script>
 
-    {% include 'footer.html' %}
-    {% endblock content %}
-</body>
-</html>
+{% include 'footer.html' %}
+{% endblock content %}
