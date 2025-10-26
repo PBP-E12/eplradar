@@ -9,171 +9,234 @@
 {% include 'navbar.html' %}
 
 <div class="bg-[#1d1f22] w-full pt-10 min-h-screen scroll-smooth">
-    <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
-        <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex items-center pl-24" 
-     style="background-image: url('{% static "img/stats.png" %}')">
-    
-  <div class="text-white">
-    <h1 class="text-6xl font-bold text-white mb-4">
-      Statistik
-    </h1>
-    <p class="text-xl text-gray-200 max-w-md mb-8">
-      Dapatkan informasi terkait gol, assist, dan cleansheet para pemain di liga inggris
-    </p>
-    
-    <a href="#statistik-content" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
-      <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
-      </svg>
-      Lihat Statistik
-    </a>
-  </div>
-  
-</div>
-
-        <div id="statistik-content" class="flex flex-col items-center mb-8 p-4 pt-12">
-            <div class="flex space-x-8">
-                <a id="filter-klub" class="text-blue-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer">
-                Klub
-            </a>
-                <a id="filter-pemain" class="text-gray-500 px-4 py-2 font-medium text-lg transition-colors hover:text-white">
-                Pemain
-                </a>
-            </div>
-        </div>
-
-        <div id="loading" class="bg-gray-500 rounded-lg p-20 text-center hidden">
-        <svg class="animate-spin h-8 w-8 text-gray-300 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-        </svg>
-        <p class="text-gray-900 mt-3">Loading stat ...</p>
-        </div>
-
-        <div id="error" class="hidden text-center text-red-600 font-medium"></div>
-
-        <div id="grid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-
+  <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
+    <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex items-center pl-24" style="background-image: url('{% static "img/stats.png" %}')">
+      <div class="text-white">
+        <h1 class="text-6xl font-bold text-white mb-4">Statistik</h1>
+        <p class="text-xl text-gray-200 max-w-md mb-8">
+          Dapatkan informasi terkait gol, assist, dan cleansheet para pemain di liga inggris
+        </p>
+      
+        <a href="#statistik-content" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
+          <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
+          </svg>
+          Lihat Statistik
+        </a>
+      </div>
     </div>
+
+    <div id="statistik-content" class="flex justify-between items-center mb-8 p-4 pt-12 lg:px-[280px]">
+      <a id="filter-klub" class="text-blue-700 font-semibold text-2xl px-4 py-2 transition-colors hover:text-blue-800 cursor-pointer">
+        Klub
+      </a>
+      <a id="filter-pemain" class="text-gray-500 px-4 py-2 font-semibold text-2xl transition-colors hover:text-white cursor-pointer">
+        Pemain
+      </a>
+    </div>
+
+    <div id="loading" class="bg-gray-500 rounded-lg p-20 text-center hidden">
+      <svg class="animate-spin h-8 w-8 text-gray-300 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      <p class="text-gray-900 mt-3">Loading stat ...</p>
+    </div>
+
+    <div id="error" class="hidden text-center text-red-600 font-medium"></div>
+
+    <div id="stats-container" class="mt-12">
+      <h2 class="text-2xl font-semibold text-white mb-6">Top Scorer</h2>
+      <div id="top-scorer-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12"></div>
+      
+      <h2 class="text-2xl font-semibold text-white mb-6">Top Assist</h2>
+      <div id="top-assist-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12"></div>
+      
+      <h2 class="text-2xl font-semibold text-white mb-6">Clean Sheet</h2>
+      <div id="clean-sheet-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+  </div>
 </div>
 
-    <script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const API_URL = "/stats/api/stats/players/";
+        const loadingEl = document.getElementById('loading');
+        const errorEl = document.getElementById('error');
+        const filterKlubEl = document.getElementById('filter-klub');
+        const filterPemainEl = document.getElementById('filter-pemain');
+
+        const gridContainers = {
+            goals: document.getElementById('top-scorer-grid'),
+            curr_assists: document.getElementById('top-assist-grid'),
+            curr_cleansheet: document.getElementById('clean-sheet-grid')
+        };
         
-const grid = document.getElementById("grid");
-const loading = document.getElementById("loading");
-const error = document.getElementById("error");
-const btnKlub = document.getElementById("filter-klub");
-const btnPemain = document.getElementById("filter-pemain");
+        const statLabels = {
+            goals: 'Gol',
+            curr_assists: 'Assist',
+            curr_cleansheet: 'Kali'
+        };
 
-let mode = "klub"; // default
+        let currentFilter = 'pemain'; // Default: Pemain
 
-//  fungsi untuk ambil data dari API
-async function fetchStats() {
-  grid.innerHTML = "";
-  error.classList.add("hidden");
-  loading.classList.remove("hidden");
-  grid.classList.add("hidden");
+        let allPlayersData = []; // Menyimpan data API
 
-  const url =
-    mode === "klub"
-      ? "/stats/api/stats/clubs/"
-      : "/stats/api/stats/players/";
+        // Fungsi untuk membuat elemen kartu (untuk Pemain atau Klub)
+        function createCard(data, statKey, isClubView) {
+            const statValue = isClubView ? data.totalStat : data[statKey] || 0;
+            const label = statLabels[statKey];
+            const name = isClubView ? data.club : data.name;
+            let subText = data.club;
+            let imageClub = data.club_logo;
+            let imagePemain = data.photo;
+            
+            const defaultImage = "{% static 'img/no-image.png' %}"
 
-  try {
-    const res = await fetch(url, { headers: { Accept: "application/json" } });
-    if (!res.ok) throw new Error("Gagal mengambil data");
+            return !isClubView ? `
+                <div class="flex items-center justify-between rounded-xl py-4 px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300 mb-1">
+                    <img src="${imagePemain || defaultImage}" alt="${name}" class="h-[100px] w-[100px] object-contain mr-6">
+                    <div class="flex-grow">
+                        <h1 class="text-xl font-semibold text-white">${name}</h1>
+                        <div class="flex items-center mt-4 space-x-2">
+                          <img src="${imageClub || defaultImage}" alt="Top Players" class="w-6 h-6 mr-2 object-contain">
+                          <p class="text-gray-200 text-sm truncate">${subText}</p>
+                        </div>
+                    </div>
+                    <div class="text-xl font-semibold text-white">
+                        ${statValue} ${label}
+                    </div>
+                </div>
+            ` : `
+                <div class="flex items-center justify-between rounded-xl py-4 px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300">
+                    <img src="${imageClub || defaultImage}" alt="${name}" class="h-[100px] w-[100px] object-contain mr-6">
+                    <div class="flex-grow">
+                        <h1 class="text-xl font-semibold text-white">${name}</h1>
+                    </div>
+                    <div class="text-xl font-semibold text-white">
+                        ${statValue} ${label}
+                    </div>
+                </div>
+              `;
+        }
 
-    const data = await res.json();
-    renderCards(data);
-  } catch (err) {
-    console.error(err);
-    error.textContent = "Terjadi kesalahan saat memuat data.";
-    error.classList.remove("hidden");
-  } finally {
-    loading.classList.add("hidden");
-  }
-}
+        // --- Fungsi Pengolahan Data ---
 
-// render data ke card
-function renderCards(data) {
-  grid.innerHTML = "";
-  grid.classList.remove("hidden");
+        function getTopPlayers(players, statKey) {
+            const sortedPlayers = [...players].sort((a, b) => (b[statKey] || 0) - (a[statKey] || 0));
+            return sortedPlayers;
+        }
 
-  if (data.length === 0) {
-    grid.innerHTML = `<p class="text-gray-500 col-span-full text-center">Tidak ada data tersedia.</p>`;
-    return;
-  }
+        // Mengurutkan berdasarkan Klub (Menampilkan semua klub top-rank)
+        function getTopClubs(players, statKey) {
+            const clubStats = {};
 
-if (mode === "klub") {
-  data.forEach((club) => {
-    const el = document.createElement("div");
-    el.className =
-      "flex items-center justify-between rounded-xl py-4 px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300";
+            players.forEach(player => {
+                const statValue = player[statKey] || 0;
+                if (!clubStats[player.club]) {
+                    clubStats[player.club] = {
+                        club: player.club,
+                        club_logo: player.club_logo,
+                        totalStat: 0,
+                        players: [] 
+                    };
+                }
+                clubStats[player.club].totalStat += statValue;
+                clubStats[player.club].players.push({ 
+                    name: player.name, 
+                    stat: statValue,
+                    photo: player.photo 
+                });
+            });
 
-    el.innerHTML = `
-      <img src="${club.logo || '/static/img/no-image.png'}" 
-           alt="${club.name}" 
-           class="h-[100px] w-[100px] object-contain mr-6">
+            const clubArray = Object.values(clubStats);
 
-      <div class="flex-1 text-left">
-        <h1 class="text-lg font-semibold text-white">${club.name}</h1>
-      </div>
+            clubArray.sort((a, b) => b.totalStat - a.totalStat);
+            return clubArray;
+        }
 
-      <div class="text-right">
-        <p class="text-xl font-semibold text-white">${club.points} Poin</p>
-      </div>
-    `;
-    grid.appendChild(el);
-  });
-} else {
-  data.forEach((player) => {
-    const el = document.createElement("div");
-    el.className =
-      "flex items-center justify-between rounded-xl py-4 px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300";
+        // --- Fungsi Utama Render ---
 
-    el.innerHTML = `
-      <img src="${player.photo || '/static/img/no-image.png'}" 
-           alt="${player.name}" 
-           class="h-[100px] w-[100px] object-contain mr-6">
+        function renderStats(players, filterType) {
+            ['goals', 'curr_assists', 'curr_cleansheet'].forEach(statKey => {
+                let items;
+                let isClubView = filterType === 'klub';
 
-      <div class="flex-1 text-left">
-        <h1 class="text-lg font-semibold text-white mb-1">${player.name}</h1>
-        <div class="flex items-center space-x-2">
-          <img src="${player.club_logo || '/static/img/no-image.png'}" 
-               alt="${player.club}" 
-               class="h-6 w-6 object-contain">
-          <p class="text-sm text-gray-300">${player.club}</p>
-        </div>
-      </div>
+                if (isClubView) {
+                    items = getTopClubs(players, statKey);
+                } else {
+                    items = getTopPlayers(players, statKey);
+                }
 
-      <div class="text-right">
-        <p class="text-xl font-semibold text-white">${player.goals} Gol</p>
-      </div>
-    `;
-    grid.appendChild(el);
-  });
-}
+                let html = items.map(item => createCard(item, statKey, isClubView)).join('');
+                gridContainers[statKey].innerHTML = html;
+            });
+        }
 
-}
+        // --- Fungsi Pengambilan Data AJAX ---
+        async function loadStats() {
+            if (allPlayersData.length > 0) {
+                renderStats(allPlayersData, currentFilter);
+                return;
+            }
 
-// Event handler tombol filter
-btnKlub.addEventListener("click", () => {
-  mode = "klub";
-  btnKlub.className = "text-blue-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer";
-  btnPemain.className = "text-gray-500 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-white cursor-pointer";
-  fetchStats();
-});
+            loadingEl.classList.remove('hidden');
+            errorEl.classList.add('hidden');
+            errorEl.textContent = '';
 
-btnPemain.addEventListener("click", () => {
-    mode = "pemain";
-    btnKlub.className = "text-gray-500 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-white cursor-pointer";
-    btnPemain.className = "text-blue-700 font-semibold text-lg px-4 py-2 font-medium transition-colors hover:text-blue-800 cursor-pointer";
-  fetchStats();
-});
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                allPlayersData = data.data || data; 
 
-// Load pertama kali
-fetchStats();
-//renderCards(dummyClubs);
+                if (!allPlayersData || allPlayersData.length === 0) {
+                    errorEl.classList.remove('hidden');
+                    errorEl.textContent = 'Tidak ada data pemain.';
+                    return;
+                }
+                
+                renderStats(allPlayersData, currentFilter);
+
+            } catch (error) {
+                errorEl.classList.remove('hidden');
+                errorEl.textContent = 'Gagal mengambil data statistik: ' + error.message;
+            } finally {
+                loadingEl.classList.add('hidden');
+            }
+        }
+
+        // --- Event Listeners untuk Filter ---
+        function setFilter(filterType) {
+            currentFilter = filterType;
+            
+            // Update styling tombol
+            const activeClass = ['text-blue-700', 'font-semibold', 'hover:text-blue-800'];
+            const inactiveClass = ['text-gray-500', 'hover:text-white'];
+            
+            [filterKlubEl, filterPemainEl].forEach(el => {
+                const isCurrent = el.id === `filter-${filterType}`;
+                el.classList.toggle('text-blue-700', isCurrent);
+                el.classList.toggle('font-semibold', isCurrent);
+                el.classList.toggle('hover:text-blue-800', isCurrent);
+                el.classList.toggle('text-gray-500', !isCurrent);
+                el.classList.toggle('hover:text-white', !isCurrent);
+            });
+            
+            if (allPlayersData.length > 0) {
+                renderStats(allPlayersData, currentFilter);
+            }
+        }
+
+        filterKlubEl.addEventListener('click', () => setFilter('klub'));
+        filterPemainEl.addEventListener('click', () => setFilter('pemain'));
+
+        setFilter(currentFilter);
+        loadStats();
+    });
 </script>
 
 
