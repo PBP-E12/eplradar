@@ -1,8 +1,12 @@
 from django.shortcuts import render
 from django.http import Http404, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from players.models import Player
+from .models import ClubComment
 import csv
 import os
+import json
 from django.conf import settings
 
 try:
@@ -52,6 +56,113 @@ def club_list_api(request):
         return JsonResponse({'error': str(e)}, status=500)
     
     return JsonResponse({'data': clubs}, safe=False)
+
+
+
+def get_comments_api(request):
+    """Get all comments"""
+    comments = ClubComment.objects.select_related('user').all()
+    
+    data = [{
+        'id': comment.id,
+        'user': comment.user.username,
+        'club_name': comment.club_name,
+        'comment': comment.comment,
+        'created_at': comment.created_at.strftime('%Y-%m-%d %H:%M'),
+        'is_owner': request.user.is_authenticated and comment.user == request.user
+    } for comment in comments]
+    
+    return JsonResponse({'data': data})
+
+
+@login_required
+@csrf_exempt
+def create_comment_api(request):
+    """Create new comment (login required)"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        club_name = data.get('club_name')
+        comment_text = data.get('comment')
+        
+        if not club_name or not comment_text:
+            return JsonResponse({'error': 'Club name and comment are required'}, status=400)
+        
+        comment = ClubComment.objects.create(
+            user=request.user,
+            club_name=club_name,
+            comment=comment_text
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'data': {
+                'id': comment.id,
+                'user': comment.user.username,
+                'club_name': comment.club_name,
+                'comment': comment.comment,
+                'created_at': comment.created_at.strftime('%Y-%m-%d %H:%M'),
+                'is_owner': True
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@csrf_exempt
+def update_comment_api(request, comment_id):
+    """Update comment (only owner)"""
+    if request.method != 'PUT':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        comment = ClubComment.objects.get(id=comment_id, user=request.user)
+        
+        data = json.loads(request.body)
+        comment_text = data.get('comment')
+        
+        if not comment_text:
+            return JsonResponse({'error': 'Comment is required'}, status=400)
+        
+        comment.comment = comment_text
+        comment.save()
+        
+        return JsonResponse({
+            'success': True,
+            'data': {
+                'id': comment.id,
+                'user': comment.user.username,
+                'club_name': comment.club_name,
+                'comment': comment.comment,
+                'created_at': comment.created_at.strftime('%Y-%m-%d %H:%M'),
+                'is_owner': True
+            }
+        })
+    except ClubComment.DoesNotExist:
+        return JsonResponse({'error': 'Comment not found or unauthorized'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@csrf_exempt
+def delete_comment_api(request, comment_id):
+    """Delete comment (only owner)"""
+    if request.method != 'DELETE':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        comment = ClubComment.objects.get(id=comment_id, user=request.user)
+        comment.delete()
+        
+        return JsonResponse({'success': True})
+    except ClubComment.DoesNotExist:
+        return JsonResponse({'error': 'Comment not found or unauthorized'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 def club_detail(request, nama_klub):
