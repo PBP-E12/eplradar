@@ -212,7 +212,6 @@
             const imagePemain = data.photo;
             const imgSrc = isClubView ? imageClub || defaultImage : imagePemain || defaultImage;
 
-            // Kelas responsif ditambahkan di sini
             return `
                 <div class="flex items-center justify-between rounded-xl py-3 px-4 sm:py-4 sm:px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300 mb-2 sm:mb-4">
                     <img src="${imgSrc}" alt="${name}" class="h-16 w-16 sm:h-20 sm:w-20 object-contain rounded-md mr-3 sm:mr-4 flex-shrink-0">
