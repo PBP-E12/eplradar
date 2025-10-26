@@ -6,6 +6,7 @@
 <div class="bg-[#18181b] text-white min-h-screen">
     <div class="max-w-[1400px] mx-auto px-5 pt-[140px] pb-[60px]">
         
+        <!-- Hero Banner -->
         <div class="my-10 rounded-2xl h-[560px] bg-cover bg-center flex items-center" 
              style="background-image: url('{% static "img/clubs.png" %}')">
             <div class="text-white pr-5 lg:pl-24">
@@ -22,9 +23,12 @@
             </div>
         </div>
         
+        <!-- Page Title & Filters -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <h1 class="text-4xl font-bold">Profil Klub Musim Ini</h1>
             
+            <!-- Filters (Only for logged in users) -->
+            {% if user.is_authenticated %}
             <div class="flex gap-3 flex-wrap">
                 <input type="text" 
                        id="search-club" 
@@ -39,8 +43,14 @@
                     <option value="wins-desc">Menang Terbanyak</option>
                 </select>
             </div>
+            {% else %}
+            <div class="text-[#a1a1aa] text-sm italic">
+                <a href="{% url 'main:login' %}" class="text-indigo-400 hover:text-indigo-300">Login</a> untuk menggunakan fitur filter
+            </div>
+            {% endif %}
         </div>
         
+        <!-- Loading -->
         <div id="loading" class="hidden text-center py-20">
             <svg class="animate-spin h-12 w-12 text-indigo-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -49,24 +59,123 @@
             <p class="text-[#a1a1aa] mt-4">Loading clubs...</p>
         </div>
         
+        <!-- Error -->
         <div id="error" class="hidden text-center py-16 bg-[#27272a] rounded-2xl text-red-500 text-lg border border-red-900"></div>
         
-        <div id="klub-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Clubs Grid -->
+        <div id="klub-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            <!-- Will be populated by JavaScript -->
         </div>
+
+        <!-- Comments Section -->
+        <div class="mt-20 border-t border-[#3f3f46] pt-12">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold">Komentar Klub</h2>
+                
+                {% if user.is_authenticated %}
+                <button id="btn-create-comment" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Tambah Komentar
+                </button>
+                {% else %}
+                <a href="{% url 'main:login' %}" class="bg-[#27272a] border border-[#3f3f46] text-[#a1a1aa] px-6 py-3 rounded-lg font-semibold transition-all hover:border-indigo-500 hover:text-white">
+                    Login untuk berkomentar
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Comments Loading -->
+            <div id="comments-loading" class="hidden text-center py-10">
+                <svg class="animate-spin h-8 w-8 text-indigo-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+            </div>
+
+            <!-- Comments List -->
+            <div id="comments-container" class="space-y-4">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Create/Edit Comment -->
+<div id="comment-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-[#27272a] rounded-2xl max-w-lg w-full p-8 border border-[#3f3f46]">
+        <div class="flex justify-between items-center mb-6">
+            <h3 id="modal-title" class="text-2xl font-bold">Tambah Komentar</h3>
+            <button id="btn-close-modal" class="text-[#a1a1aa] hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <form id="comment-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-2">Klub yang Dituju</label>
+                <select id="input-club" required class="w-full px-4 py-3 bg-[#18181b] border border-[#3f3f46] rounded-lg text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                    <option value="">Pilih klub...</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2">Komentar</label>
+                <textarea id="input-comment" required rows="4" placeholder="Tulis komentar Anda..." class="w-full px-4 py-3 bg-[#18181b] border border-[#3f3f46] rounded-lg text-white placeholder-[#a1a1aa] focus:outline-none focus:border-indigo-500 transition-colors resize-none"></textarea>
+            </div>
+
+            <div class="flex gap-3 justify-end">
+                <button type="button" id="btn-cancel" class="px-6 py-3 bg-[#3f3f46] hover:bg-[#52525b] rounded-lg font-medium transition-colors">
+                    Batal
+                </button>
+                <button type="submit" id="btn-submit" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors">
+                    Simpan
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const API_URL = "{% url 'clubs:club_list_api' %}";
+    const COMMENTS_API_URL = "{% url 'clubs:get_comments_api' %}";
+    const CREATE_COMMENT_URL = "{% url 'clubs:create_comment_api' %}";
+    
     const loadingEl = document.getElementById('loading');
     const errorEl = document.getElementById('error');
     const gridEl = document.getElementById('klub-list');
     const searchInput = document.getElementById('search-club');
     const sortSelect = document.getElementById('sort-club');
     
-    let allClubs = [];
+    const commentsLoadingEl = document.getElementById('comments-loading');
+    const commentsContainerEl = document.getElementById('comments-container');
+    const btnCreateComment = document.getElementById('btn-create-comment');
+    const commentModal = document.getElementById('comment-modal');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+    const btnCancel = document.getElementById('btn-cancel');
+    const commentForm = document.getElementById('comment-form');
+    const modalTitle = document.getElementById('modal-title');
+    const inputClub = document.getElementById('input-club');
+    const inputComment = document.getElementById('input-comment');
+    const btnSubmit = document.getElementById('btn-submit');
     
+    const isAuthenticated = {{ user.is_authenticated|lower }};
+    let allClubs = [];
+    let commentsData = [];
+    let editingCommentId = null;
+    
+    // Helper function to escape HTML
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // Create club card HTML
     function createClubCard(club) {
         return `
             <a href="/clubs/${club.nama_klub}/" class="block no-underline text-inherit">
@@ -106,7 +215,10 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
     
+    // Sort clubs (only if authenticated)
     function sortClubs(clubs, sortBy) {
+        if (!isAuthenticated) return clubs;
+        
         const sorted = [...clubs];
         
         switch(sortBy) {
@@ -125,22 +237,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Filter clubs by search (only if authenticated)
     function filterClubs(clubs, searchTerm) {
-        if (!searchTerm) return clubs;
+        if (!isAuthenticated || !searchTerm) return clubs;
         
         return clubs.filter(club => 
             club.nama_klub.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }
     
+    // Render clubs
     function renderClubs() {
-        const searchTerm = searchInput.value;
-        const sortBy = sortSelect.value;
+        let displayClubs = allClubs;
         
-        let filteredClubs = filterClubs(allClubs, searchTerm);
-        let sortedClubs = sortClubs(filteredClubs, sortBy);
+        if (isAuthenticated && searchInput && sortSelect) {
+            const searchTerm = searchInput.value;
+            const sortBy = sortSelect.value;
+            
+            displayClubs = filterClubs(allClubs, searchTerm);
+            displayClubs = sortClubs(displayClubs, sortBy);
+        }
         
-        if (sortedClubs.length === 0) {
+        if (displayClubs.length === 0) {
             gridEl.innerHTML = `
                 <div class="col-span-full text-center py-16 bg-[#27272a] rounded-2xl text-[#a1a1aa] text-lg">
                     <p>Tidak ada klub yang ditemukan.</p>
@@ -149,9 +267,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        gridEl.innerHTML = sortedClubs.map(club => createClubCard(club)).join('');
+        gridEl.innerHTML = displayClubs.map(club => createClubCard(club)).join('');
     }
     
+    // Load clubs from API
     async function loadClubs() {
         loadingEl.classList.remove('hidden');
         errorEl.classList.add('hidden');
@@ -171,6 +290,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('Tidak ada data klub.');
             }
             
+            // Populate club select in modal
+            if (inputClub) {
+                inputClub.innerHTML = '<option value="">Pilih klub...</option>' + 
+                    allClubs.map(club => `<option value="${club.nama_klub}">${club.nama_klub}</option>`).join('');
+            }
+            
             renderClubs();
             
         } catch (error) {
@@ -181,10 +306,267 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    searchInput.addEventListener('input', renderClubs);
-    sortSelect.addEventListener('change', renderClubs);
+    // Create comment card HTML
+    function createCommentCard(comment) {
+        return `
+            <div class="bg-[#27272a] border border-[#3f3f46] rounded-xl p-6" data-comment-id="${comment.id}">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center font-bold">
+                                ${comment.user.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <div class="font-semibold">${escapeHtml(comment.user)}</div>
+                                <div class="text-xs text-[#a1a1aa]">${comment.created_at}</div>
+                            </div>
+                        </div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-[#3f3f46] rounded-full text-sm">
+                            <img src="{% static 'img/club/' %}${comment.club_name.replace(/ /g, '_')}.png" 
+                                 alt="${escapeHtml(comment.club_name)}"
+                                 class="w-5 h-5 object-contain"
+                                 onerror="this.style.display='none'">
+                            ${escapeHtml(comment.club_name)}
+                        </div>
+                    </div>
+                    ${comment.is_owner ? `
+                        <div class="flex gap-2">
+                            <button class="btn-edit-comment text-indigo-400 hover:text-indigo-300 transition-colors p-2" data-comment-id="${comment.id}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                            </button>
+                            <button class="btn-delete-comment text-red-400 hover:text-red-300 transition-colors p-2" data-comment-id="${comment.id}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+                <p class="text-[#e4e4e7] leading-relaxed">${escapeHtml(comment.comment)}</p>
+            </div>
+        `;
+    }
     
+    // Load comments
+    async function loadComments() {
+        commentsLoadingEl.classList.remove('hidden');
+        commentsContainerEl.innerHTML = '';
+        
+        try {
+            const response = await fetch(COMMENTS_API_URL);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            commentsData = result.data || [];
+            
+            if (commentsData.length === 0) {
+                commentsContainerEl.innerHTML = `
+                    <div class="text-center py-16 bg-[#27272a] rounded-xl text-[#a1a1aa] border border-[#3f3f46]">
+                        <svg class="w-16 h-16 mx-auto mb-4 text-[#3f3f46]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                        <p class="text-lg">Belum ada komentar. Jadilah yang pertama!</p>
+                    </div>
+                `;
+            } else {
+                commentsContainerEl.innerHTML = commentsData.map(comment => createCommentCard(comment)).join('');
+                
+                // Attach event listeners to edit/delete buttons
+                document.querySelectorAll('.btn-edit-comment').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const commentId = parseInt(this.dataset.commentId);
+                        const comment = commentsData.find(c => c.id === commentId);
+                        if (comment) {
+                            editComment(comment.id, comment.club_name, comment.comment);
+                        }
+                    });
+                });
+                
+                document.querySelectorAll('.btn-delete-comment').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const commentId = parseInt(this.dataset.commentId);
+                        deleteComment(commentId);
+                    });
+                });
+            }
+            
+        } catch (error) {
+            commentsContainerEl.innerHTML = `
+                <div class="text-center py-16 bg-[#27272a] rounded-xl text-red-500">
+                    <p>Gagal memuat komentar: ${error.message}</p>
+                </div>
+            `;
+        } finally {
+            commentsLoadingEl.classList.add('hidden');
+        }
+    }
+    
+    // Open modal for create
+    function openCreateModal() {
+        editingCommentId = null;
+        modalTitle.textContent = 'Tambah Komentar';
+        inputClub.disabled = false;
+        inputClub.value = '';
+        inputComment.value = '';
+        btnSubmit.textContent = 'Simpan';
+        commentModal.classList.remove('hidden');
+    }
+    
+    // Open modal for edit
+    function editComment(id, clubName, comment) {
+        editingCommentId = id;
+        modalTitle.textContent = 'Edit Komentar';
+        inputClub.value = clubName;
+        inputClub.disabled = true;
+        inputComment.value = comment;
+        btnSubmit.textContent = 'Update';
+        commentModal.classList.remove('hidden');
+    }
+    
+    // Close modal
+    function closeModal() {
+        commentModal.classList.add('hidden');
+        editingCommentId = null;
+        commentForm.reset();
+    }
+    
+    // Get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Submit comment (create or update)
+    async function submitComment(e) {
+        e.preventDefault();
+        
+        const clubName = inputClub.value;
+        const comment = inputComment.value;
+        
+        if (!clubName || !comment) {
+            alert('Mohon lengkapi semua field!');
+            return;
+        }
+        
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = editingCommentId ? 'Updating...' : 'Saving...';
+        
+        try {
+            const url = editingCommentId 
+                ? `/clubs/api/comments/${editingCommentId}/update/`
+                : CREATE_COMMENT_URL;
+            
+            const method = editingCommentId ? 'PUT' : 'POST';
+            
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    club_name: clubName,
+                    comment: comment
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                closeModal();
+                loadComments();
+                
+                // Show success message
+                showNotification(editingCommentId ? 'Komentar berhasil diupdate!' : 'Komentar berhasil ditambahkan!', 'success');
+            } else {
+                throw new Error(result.error || 'Gagal menyimpan komentar');
+            }
+            
+        } catch (error) {
+            alert('Error: ' + error.message);
+        } finally {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = editingCommentId ? 'Update' : 'Simpan';
+        }
+    }
+    
+    // Delete comment
+    async function deleteComment(commentId) {
+        if (!confirm('Apakah Anda yakin ingin menghapus komentar ini?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/clubs/api/comments/${commentId}/delete/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                loadComments();
+                showNotification('Komentar berhasil dihapus!', 'success');
+            } else {
+                throw new Error(result.error || 'Gagal menghapus komentar');
+            }
+            
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+    
+    // Show notification
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-24 right-5 px-6 py-4 rounded-lg font-medium shadow-lg z-50 transition-all ${
+            type === 'success' ? 'bg-green-600' : 'bg-red-600'
+        } text-white`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+    
+    // Event listeners
+    if (searchInput) searchInput.addEventListener('input', renderClubs);
+    if (sortSelect) sortSelect.addEventListener('change', renderClubs);
+    
+    if (btnCreateComment) btnCreateComment.addEventListener('click', openCreateModal);
+    if (btnCloseModal) btnCloseModal.addEventListener('click', closeModal);
+    if (btnCancel) btnCancel.addEventListener('click', closeModal);
+    if (commentForm) commentForm.addEventListener('submit', submitComment);
+    
+    // Close modal on outside click
+    commentModal.addEventListener('click', function(e) {
+        if (e.target === commentModal) {
+            closeModal();
+        }
+    });
+    
+    // Initial load
     loadClubs();
+    loadComments();
 });
 </script>
 
