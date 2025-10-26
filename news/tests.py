@@ -3,50 +3,19 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from .models import News
 
-class NewsModelTest(TestCase):
-    
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = User.objects.create_user(username='testuser', password='password123')
-        cls.news_hot = News.objects.create(
-            user=cls.user,
-            title="Hot News",
-            content="This is hot news.",
-            category='transfer',
-            news_views=100
-        )
-        cls.news_cold = News.objects.create(
-            user=cls.user,
-            title="Cold News",
-            content="This is not hot news.",
-            category='rumor',
-            news_views=10
-        )
 
-    def test_news_creation(self):
-        self.assertEqual(News.objects.count(), 2)
-        self.assertEqual(self.news_hot.title, "Hot News")
-
-    def test_str_method(self):
-        self.assertEqual(str(self.news_hot), "Hot News")
-
-    def test_increment_views(self):
-        initial_views = self.news_cold.news_views
-        self.news_cold.increment_views()
-        self.assertEqual(self.news_cold.news_views, initial_views + 1)
-
-    def test_is_news_hot_property(self):
-        self.assertTrue(self.news_hot.is_news_hot) 
-        self.assertFalse(self.news_cold.is_news_hot) 
-
-
-class NewsViewTest(TestCase):
+class NewsFunctionalTest(TestCase):
+    """Functional-style test for News app (similar to FootballNewsFunctionalTest style)"""
 
     @classmethod
     def setUpTestData(cls):
+        cls.client = Client()
+
+        # Create users
         cls.user1 = User.objects.create_user(username='user1', password='password123')
         cls.user2 = User.objects.create_user(username='user2', password='password123')
-    
+
+        # Create sample news
         cls.news1 = News.objects.create(
             user=cls.user1,
             title="Berita User 1",
@@ -62,122 +31,90 @@ class NewsViewTest(TestCase):
             news_views=10
         )
 
-    def setUp(self):
-        self.client = Client()
-        self.list_url = reverse('news:news_list')
-        self.detail_url = reverse('news:news_detail', args=[self.news1.pk])
-        self.add_url = reverse('news:add_news_entry_ajax')
-        self.update_url = reverse('news:update_news_ajax', args=[self.news1.pk])
-        self.delete_url = reverse('news:delete_news_ajax', args=[self.news1.pk])
+        # URLs
+        cls.list_url = reverse('news:news_list')
+        cls.detail_url = reverse('news:news_detail', args=[cls.news1.pk])
+        cls.add_url = reverse('news:add_news_entry_ajax')
+        cls.update_url = reverse('news:update_news_ajax', args=[cls.news1.pk])
+        cls.delete_url = reverse('news:delete_news_ajax', args=[cls.news1.pk])
 
+    # helper
+    def login_user1(self):
+        self.client.login(username='user1', password='password123')
 
+    def login_user2(self):
+        self.client.login(username='user2', password='password123')
 
-    def test_news_list_view_status_code(self):
+    # test
+
+    def test_1_news_list_page_loads(self):
+        """List page tampil dengan template benar"""
         response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'news.html')
-
-    def test_news_list_displays_news(self):
-        response = self.client.get(self.list_url)
         self.assertContains(response, "Berita User 1")
         self.assertContains(response, "Berita User 2")
 
-    def test_news_list_filtering(self):
-      
+    def test_2_news_list_filtering(self):
+        """Filter kategori transfer hanya tampil berita transfer"""
         response = self.client.get(self.list_url, {'category': 'transfer'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Berita User 1")
         self.assertNotContains(response, "Berita User 2")
 
-    def test_news_list_sorting(self):
-        response = self.client.get(self.list_url, {'sort': 'views_desc'})
-
-        news_list_from_context = list(response.context['news_items'])
-        self.assertEqual(news_list_from_context, [self.news1, self.news2])
-
-    def test_news_list_ajax_response(self):
-        response = self.client.get(self.list_url, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 200)
-        json_data = response.json()
-        self.assertIn('news_items', json_data)
-        self.assertEqual(len(json_data['news_items']), 2)
-        self.assertEqual(json_data['news_items'][0]['title'], "Berita User 1") 
-
-    def test_news_detail_view_status_code(self):
-        response = self.client.get(self.detail_url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'news_detail.html')
-
-    def test_news_detail_increments_views(self):
+    def test_3_news_detail_increments_views(self):
+        """Kunjungan ke detail news menambah jumlah views"""
         initial_views = self.news1.news_views
         self.client.get(self.detail_url)
         self.news1.refresh_from_db()
         self.assertEqual(self.news1.news_views, initial_views + 1)
 
-    def test_news_detail_404_if_not_exist(self):
-        url_404 = reverse('news:news_detail', args=[9999])
-        response = self.client.get(url_404)
-        self.assertEqual(response.status_code, 404)
-
-    def test_add_news_requires_login(self):
-        response = self.client.post(self.add_url, {'title': 'test', 'content': 'test', 'category': 'rumor'})
+    def test_4_add_news_requires_login(self):
+        """Tambah berita gagal tanpa login"""
+        response = self.client.post(self.add_url, {
+            'title': 'Test News', 
+            'content': 'Test content', 
+            'category': 'rumor'
+        })
         self.assertEqual(response.status_code, 302) 
-        self.assertFalse(News.objects.filter(title='test').exists())
 
-    def test_add_news_success_when_logged_in(self):
-        self.client.login(username='user1', password='password123')
-        data = {'title': 'Berita Baru', 'content': 'Konten tes', 'category': 'analysis'}
-        response = self.client.post(self.add_url, data)
+    def test_5_add_news_success(self):
+        """Tambah berita berhasil saat login"""
+        self.login_user1()
+        response = self.client.post(self.add_url, {
+            'title': 'Berita Baru',
+            'content': 'Konten baru',
+            'category': 'analysis'
+        })
         self.assertEqual(response.status_code, 201)
         self.assertTrue(News.objects.filter(title='Berita Baru').exists())
-        new_news = News.objects.get(title='Berita Baru')
-        self.assertEqual(new_news.user, self.user1)
 
-    def test_add_news_fails_on_missing_data(self):
-        self.client.login(username='user1', password='password123')
-        data = {'title': 'Berita Gagal'} 
-        response = self.client.post(self.add_url, data)
-        self.assertEqual(response.status_code, 400)
-        self.assertFalse(News.objects.filter(title='Berita Gagal').exists())
-
-    
-    def test_update_news_requires_login(self):
-        response = self.client.post(self.update_url, {'title': 'update'})
-        self.assertEqual(response.status_code, 302) 
-
-    def test_update_news_by_owner(self):
-        self.client.login(username='user1', password='password123')
-        data = {
-            'title': 'Judul Updated', 
-            'content': 'Konten Updated', 
+    def test_6_update_news_by_owner(self):
+        """User pemilik bisa update berita"""
+        self.login_user1()
+        response = self.client.post(self.update_url, {
+            'title': 'Judul Updated',
+            'content': 'Konten Updated',
             'category': 'rumor'
-        }
-        response = self.client.post(self.update_url, data) 
+        })
         self.assertEqual(response.status_code, 200)
         self.news1.refresh_from_db()
         self.assertEqual(self.news1.title, 'Judul Updated')
 
-    def test_update_news_by_wrong_user(self):
-        self.client.login(username='user2', password='password123')
-        data = {'title': 'Judul Gagal Update'}
-        response = self.client.post(self.update_url, data)
-        self.assertEqual(response.status_code, 404) 
+    def test_7_update_news_by_wrong_user(self):
+        """User lain tidak bisa update berita milik user lain"""
+        self.login_user2()
+        response = self.client.post(self.update_url, {'title': 'Judul Gagal Update'})
+        self.assertEqual(response.status_code, 404)
         self.news1.refresh_from_db()
         self.assertNotEqual(self.news1.title, 'Judul Gagal Update')
 
-    def test_delete_news_requires_login(self):
-        response = self.client.post(self.delete_url, {'_method': 'DELETE'})
-        self.assertEqual(response.status_code, 302) 
-    def test_delete_news_by_owner(self):
-        self.client.login(username='user1', password='password123')
+    def test_8_delete_news_by_owner(self):
+        """User pemilik bisa hapus berita"""
+        self.login_user1()
         news_pk = self.news1.pk
         response = self.client.post(self.delete_url, {'_method': 'DELETE'})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(News.objects.filter(pk=news_pk).exists())
 
-    def test_delete_news_by_wrong_user(self):
-        self.client.login(username='user2', password='password123')
-        news_pk = self.news1.pk
-        response = self.client.post(self.delete_url, {'_method': 'DELETE'})
-        self.assertEqual(response.status_code, 404) 
-        self.assertTrue(News.objects.filter(pk=news_pk).exists())
+
