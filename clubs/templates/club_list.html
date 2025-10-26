@@ -3,244 +3,78 @@
 {% block content %}
 {% include 'navbar.html' %}
 
-<div class="container-custom">
-    
-    <div class="my-10 rounded-2xl h-[560px] bg-cover bg-center flex items-center justify-first" 
-    style="background-image: url('{% static "img/clubs.png" %}')">
-            
-            <div class="text-white pr-20 lg:pl-24">
-                <h1 class="text-6xl font-bold text-white mb-4">
-                    Klub
-                </h1>
+<div class="bg-[#18181b] text-white min-h-screen">
+    <div class="max-w-[1400px] mx-auto px-5 pt-[140px] pb-[60px]">
+        
+        <!-- Hero Banner -->
+        <div class="my-10 rounded-2xl h-[560px] bg-cover bg-center flex items-center" 
+             style="background-image: url('{% static "img/clubs.png" %}')">
+            <div class="text-white pr-5 lg:pl-24">
+                <h1 class="text-6xl font-bold mb-4">Klub</h1>
                 <p class="text-xl text-gray-200 max-w-md mb-8">
                     Temukan info terlengkap terkait tim favoritmu di liga inggris musim ini
                 </p>
                 <a href="#klub-list" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
-                    <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
                     </svg>
                     Lihat Club
                 </a>
             </div>
         </div>
-    
-    <h1 class="page-title">Profil Klub Musim Ini</h1>
-    <div id="klub-list" class="clubs-grid">
-        {% for club in clubs %}
-        <a href="{% url 'clubs:club_detail' club.nama_klub %}" class="club-card-link">
-            <div class="club-card">
-                <div class="club-card-inner">
-                    <div class="club-logo-container">
-                         <img src="{% static 'img/club/' %}{{ club.logo_filename }}.png" 
-                            class="club-logo" 
-                            alt="{{ club.nama_klub }}"
-                            >
-                    </div>
-                    <h5 class="club-name">{{ club.nama_klub }}</h5>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-box stat-win">
-                            <div class="stat-value">{{ club.jumlah_win }}</div>
-                            <div class="stat-label">Menang</div>
+        
+        <!-- Page Title -->
+        <h1 class="text-4xl font-bold text-white mb-10">Profil Klub Musim Ini</h1>
+        
+        <!-- Clubs Grid -->
+        <div id="klub-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for club in clubs %}
+            <a href="{% url 'clubs:club_detail' club.nama_klub %}" class="block no-underline text-inherit">
+                <div class="bg-[#333438] rounded-2xl border border-[#3f3f46] overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:border-[#52525b] cursor-pointer h-full">
+                    <div class="p-8 text-center">
+                        <!-- Club Logo -->
+                        <div class="w-[100px] h-[100px] mx-auto mb-5 bg-[#3f3f46] rounded-full flex items-center justify-center overflow-hidden">
+                            <img src="{% static 'img/club/' %}{{ club.logo_filename }}.png" 
+                                 class="w-20 h-20 object-contain" 
+                                 alt="{{ club.nama_klub }}">
                         </div>
-                        <div class="stat-box stat-draw">
-                            <div class="stat-value">{{ club.jumlah_draw }}</div>
-                            <div class="stat-label">Seri</div>
+                        
+                        <!-- Club Name -->
+                        <h5 class="text-xl font-bold text-white mb-5 min-h-[30px]">{{ club.nama_klub }}</h5>
+                        
+                        <!-- Stats Grid -->
+                        <div class="grid grid-cols-3 gap-3 mb-5">
+                            <div class="bg-[#3f3f46] rounded-xl p-4 transition-colors hover:bg-[#52525b]">
+                                <div class="text-2xl font-bold text-[#22c55e] mb-1">{{ club.jumlah_win }}</div>
+                                <div class="text-xs text-[#a1a1aa] uppercase tracking-wide">Menang</div>
+                            </div>
+                            <div class="bg-[#3f3f46] rounded-xl p-4 transition-colors hover:bg-[#52525b]">
+                                <div class="text-2xl font-bold text-[#eab308] mb-1">{{ club.jumlah_draw }}</div>
+                                <div class="text-xs text-[#a1a1aa] uppercase tracking-wide">Seri</div>
+                            </div>
+                            <div class="bg-[#3f3f46] rounded-xl p-4 transition-colors hover:bg-[#52525b]">
+                                <div class="text-2xl font-bold text-[#ef4444] mb-1">{{ club.jumlah_lose }}</div>
+                                <div class="text-xs text-[#a1a1aa] uppercase tracking-wide">Kalah</div>
+                            </div>
                         </div>
-                        <div class="stat-box stat-lose">
-                            <div class="stat-value">{{ club.jumlah_lose }}</div>
-                            <div class="stat-label">Kalah</div>
+                        
+                        <!-- Summary -->
+                        <div class="text-sm text-[#a1a1aa] flex items-center justify-center gap-2">
+                            <span>{{ club.total_matches }} pertandingan</span>
+                            <span class="text-[#52525b]">•</span>
+                            <span class="font-semibold text-white">{{ club.points }} poin</span>
                         </div>
-                    </div>
-                    
-                    <div class="club-summary">
-                        <span class="summary-text">{{ club.total_matches }} pertandingan</span>
-                        <span class="summary-divider">•</span>
-                        <span class="summary-points">{{ club.points }} poin</span>
                     </div>
                 </div>
+            </a>
+            {% empty %}
+            <div class="col-span-full text-center py-16 bg-[#27272a] rounded-2xl text-[#a1a1aa] text-lg">
+                <p>Belum ada data klub.</p>
             </div>
-        </a>
-        {% empty %}
-        <div class="no-data">
-            <p>Belum ada data klub.</p>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
 </div>
-{% include 'footer.html' %}
 
-<style>
-    body {
-        background-color: #18181b;
-        color: #fafafa;
-        scroll-behavior: smooth;
-    }
-    
-    .container-custom {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 140px 20px 60px;
-    }
-    
-    .page-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #fafafa;
-        margin-bottom: 40px;
-        text-align: left;
-    }
-    
-    .clubs-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
-    }
-    
-    .club-card-link {
-        text-decoration: none;
-        color: inherit;
-        display: block;
-    }
-    
-    .club-card {
-        background: #333438;
-        border-radius: 16px;
-        overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 1px solid #3f3f46;
-        cursor: pointer;
-        height: 100%;
-    }
-    
-    .club-card-link:hover .club-card {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        border-color: #52525b;
-    }
-    
-    .club-card-inner {
-        padding: 30px 24px 24px;
-        text-align: center;
-    }
-    
-    .club-logo-container {
-        width: 100px;
-        height: 100px;
-        margin: 0 auto 20px;
-        background: #3f3f46;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-    }
-    
-    .club-logo {
-        width: 80px;
-        height: 80px;
-        object-fit: contain;
-    }
-    
-    .club-name {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #fafafa;
-        margin-bottom: 20px;
-        min-height: 30px;
-    }
-    
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-    
-    .stat-box {
-        background: #3f3f46;
-        border-radius: 12px;
-        padding: 16px 8px;
-        transition: background 0.2s ease;
-    }
-    
-    .stat-box:hover {
-        background: #52525b;
-    }
-    
-    .stat-value {
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin-bottom: 4px;
-    }
-    
-    .stat-win .stat-value {
-        color: #22c55e;
-    }
-    
-    .stat-draw .stat-value {
-        color: #eab308;
-    }
-    
-    .stat-lose .stat-value {
-        color: #ef4444;
-    }
-    
-    .stat-label {
-        font-size: 0.75rem;
-        color: #a1a1aa;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .club-summary {
-        font-size: 0.875rem;
-        color: #a1a1aa;
-        margin-bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-    
-    .summary-points {
-        font-weight: 600;
-        color: #fafafa;
-    }
-    
-    .summary-divider {
-        color: #52525b;
-    }
-    
-    .no-data {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 60px 20px;
-        background: #27272a;
-        border-radius: 16px;
-        color: #a1a1aa;
-        font-size: 1.125rem;
-    }
-    
-    @media (max-width: 1024px) {
-        .clubs-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    
-    @media (max-width: 640px) {
-        .container-custom {
-            padding-top: 120px;
-        }
-        
-        .clubs-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .page-title {
-            font-size: 1.5rem;
-            text-align: center;
-        }
-    }
-</style>
+{% include 'footer.html' %}
 {% endblock %}
