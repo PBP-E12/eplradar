@@ -31,9 +31,10 @@
             <div class="club-card">
                 <div class="club-card-inner">
                     <div class="club-logo-container">
-                        <img src="/static/img/club/{{ club.nama_klub }}.png"
+                         <img src="{% static 'img/club/' %}{{ club.logo_filename }}.png" 
                             class="club-logo" 
-                            alt="{{ club.nama_klub }}">
+                            alt="{{ club.nama_klub }}"
+                            >
                     </div>
                     <h5 class="club-name">{{ club.nama_klub }}</h5>
                     
