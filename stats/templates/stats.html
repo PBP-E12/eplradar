@@ -5,53 +5,56 @@
 {% include 'navbar.html' %}
 
 <div class="bg-[#1d1f22] w-full pt-10 min-h-screen scroll-smooth">
-  <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
-    <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex items-center pl-24" style="background-image: url('{% static "img/stats.png" %}')">
-      <div class="text-white">
-        <h1 class="text-6xl font-bold text-white mb-4">Statistik</h1>
-        <p class="text-xl text-gray-200 max-w-md mb-8">
-          Dapatkan informasi terkait gol, assist, dan cleansheet para pemain di liga inggris
-        </p>
-      
-        <a href="#statistik-content" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
-          <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
-          </svg>
-          Lihat Statistik
-        </a>
-      </div>
-    </div>
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 xl:px-20 py-8">
+        <div class="my-12 sm:my-16 lg:my-24 rounded-2xl h-[400px] sm:h-[480px] lg:h-[560px] bg-cover bg-center flex items-center pl-4 sm:pl-10 lg:pl-24" 
+             style="background-image: url('{% static "img/stats.png" %}')">
+            <div class="text-white">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">Statistik</h1>
+                <p class="text-base sm:text-xl text-gray-200 max-w-xs sm:max-w-md mb-6 sm:mb-8">
+                    Dapatkan informasi terkait gol, assist, dan cleansheet para pemain di liga inggris
+                </p>
+            
+                <a href="#statistik-content" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
+                    <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
+                    </svg>
+                    Lihat Statistik
+                </a>
+            </div>
+        </div>
 
-    <div id="statistik-content" class="flex justify-between items-center mb-8 p-4 pt-12 lg:px-[280px]">
-      <a id="filter-klub" class="text-blue-700 font-semibold text-2xl px-4 py-2 transition-colors hover:text-blue-800 cursor-pointer">
-        Klub
-      </a>
-      <a id="filter-pemain" class="text-gray-500 px-4 py-2 font-semibold text-2xl transition-colors hover:text-white cursor-pointer">
-        Pemain
-      </a>
-    </div>
+        <div id="statistik-content" class="flex justify-between sm:justify-center items-center mb-8 p-4 pt-12 lg:px-0">
+            <div class="flex space-x-8 sm:space-x-12 lg:space-x-20">
+                <a id="filter-klub" class="text-blue-700 font-semibold text-xl sm:text-2xl px-2 py-2 transition-colors hover:text-blue-800 cursor-pointer">
+                    Klub
+                </a>
+                <a id="filter-pemain" class="text-gray-500 px-2 py-2 font-semibold text-xl sm:text-2xl transition-colors hover:text-white cursor-pointer">
+                    Pemain
+                </a>
+            </div>
+        </div>
 
-    <div id="loading" class="bg-gray-500 rounded-lg p-20 text-center hidden">
-      <svg class="animate-spin h-8 w-8 text-gray-300 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-      </svg>
-      <p class="text-gray-900 mt-3">Loading stat ...</p>
-    </div>
+        <div id="loading" class="bg-gray-500 rounded-lg p-10 sm:p-20 text-center hidden">
+            <svg class="animate-spin h-8 w-8 text-gray-300 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            <p class="text-gray-900 mt-3">Loading stat ...</p>
+        </div>
 
-    <div id="error" class="hidden text-center text-red-600 font-medium"></div>
+        <div id="error" class="hidden text-center text-red-600 font-medium"></div>
 
-    <div id="stats-container" class="mt-12">
-      <h2 class="text-2xl font-semibold text-white mb-6">Top Scorer</h2>
-      <div id="top-scorer-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12"></div>
-      
-      <h2 class="text-2xl font-semibold text-white mb-6">Top Assist</h2>
-      <div id="top-assist-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12"></div>
-      
-      <h2 class="text-2xl font-semibold text-white mb-6">Clean Sheet</h2>
-      <div id="clean-sheet-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="stats-container" class="mt-8 sm:mt-12">
+            <h2 class="text-xl sm:text-2xl font-semibold text-white mb-6">Top Scorer</h2>
+            <div id="top-scorer-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10 sm:mb-12"></div>
+            
+            <h2 class="text-xl sm:text-2xl font-semibold text-white mb-6">Top Assist</h2>
+            <div id="top-assist-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10 sm:mb-12"></div>
+            
+            <h2 class="text-xl sm:text-2xl font-semibold text-white mb-6">Clean Sheet</h2>
+            <div id="clean-sheet-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
     </div>
-  </div>
 </div>
 
 <script>
@@ -78,7 +81,6 @@
 
         let allPlayersData = []; // Menyimpan data API
 
-        // Fungsi untuk membuat elemen kartu (untuk Pemain atau Klub)
         function createCard(data, statKey, isClubView) {
             const statValue = isClubView ? data.totalStat : data[statKey] || 0;
             const label = statLabels[statKey];
@@ -90,40 +92,38 @@
             const defaultImage = "{% static 'img/no-image.png' %}"
 
             return !isClubView ? `
-                <div class="flex items-center justify-between rounded-xl py-4 px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300 mb-1">
-                    <img src="${imagePemain || defaultImage}" alt="${name}" class="h-[100px] w-[100px] object-contain mr-6">
-                    <div class="flex-grow">
-                        <h1 class="text-xl font-semibold text-white">${name}</h1>
-                        <div class="flex items-center mt-4 space-x-2">
-                          <img src="${imageClub || defaultImage}" alt="Top Players" class="w-6 h-6 mr-2 object-contain">
-                          <p class="text-gray-200 text-sm truncate">${subText}</p>
+                <div class="flex items-center rounded-xl p-3 sm:py-4 sm:px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300">
+                    <img src="${imagePemain || defaultImage}" alt="${name}" class="h-[80px] w-[80px] sm:h-[100px] sm:w-[100px] object-cover rounded-md mr-4 sm:mr-6">
+                    <div class="flex-grow min-w-0">
+                        <h1 class="text-lg sm:text-xl font-semibold text-white truncate">${name}</h1>
+                        <div class="flex items-center mt-2 sm:mt-3 space-x-1 sm:space-x-2 min-w-0">
+                            <img src="${imageClub || defaultImage}" alt="${subText}" class="w-5 h-5 sm:w-6 sm:h-6 object-contain">
+                            <p class="text-gray-200 text-xs sm:text-sm truncate">${subText}</p>
                         </div>
                     </div>
-                    <div class="text-xl font-semibold text-white">
-                        ${statValue} ${label}
+                    <div class="flex-shrink-0 text-lg sm:text-xl font-semibold text-white ml-4 text-right">
+                        ${statValue} <span class="text-sm sm:text-lg">${label}</span>
                     </div>
                 </div>
             ` : `
-                <div class="flex items-center justify-between rounded-xl py-4 px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300">
-                    <img src="${imageClub || defaultImage}" alt="${name}" class="h-[100px] w-[100px] object-contain mr-6">
-                    <div class="flex-grow">
-                        <h1 class="text-xl font-semibold text-white">${name}</h1>
+                <div class="flex items-center rounded-xl p-4 sm:py-4 sm:px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300">
+                    <img src="${imageClub || defaultImage}" alt="${name}" class="h-[80px] w-[80px] sm:h-[100px] sm:w-[100px] object-contain mr-4 sm:mr-6">
+                    <div class="flex-grow min-w-0">
+                        <h1 class="text-lg sm:text-xl font-semibold text-white truncate">${name}</h1>
                     </div>
-                    <div class="text-xl font-semibold text-white">
-                        ${statValue} ${label}
+                    <div class="flex-shrink-0 text-lg sm:text-xl font-semibold text-white ml-4 text-right">
+                        ${statValue} <span class="text-sm sm:text-lg">${label}</span>
                     </div>
                 </div>
               `;
         }
 
-        // --- Fungsi Pengolahan Data ---
 
         function getTopPlayers(players, statKey) {
             const sortedPlayers = [...players].sort((a, b) => (b[statKey] || 0) - (a[statKey] || 0));
             return sortedPlayers;
         }
 
-        // Mengurutkan berdasarkan Klub (Menampilkan semua klub top-rank)
         function getTopClubs(players, statKey) {
             const clubStats = {};
 
@@ -151,7 +151,6 @@
             return clubArray;
         }
 
-        // --- Fungsi Utama Render ---
 
         function renderStats(players, filterType) {
             ['goals', 'curr_assists', 'curr_cleansheet'].forEach(statKey => {
@@ -169,7 +168,6 @@
             });
         }
 
-        // --- Fungsi Pengambilan Data AJAX ---
         async function loadStats() {
             if (allPlayersData.length > 0) {
                 renderStats(allPlayersData, currentFilter);
@@ -205,11 +203,9 @@
             }
         }
 
-        // --- Event Listeners untuk Filter ---
         function setFilter(filterType) {
             currentFilter = filterType;
             
-            // Update styling tombol
             const activeClass = ['text-blue-700', 'font-semibold', 'hover:text-blue-800'];
             const inactiveClass = ['text-gray-500', 'hover:text-white'];
             
@@ -234,7 +230,6 @@
         loadStats();
     });
 </script>
-
 
 {% include 'footer.html' %}
 {% endblock content %}

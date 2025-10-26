@@ -84,7 +84,7 @@
           <p class="text-xl text-white">Tidak ada pertandingan di Pekan {{ current_week }}.</p>
       {% endif %}
       </div>
-    </div>
+    </div> 
   
     <section id="stats">
       <div class="flex justify-between items-center mb-8 mt-24">
@@ -97,18 +97,20 @@
         </a>
       </div>
 
-      <div class="flex">
-        <div id="home-sidebar" class="w-[180px] mr-12 space-y-2">
-          <button data-stat="goals" class="stat-category-btn w-full text-left py-3 px-4 rounded-lg bg-blue-700 text-white font-semibold transition-colors">
-            Top Scorer
-          </button>
-          <button data-stat="curr_assists" class="stat-category-btn w-full text-left py-3 px-4 rounded-lg bg-transparent text-gray-400 hover:bg-[#333438] hover:text-white transition-colors">
-            Top Assist
-          </button>
-          <button data-stat="curr_cleansheet" class="stat-category-btn w-full text-left py-3 px-4 rounded-lg bg-transparent text-gray-400 hover:bg-[#333438] hover:text-white transition-colors">
-            Cleansheet
-          </button>
-        </div>
+      <div class="flex flex-col lg:flex-row">
+        <div id="home-sidebar" class="w-full lg:w-[180px] lg:mr-12 space-y-2 mb-6 lg:mb-0">
+                    <div class="flex justify-around lg:flex-col lg:justify-start gap-2">
+                        <button data-stat="goals" class="stat-category-btn flex-grow lg:flex-none text-center lg:text-left py-2 px-3 lg:py-3 lg:px-4 rounded-lg bg-blue-700 text-white font-semibold text-sm sm:text-base transition-colors">
+                            Top Scorer
+                        </button>
+                        <button data-stat="curr_assists" class="stat-category-btn flex-grow lg:flex-none text-center lg:text-left py-2 px-3 lg:py-3 lg:px-4 rounded-lg bg-transparent text-gray-400 hover:bg-[#333438] hover:text-white text-sm sm:text-base transition-colors">
+                            Top Assist
+                        </button>
+                        <button data-stat="curr_cleansheet" class="stat-category-btn flex-grow lg:flex-none text-center lg:text-left py-2 px-3 lg:py-3 lg:px-4 rounded-lg bg-transparent text-gray-400 hover:bg-[#333438] hover:text-white text-sm sm:text-base transition-colors">
+                            Cleansheet
+                        </button>
+                    </div>
+                </div>
 
         <div class="flex-grow">
           <div id="home-loading" class="bg-gray-500 rounded-lg p-10 text-center hidden">
@@ -208,22 +210,23 @@
             const subText = data.club;
             const imageClub = data.club_logo;
             const imagePemain = data.photo;
-            const imageSrc = imageClub || defaultImage;
+            const imgSrc = isClubView ? imageClub || defaultImage : imagePemain || defaultImage;
 
+            // Kelas responsif ditambahkan di sini
             return `
-                <div class="flex items-center justify-between rounded-xl py-4 px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300 mb-4">
-                    <img src="${isClubView ? imageClub || defaultImage : imagePemain || defaultImage}" alt="${name}" class="h-[100px] w-[100px] object-contain mr-4">
-                    <div class="flex-grow">
-                        <h1 class="text-lg font-semibold text-white">${name}</h1>
+                <div class="flex items-center justify-between rounded-xl py-3 px-4 sm:py-4 sm:px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300 mb-2 sm:mb-4">
+                    <img src="${imgSrc}" alt="${name}" class="h-16 w-16 sm:h-20 sm:w-20 object-contain rounded-md mr-3 sm:mr-4 flex-shrink-0">
+                    <div class="flex-grow min-w-0">
+                        <h1 class="text-base sm:text-xl font-semibold text-white truncate">${name}</h1>
                         ${!isClubView ? `
-                            <div class="flex items-center mt-4 space-x-2">
-                                <img src="${imageClub || defaultImage}" alt="${subText}" class="w-6 h-6 mr-2 object-contain">
-                                <p class="text-gray-200 text-sm truncate">${subText}</p>
+                            <div class="flex items-center mt-2 space-x-1 sm:space-x-2 min-w-0">
+                                <img src="${imageClub || defaultImage}" alt="${subText}" class="w-4 h-4 sm:w-5 sm:h-5 object-contain">
+                                <p class="text-gray-200 text-xs sm:text-sm truncate">${subText}</p>
                             </div>
                         ` : ''}
                     </div>
-                    <div class="text-lg font-semibold text-white ml-4 flex-shrink-0">
-                        ${statValue} ${label}
+                    <div class="text-base sm:text-xl font-semibold text-white ml-3 sm:ml-4 flex-shrink-0 text-right">
+                        ${statValue} <span class="text-sm md:text-lg">${label}</span>
                     </div>
                 </div>
             `;
