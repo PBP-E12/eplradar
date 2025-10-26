@@ -76,12 +76,30 @@
   
     <div class="flex justify-between items-center mt-24">
       <h2 class="text-xl font-semibold text-white">Profil Klub</h2>
-      <a href="#" class="text-sm text-gray-400 hover:text-white transition duration-200 flex items-center">Lihat Semua Profil
+      <a href="{% url 'clubs:club_list' %}" class="text-sm text-gray-400 hover:text-white transition duration-200 flex items-center">
+        Lihat Semua Profil
         <svg class="w-4 ml-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
         </svg>
       </a>
     </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
+      {% for club in clubs %}
+      <a href="{% url 'clubs:club_detail' club.nama_klub %}" 
+        class="bg-[#27272a] rounded-2xl overflow-hidden border border-[#3f3f46] hover:border-[#52525b] hover:shadow-xl transition-all duration-300 flex flex-col items-center p-6 text-center">
+        <div class="w-24 h-24 mb-4 bg-[#3f3f46] rounded-full flex items-center justify-center overflow-hidden">
+          <img src="{{ club.logo_url }}" alt="{{ club.nama_klub }}" class="w-20 h-20 object-contain">
+        </div>
+        <h3 class="text-lg font-bold text-white mb-1">{{ club.nama_klub }}</h3>
+        <p class="text-sm text-gray-400">{{ club.points }} poin</p>
+      </a>
+      {% empty %}
+      <p class="text-gray-400 col-span-full text-center py-10">Belum ada data klub.</p>
+      {% endfor %}
+    </div>
+
+
     
     <div class="flex justify-between items-center mt-24">
       <h2 class="text-xl font-semibold text-white">Berita Terbaru</h2>
