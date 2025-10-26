@@ -1,5 +1,5 @@
 {% for player in player_list %}
-<a href="{% url 'players:show_player_detail' player.id %}" class="player-card bg-gray-800 rounded-lg p-4 hover:bg-gray-750 transition block" data-player-id="{{ player.id }}">
+<a href="{% url 'players:show_player_detail' player.id %}" class="player-card rounded-lg p-4 hover:ring hover:ring-blue-500/50 transition block" style="background-color: #333438;" data-player-id="{{ player.id }}">
     <div class="flex items-center gap-4">
         <!-- Player Image -->
         <div class="w-20 h-20 flex-shrink-0">
