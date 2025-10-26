@@ -49,7 +49,6 @@ def club_list(request):
     
     return render(request, 'club_list.html', {'clubs': clubs})
 
-
 def club_detail(request, nama_klub):
     """Display detail for a specific club"""
     club = None
@@ -82,9 +81,22 @@ def club_detail(request, nama_klub):
     
     if not club:
         raise Http404("Club not found")
-    
+
     # Get players for this club
-    players = Player.objects.filter(team__nama_klub=nama_klub)
+    players_queryset = Player.objects.filter(team__nama_klub=nama_klub)
+    
+    # MODIFIKASI: Tambahkan player_filename ke setiap objek player
+    players_list = []
+    for player in players_queryset:
+        # Konversi nama pemain menjadi format filename: lowercase dan ganti spasi dengan underscore
+        player_filename = player.name.lower().replace(' ', '_')
+        
+        # Asumsikan 'player' adalah model instance, tambahkan atribut baru
+        player.image_filename = player_filename 
+        players_list.append(player)
+    
+    # Di sini, variabel 'players' akan menjadi players_list yang sudah di-annotate dengan image_filename
+    players = players_list
     
     # Get matches if available
     if MATCH_AVAILABLE and Match is not None:
