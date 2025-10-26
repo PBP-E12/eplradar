@@ -9,7 +9,6 @@ import os
 import json
 from django.conf import settings
 
-# Import Match defensively
 try:
     from matches.models import Match
     MATCH_AVAILABLE = True
@@ -59,7 +58,6 @@ def club_list_api(request):
     return JsonResponse({'data': clubs}, safe=False)
 
 
-# ===== COMMENT API ENDPOINTS =====
 
 def get_comments_api(request):
     """Get all comments"""
@@ -200,10 +198,8 @@ def club_detail(request, nama_klub):
     if not club:
         raise Http404("Club not found")
     
-    # Get players for this club
     players = Player.objects.filter(team__nama_klub=nama_klub)
     
-    # Get matches if available
     if MATCH_AVAILABLE and Match is not None:
         date_field = 'date' if hasattr(Match, 'date') else ('match_date' if hasattr(Match, 'match_date') else None)
         

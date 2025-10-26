@@ -6,7 +6,6 @@
 <div class="bg-[#18181b] text-white min-h-screen">
     <div class="max-w-[1400px] mx-auto px-5 pt-[140px] pb-[60px]">
         
-        <!-- Hero Banner -->
         <div class="my-10 rounded-2xl h-[560px] bg-cover bg-center flex items-center" 
              style="background-image: url('{% static "img/clubs.png" %}')">
             <div class="text-white pr-5 lg:pl-24">
@@ -23,11 +22,9 @@
             </div>
         </div>
         
-        <!-- Page Title & Filters -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <h1 class="text-4xl font-bold">Profil Klub Musim Ini</h1>
             
-            <!-- Filters (Only for logged in users) -->
             {% if user.is_authenticated %}
             <div class="flex gap-3 flex-wrap">
                 <input type="text" 
@@ -50,7 +47,6 @@
             {% endif %}
         </div>
         
-        <!-- Loading -->
         <div id="loading" class="hidden text-center py-20">
             <svg class="animate-spin h-12 w-12 text-indigo-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -59,15 +55,11 @@
             <p class="text-[#a1a1aa] mt-4">Loading clubs...</p>
         </div>
         
-        <!-- Error -->
         <div id="error" class="hidden text-center py-16 bg-[#27272a] rounded-2xl text-red-500 text-lg border border-red-900"></div>
         
-        <!-- Clubs Grid -->
         <div id="klub-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-            <!-- Will be populated by JavaScript -->
         </div>
 
-        <!-- Comments Section -->
         <div class="mt-20 border-t border-[#3f3f46] pt-12">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-3xl font-bold">Komentar Klub</h2>
@@ -86,7 +78,6 @@
                 {% endif %}
             </div>
 
-            <!-- Comments Loading -->
             <div id="comments-loading" class="hidden text-center py-10">
                 <svg class="animate-spin h-8 w-8 text-indigo-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -94,15 +85,12 @@
                 </svg>
             </div>
 
-            <!-- Comments List -->
             <div id="comments-container" class="space-y-4">
-                <!-- Will be populated by JavaScript -->
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Create/Edit Comment -->
 <div id="comment-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-[#27272a] rounded-2xl max-w-lg w-full p-8 border border-[#3f3f46]">
         <div class="flex justify-between items-center mb-6">
@@ -168,14 +156,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let commentsData = [];
     let editingCommentId = null;
     
-    // Helper function to escape HTML
+
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
-    
-    // Create club card HTML
+
     function createClubCard(club) {
         return `
             <a href="/clubs/${club.nama_klub}/" class="block no-underline text-inherit">
@@ -215,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
     
-    // Sort clubs (only if authenticated)
+
     function sortClubs(clubs, sortBy) {
         if (!isAuthenticated) return clubs;
         
@@ -237,7 +224,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Filter clubs by search (only if authenticated)
     function filterClubs(clubs, searchTerm) {
         if (!isAuthenticated || !searchTerm) return clubs;
         
@@ -246,7 +232,6 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     }
     
-    // Render clubs
     function renderClubs() {
         let displayClubs = allClubs;
         
@@ -270,7 +255,6 @@ document.addEventListener('DOMContentLoaded', function() {
         gridEl.innerHTML = displayClubs.map(club => createClubCard(club)).join('');
     }
     
-    // Load clubs from API
     async function loadClubs() {
         loadingEl.classList.remove('hidden');
         errorEl.classList.add('hidden');
@@ -290,7 +274,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('Tidak ada data klub.');
             }
             
-            // Populate club select in modal
             if (inputClub) {
                 inputClub.innerHTML = '<option value="">Pilih klub...</option>' + 
                     allClubs.map(club => `<option value="${club.nama_klub}">${club.nama_klub}</option>`).join('');
@@ -306,7 +289,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Create comment card HTML
     function createCommentCard(comment) {
         return `
             <div class="bg-[#27272a] border border-[#3f3f46] rounded-xl p-6" data-comment-id="${comment.id}">
@@ -349,7 +331,6 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
     
-    // Load comments
     async function loadComments() {
         commentsLoadingEl.classList.remove('hidden');
         commentsContainerEl.innerHTML = '';
@@ -376,7 +357,6 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 commentsContainerEl.innerHTML = commentsData.map(comment => createCommentCard(comment)).join('');
                 
-                // Attach event listeners to edit/delete buttons
                 document.querySelectorAll('.btn-edit-comment').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const commentId = parseInt(this.dataset.commentId);
@@ -406,7 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Open modal for create
+
     function openCreateModal() {
         editingCommentId = null;
         modalTitle.textContent = 'Tambah Komentar';
@@ -416,8 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btnSubmit.textContent = 'Simpan';
         commentModal.classList.remove('hidden');
     }
-    
-    // Open modal for edit
+
     function editComment(id, clubName, comment) {
         editingCommentId = id;
         modalTitle.textContent = 'Edit Komentar';
@@ -428,14 +407,12 @@ document.addEventListener('DOMContentLoaded', function() {
         commentModal.classList.remove('hidden');
     }
     
-    // Close modal
     function closeModal() {
         commentModal.classList.add('hidden');
         editingCommentId = null;
         commentForm.reset();
     }
     
-    // Get CSRF token
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -451,7 +428,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return cookieValue;
     }
     
-    // Submit comment (create or update)
     async function submitComment(e) {
         e.preventDefault();
         
@@ -491,7 +467,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeModal();
                 loadComments();
                 
-                // Show success message
                 showNotification(editingCommentId ? 'Komentar berhasil diupdate!' : 'Komentar berhasil ditambahkan!', 'success');
             } else {
                 throw new Error(result.error || 'Gagal menyimpan komentar');
@@ -505,7 +480,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Delete comment
     async function deleteComment(commentId) {
         if (!confirm('Apakah Anda yakin ingin menghapus komentar ini?')) {
             return;
@@ -533,7 +507,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Show notification
     function showNotification(message, type = 'success') {
         const notification = document.createElement('div');
         notification.className = `fixed top-24 right-5 px-6 py-4 rounded-lg font-medium shadow-lg z-50 transition-all ${
@@ -548,7 +521,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
     
-    // Event listeners
     if (searchInput) searchInput.addEventListener('input', renderClubs);
     if (sortSelect) sortSelect.addEventListener('change', renderClubs);
     
@@ -557,14 +529,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnCancel) btnCancel.addEventListener('click', closeModal);
     if (commentForm) commentForm.addEventListener('submit', submitComment);
     
-    // Close modal on outside click
     commentModal.addEventListener('click', function(e) {
         if (e.target === commentModal) {
             closeModal();
         }
     });
     
-    // Initial load
     loadClubs();
     loadComments();
 });
