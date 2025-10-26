@@ -54,9 +54,14 @@
             {% for player in players %}
             <div class="player-card">
                 <div class="player-avatar">
-                    <img src="{{ player.photo|default:'/static/img/no-image.png' }}" 
-                         alt="{{ player.name }}"
-                         onerror="this.src='{% static 'img/no-image.png' %}'">
+                    {% if player.photo %}
+                        <img src="{{ player.photo.url }}" 
+                             alt="{{ player.name }}"
+                             onerror="this.src='{% static 'img/no-image.png' %}'">
+                    {% else %}
+                        <img src="{% static 'img/no-image.png' %}" 
+                             alt="{{ player.name }}">
+                    {% endif %}
                 </div>
                 <div class="player-info">
                     <h3 class="player-name">{{ player.name }}</h3>
