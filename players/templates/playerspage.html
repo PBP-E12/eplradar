@@ -3,29 +3,27 @@
 
 {% block content %}
 {% include 'navbar.html' %}
-<div class="bg-[#1d1f22] container mx-auto px-4 py-8">
+<div class="bg-[#1d1f22] w-full pt-10 min-h-screen scroll-smooth">
     <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
         <!-- Hero Section -->
-        <div class="relative rounded-lg mb-8 h-[560px] overflow-hidden">
-            <!-- Background Image with Overlay -->
-            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{% static "img/playershero.png" %}')">
-                <div class="absolute inset-0 bg-black bg-opacity-60"></div>
-            </div>
-            
-            <!-- Hero Content -->
-            <div class="relative h-full flex flex-col items-center justify-center text-center px-4">
-                <h1 class="text-white text-5xl font-bold mb-4">Pemain</h1>
-                <p class="text-gray-200 text-lg mb-6 max-w-2xl">
-                    Dapatkan informasi terkait pemain favoritmu di liga inggris musim ini
+        <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex items-center pl-24" style="background-image: url('{% static "img/playershero.png" %}')">
+            <div class="text-white">
+                <h1 class="text-6xl font-bold text-white mb-4">Pemain</h1>
+                <p class="text-xl text-gray-200 max-w-md mb-8">
+                Dapatkan informasi terkait pemain favoritmu di liga inggris musim ini
                 </p>
-                <a href="#players-section" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition">
-                    <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
-                    </svg>Lihat seluruh pemain
+            
+                <a href="#players-section" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
+                <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
+                </svg>
+                Lihat seluruh pemain
                 </a>
             </div>
         </div>
     </div>
+    
+    
     <!-- Players Section -->
     <div class="mb-8" id="players-section">
         <div class="flex justify-between items-center mb-6">
