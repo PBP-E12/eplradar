@@ -54,8 +54,8 @@
             {% for player in players %}
             <div class="player-card">
                 <div class="player-avatar">
-                    {% if player.photo %}
-                        <img src="{{ player.photo.url }}" 
+                    {% if player.profile_picture_url %}
+                        <img src="{{ player.profile_picture_url.url }}" 
                              alt="{{ player.name }}"
                              onerror="this.src='{% static 'img/no-image.png' %}'">
                     {% else %}
