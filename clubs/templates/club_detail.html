@@ -54,10 +54,9 @@
             {% for player in players %}
             <div class="player-card">
                 <div class="player-avatar">
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="1.5">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                    </svg>
+                    <img src="{{ player.photo|default:'/static/img/no-image.png' }}" 
+                         alt="{{ player.name }}"
+                         onerror="this.src='{% static 'img/no-image.png' %}'">
                 </div>
                 <div class="player-info">
                     <h3 class="player-name">{{ player.name }}</h3>
@@ -78,6 +77,8 @@
         </div>
     </div>
 </div>
+
+{% include 'footer.html' %}
 
 <style>
     body {
@@ -151,14 +152,13 @@
     }
     
     .stat-item {
-    display: flex;
-    flex-direction: row; /* from column → row */
-    justify-content: space-between;
-    align-items: center;
-    width: 180px; /* optional: controls how far apart label and value are */
-    gap: 12px; /* optional: adds a bit of space between them */
-}
-
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 180px;
+        gap: 12px;
+    }
     
     .stat-label-small {
         font-size: 0.875rem;
@@ -247,6 +247,13 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        overflow: hidden;
+    }
+    
+    .player-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
     
     .player-info {
