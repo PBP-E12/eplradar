@@ -13,7 +13,7 @@ def show_player_detail(request, id):
             'name': player.name,
             'position': player.position,
             'team_name': player.team.nama_klub,
-            'profile_picture_url': player.profile_picture_url or '',
+            'profile_picture_url': player.profile_picture_url.url or '',
             'citizenship': player.citizenship,
             'age': player.age,
             'curr_goals': player.curr_goals,
