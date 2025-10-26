@@ -1,0 +1,47 @@
+{% if matches %}
+    {% regroup matches by match_date|date:"Ymd" as matches_by_date %}
+    
+    {% for matches in matches_by_date %}
+    <div class="flex flex-col justify-start items-center self-stretch flex-grow-0 flex-shrink-0 relative gap-6 w-full">
+        <p class="self-stretch flex-grow-0 flex-shrink-0 w-full text-xl text-center text-white">
+            {{ matches.list.0.match_date|date:"l, d F Y" }}
+        </p>
+        
+        <div class="flex flex-col justify-center items-center w-full gap-5">
+            {% for match in matches.list %}
+            <div class="flex justify-between items-center w-full max-w-2xl lg:max-w-4xl">
+                
+                <div class="flex justify-end items-center flex-grow-0 flex-shrink-0 w-[145px] gap-3">
+                    <p class="flex-grow-0 flex-shrink-0 text-xl lg:text-2xl font-medium text-right text-white">
+                        {{ match.home_team }}
+                    </p>
+                    <img
+                        src="/static/img/club-matches/{{ match.home_team }}.png"
+                        class="flex-grow-0 flex-shrink-0 w-10 lg:w-[41px] h-10 lg:h-12 object-contain"
+                    />
+                </div>
+                
+                <div class="flex justify-center items-center flex-grow-0 flex-shrink-0 px-8 py-3 rounded-2xl bg-[#3247b1] self-stretch">
+                    <p class="flex-grow-0 flex-shrink-0 text-xl font-medium text-left text-white">
+                        VS
+                    </p>
+                </div>
+                
+                <div class="flex justify-start items-center flex-grow-0 flex-shrink-0 w-[153px] gap-3">
+                    <img
+                        src="/static/img/club-matches/{{ match.away_team }}.png"
+                        class="flex-grow-0 flex-shrink-0 w-10 lg:w-[41px] h-10 lg:h-12 object-contain"
+                    />
+                    <p class="flex-grow-0 flex-shrink-0 text-xl lg:text-2xl font-medium text-left text-white">
+                        {{ match.away_team }}
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+{% else %}
+    <p class="text-xl text-white">Tidak ada pertandingan di Pekan {{ current_week }}.</p>
+{% endif %}
