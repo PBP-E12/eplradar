@@ -7,18 +7,23 @@ from django.contrib import messages
 import datetime
 from news.models import News
 from clubs.models import Club 
+from matches.models import Match
 from django.templatetags.static import static
 import csv, os
 from django.conf import settings
+from django.db.models import Max
 
 # Create your views here.
 def show_main(request):
     news_terbaru = News.objects.order_by('-created_at')[:3]
     clubs = read_clubs_for_home(limit=4)
+    matches = read_matches_for_home
+    
     context = {
         'title': 'EPLRadar',
         'news_terbaru': news_terbaru,
         'clubs': clubs,
+        'matches': matches,
     }
     return render(request, "main.html", context)
 
@@ -88,3 +93,9 @@ def read_clubs_for_home(limit=4):
         print("Error reading clubs for home:", e)
 
     return clubs[:limit]
+
+def read_matches_for_home():
+    latest_week_value = Match.objects.aggregate(Max('week'))['week__max']
+    latest_match = Match.objects.filter(week=latest_week_value)
+    
+    return latest_match
