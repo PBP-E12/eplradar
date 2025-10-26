@@ -114,7 +114,7 @@
                 </p>
                 <div class="flex items-center space-x-4 mb-6">
                     <select id="weekFilter" 
-                        class="flex-grow-0 flex-shrink-0 relative bg-[#333438] text-white px-8 py-3 rounded-2xl border border-white text-xl font-medium cursor-pointer focus:outline-none"
+                        class="bg-gray-800 text-white px-4 py-2 rounded-lg text-xl cursor-pointer focus:outline-none"
                     >
                         {% for week in week_range %}
                             <option value="{{ week }}" {% if week == current_week %}selected{% endif %}>
