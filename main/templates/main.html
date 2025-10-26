@@ -139,7 +139,7 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
       {% for club in clubs %}
       <a href="{% url 'clubs:club_detail' club.nama_klub %}" 
-        class="bg-[#27272a] rounded-2xl overflow-hidden border border-[#3f3f46] hover:border-[#52525b] hover:shadow-xl transition-all duration-300 flex flex-col items-center p-6 text-center">
+        class="bg-[#333438] rounded-2xl overflow-hidden border border-[#3f3f46] hover:border-[#52525b] hover:shadow-xl transition-all duration-300 flex flex-col items-center p-6 text-center">
         <div class="w-24 h-24 mb-4 bg-[#3f3f46] rounded-full flex items-center justify-center overflow-hidden">
           <img src="{{ club.logo_url }}" alt="{{ club.nama_klub }}" class="w-20 h-20 object-contain">
         </div>
