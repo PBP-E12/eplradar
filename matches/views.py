@@ -23,11 +23,15 @@ def show_matches(request):
         
     matches_in_week = Match.objects.filter(week=current_week).order_by('match_date')
 
-    clubs = sorted(
-        Club.objects.all(), 
-        key=lambda x: x.points, 
-        reverse=True
-    )
+    clubs = []
+    request_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+    
+    if not request_ajax:
+        clubs = sorted(
+            Club.objects.all(), 
+            key=lambda x: x.points, 
+            reverse=True
+        )
     
     context = {
         'current_week': current_week,
@@ -42,4 +46,7 @@ def show_matches(request):
         'clubs': clubs,
     }
     
-    return render(request, 'show_matches.html', context)
+    if request_ajax:
+        return render(request, 'show_matches_ajax.html', context)
+    else:
+        return render(request, 'show_matches.html', context)

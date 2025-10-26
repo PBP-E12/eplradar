@@ -3,13 +3,12 @@
 {% block content %}
 {% include 'navbar.html' %}
 
-<div class="container-custom bg-[]">
-    <h1 class="page-title">Profil Klub Musim Ini</h1>
-
-        <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex items-center justify-end" 
-             style="background-image: url('{% static "img/clubs.png" %}')">
+<div class="container-custom">
+    
+    <div class="my-10 rounded-2xl h-[560px] bg-cover bg-center flex items-center justify-first" 
+    style="background-image: url('{% static "img/clubs.png" %}')">
             
-            <div class="text-white pr-20 lg:pr-24">
+            <div class="text-white pr-20 lg:pl-24">
                 <h1 class="text-6xl font-bold text-white mb-4">
                     Klub
                 </h1>
@@ -25,13 +24,14 @@
             </div>
         </div>
     
+    <h1 class="page-title">Profil Klub Musim Ini</h1>
     <div id="klub-list" class="clubs-grid">
         {% for club in clubs %}
         <a href="{% url 'clubs:club_detail' club.nama_klub %}" class="club-card-link">
             <div class="club-card">
                 <div class="club-card-inner">
                     <div class="club-logo-container">
-                        <img src="{% static 'img/club/' %}{{ club.logo_filename }}.png" 
+                        <img src="/static/img/club/{{ club.nama_klub }}.png"
                             class="club-logo" 
                             alt="{{ club.nama_klub }}">
                     </div>
@@ -67,6 +67,7 @@
         {% endfor %}
     </div>
 </div>
+{% include 'footer.html' %}
 
 <style>
     body {
