@@ -5,6 +5,8 @@ from clubs import views as club_views
 from clubs.models import Club
 import json
 import os
+import tempfile
+import shutil
 
 
 class MockClub:
@@ -55,16 +57,20 @@ class ClubURLsTest(TestCase):
 class ClubViewsTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
-        self.csv_path = os.path.join(os.getcwd(), 'data', 'clubs.csv')
-        os.makedirs(os.path.dirname(self.csv_path), exist_ok=True)
+        
+        # Buat temporary directory untuk testing
+        self.test_dir = tempfile.mkdtemp()
+        self.csv_path = os.path.join(self.test_dir, 'clubs.csv')
+        
+        # Buat CSV untuk testing
         with open(self.csv_path, 'w', encoding='utf-8') as f:
             f.write('Club_name,Win_count,Draw_count,Lose_count\n')
             f.write('Arsenal,10,5,3\n')
             f.write('Chelsea,8,6,4\n')
 
     def tearDown(self):
-        if os.path.exists(self.csv_path):
-            os.remove(self.csv_path)
+        # Hapus seluruh temporary directory
+        shutil.rmtree(self.test_dir)
 
     def test_club_list_renders_successfully(self):
         request = self.factory.get('/clubs/')
