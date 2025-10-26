@@ -23,8 +23,7 @@ def club_detail(request, nama_klub):
     club = Club.objects.all()
         
     # Get players for this club
-    nama_klub = Club.objects.filter(nama_klub=nama_klub)
-    players = Player.objects.filter(team=nama_klub)
+    players = Player.objects.filter(team__nama_klub=nama_klub)
     
     # Get matches if available
     if MATCH_AVAILABLE and Match is not None:

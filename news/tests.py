@@ -1,4 +1,3 @@
-import json
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -168,7 +167,7 @@ class NewsViewTest(TestCase):
 
     def test_delete_news_requires_login(self):
         response = self.client.post(self.delete_url, {'_method': 'DELETE'})
-        self.assertEqual(response.status_code, 302) #
+        self.assertEqual(response.status_code, 302) 
     def test_delete_news_by_owner(self):
         self.client.login(username='user1', password='password123')
         news_pk = self.news1.pk
