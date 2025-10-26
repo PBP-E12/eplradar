@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="bg-[#1d1f22] w-full pt-10 min-h-screen scroll-smooth">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 xl:px-20 py-8">
+        <h1 class="text-3xl font-bold text-white my-16">Filter Jumlah Gol</h1>
+
+        <div class="flex justify-end mb-6">
+            <button onclick="showJumlahGolModal()" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                Tambah Data Gol
+            </button>
+        </div>
+
+        <div id="loading" class="text-center text-gray-400 p-10">Memuat data gol...</div>
+        <div id="error" class="hidden text-center text-red-500 font-medium p-10"></div>
+        
+        <div id="gol-list-container" class="space-y-4">
+            </div>
+
+    </div>
+</div>
+
+{% include 'jumlah_gol_modal.html' %} 
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const golListContainer = document.getElementById('gol-list-container');
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
+    
+    const API_LIST_URL = "{% url 'stats:list_gol_api' %}"; 
+    const API_BASE_URL = "/stats/api/gol/"; 
+
+    function createGolItem(gol) {
+        const item = document.createElement('div');
+        item.className = 'flex items-center justify-between p-4 bg-[#333438] rounded-xl shadow-lg';
+        item.setAttribute('data-gol-id', gol.id);
+
+        item.innerHTML = `
+            <div>
+                <p class="text-lg font-semibold text-white">Data Gol (UUID: ${gol.id.substring(0, 8)}...)</p>
+                <p class="text-3xl text-blue-400 font-bold">${gol.jumlahGol} <span class="text-base text-gray-400">Gol</span></p>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="editGol('${gol.id}')" class="text-yellow-400 hover:text-yellow-500 transition-colors p-2 rounded-full bg-gray-700/50">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                </button>
+                <button onclick="deleteGol('${gol.id}')" class="text-red-400 hover:text-red-500 transition-colors p-2 rounded-full bg-gray-700/50">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </div>
+        `;
+        return item;
+    }
+
+    async function loadJumlahGolData() {
+        golListContainer.innerHTML = '';
+        loadingEl.classList.remove('hidden');
+        errorEl.classList.add('hidden');
+        errorEl.textContent = '';
+
+        try {
+            const response = await fetch(API_LIST_URL);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            
+            if (!data || data.length === 0) {
+                golListContainer.innerHTML = '<p class="text-center text-gray-500 p-10">Tidak ada data gol yang tersedia. Silakan tambahkan satu.</p>';
+                return;
+            }
+            
+            data.forEach(gol => {
+                golListContainer.appendChild(createGolItem(gol));
+            });
+
+        } catch (error) {
+            errorEl.classList.remove('hidden');
+            errorEl.textContent = 'Gagal memuat data gol: ' + error.message;
+        } finally {
+            loadingEl.classList.add('hidden');
+        }
+    }
+    
+    async function editGol(golId) {
+        try {
+            const response = await fetch(`${API_BASE_URL}${golId}/`); 
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const golData = await response.json();
+            showJumlahGolModal(golData);
+        } catch (error) {
+            console.error("Gagal memuat data gol untuk edit:", error);
+            alert("Gagal memuat data untuk edit.");
+        }
+    }
+
+    async function deleteGol(golId) {
+        if (!confirm('Anda yakin ingin menghapus data gol ini?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}delete/${golId}/`, {
+                method: 'DELETE',
+                headers: { "X-CSRFToken": getCookie('csrftoken') },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            loadJumlahGolData();
+            console.log('Gol berhasil dihapus');
+        } catch (error) {
+            console.error('Gagal menghapus gol:', error);
+            errorEl.classList.remove('hidden');
+            errorEl.textContent = 'Gagal menghapus data: ' + error.message;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadJumlahGolData);
+</script>
+
+{% include 'footer.html' %}
+{% endblock content %}
