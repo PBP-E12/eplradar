@@ -23,6 +23,24 @@
             </div>
         </div>
 
+        <div id="favorite-box" class="lg:mb-8 lg:p-8 mb-4 p-4 rounded-xl bg-[#2b2c2f] text-white">
+            {% if user.is_authenticated %}
+            <h2 class="text-xl font-semibold mb-4">Pemain Favorit Saya</h2>
+
+            <input id="fav-search" type="text" placeholder="Cari pemain..."
+                class="w-full p-2 rounded mb-3 bg-[#3a3b3e] text-white">
+            <div id="fav-search-results" class="mb-4"></div>
+
+            <div id="favorite-list" class="space-y-3"></div>
+
+            {% else %}
+            <div class="text-center py-6">
+                <p class="text-gray-300 mb-2">Login untuk menambahkan pemain favorit</p>
+                <a href="/login/" class="px-4 py-2 bg-blue-600 rounded-lg">Login</a>
+            </div>
+            {% endif %}
+        </div>
+
         <div id="statistik-content" class="flex justify-between sm:justify-center items-center mb-8 p-4 pt-12 lg:px-0">
             <div class="flex space-x-8 sm:space-x-12 lg:space-x-20">
                 <a id="filter-klub" class="text-blue-700 font-semibold text-xl sm:text-2xl px-2 py-2 transition-colors hover:text-blue-800 cursor-pointer">
@@ -44,6 +62,8 @@
 
         <div id="error" class="hidden text-center text-red-600 font-medium"></div>
 
+
+
         <div id="stats-container" class="mt-8 sm:mt-12">
             <h2 class="text-xl sm:text-2xl font-semibold text-white mb-6">Top Scorer</h2>
             <div id="top-scorer-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10 sm:mb-12"></div>
@@ -53,20 +73,6 @@
             
             <h2 class="text-xl sm:text-2xl font-semibold text-white mb-6">Clean Sheet</h2>
             <div id="clean-sheet-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-        </div>
-
-        <div class="flex justify-end my-6">
-            {% if user.is_authenticated %}
-                <a href="{% url 'stats:manage_gol_page' %}" 
-                class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                    Tambah Filter Gol
-                </a>
-            {% else %}
-                <p class="text-gray-400 text-lg">Login untuk mengelola filter gol.</p>
-            {% endif %}
         </div>
     </div>
 </div>
@@ -243,6 +249,181 @@
         setFilter(currentFilter);
         loadStats();
     });
+
+    {% if user.is_authenticated %}
+
+    let favoritePlayerIds = new Set();
+
+    // LOAD FAVORITES
+    async function loadFavorites() {
+        const res = await fetch("/stats/api/favorite/list/");
+        const data = await res.json();
+
+        favoritePlayerIds = new Set(data.favorites.map(f => f.player_id));
+
+        renderFavorites(data.favorites);
+    }
+
+    // RENDER LIST FAVORIT
+    function renderFavorites(items) {
+        const box = document.getElementById("favorite-list");
+        box.innerHTML = items.map(f => `
+            <div class="flex items-center bg-[#3a3b3e] p-4 rounded-lg">
+                <img src="${f.photo}" class="w-16 h-16 rounded mr-2 lg:mr-6">
+
+                <div class="flex-grow">
+                    <p class="font-semibold">${f.name}</p>
+                    <p class="text-sm text-gray-300">${f.club}</p>
+
+                    <div class="mt-2">
+                        <input data-id="${f.fav_id}"
+                            maxlength="150"
+                            value="${f.reason}"
+                            placeholder="Note (max 150 karakter)"
+                            class="fav-reason p-2 w-full rounded bg-[#2b2c2f] text-sm">
+
+                        <button data-id="${f.fav_id}"
+                                class="save-reason mt-3 bg-blue-600 px-2 py-1 rounded text-sm hidden">
+                            Save
+                        </button>
+
+                        <span class="save-success text-green-400 text-sm hidden">Berhasil disimpan!</span>
+
+                    </div>
+                </div>
+
+                <button class="ml-2 lg:mx-6 text-red-400 fav-delete" data-id="${f.player_id}">Hapus</button>
+            </div>
+        `).join("");
+    }
+
+    document.addEventListener("input", function(e) {
+        if (e.target.classList.contains("fav-reason")) {
+            const id = e.target.dataset.id;
+            const saveBtn = document.querySelector(`button.save-reason[data-id="${id}"]`);
+            const successMsg = saveBtn.parentElement.querySelector(".save-success");
+
+            saveBtn.classList.remove("hidden");
+            successMsg.classList.add("hidden");
+        }
+    });
+
+
+    document.addEventListener("click", async function(e) {
+        if (e.target.classList.contains("save-reason")) {
+            const favId = e.target.dataset.id;
+            const input = document.querySelector(`input.fav-reason[data-id="${favId}"]`);
+            const reason = input.value;
+
+            const res = await fetch("/stats/api/favorite/update-reason/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ fav_id: favId, reason })
+            });
+
+            if (res.ok) {
+                const saveBtn = e.target;
+                const successMsg = saveBtn.parentElement.querySelector(".save-success");
+
+                saveBtn.classList.add("hidden");
+                successMsg.classList.remove("hidden");
+
+                setTimeout(() => {
+                    successMsg.classList.add("hidden");
+                }, 1500);
+            }
+        }
+    });
+
+
+    // DELETE FAVORITE
+    document.addEventListener("click", async function(e) {
+        if (e.target.classList.contains("fav-delete")) {
+            const playerId = e.target.dataset.id;
+            await fetch("/stats/api/favorite/toggle/", {
+                method: "POST",
+                headers: {"Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}"},
+                body: JSON.stringify({ player_id: playerId })
+            });
+            loadFavorites();
+        }
+    });
+
+    // SEARCH PLAYER UNTUK ADD FAVORITE
+    document.getElementById("fav-search").addEventListener("input", async function() {
+        const q = this.value;
+        if (q.length < 2) return;
+
+        const res = await fetch(`/stats/api/player/search/?q=${q}`);
+        const data = await res.json();
+
+        const box = document.getElementById("fav-search-results");
+        box.innerHTML = data.players.map(p => {
+            const isFav = favoritePlayerIds.has(p.id);
+            return `
+                <div class="p-2 bg-[#3a3b3e] mt-1 rounded flex justify-between items-center">
+                    <span>${p.name} - ${p.club}</span>
+                    ${
+                        isFav
+                        ? `<span class="text-gray-400 text-sm">Sudah Ada</span>`
+                        : `<button class="add-fav bg-blue-600 px-2 py-1 rounded text-sm" data-id="${p.id}">+</button>`
+                    }
+                </div>
+            `;
+        }).join("");
+
+    });
+
+    document.addEventListener("click", function(e) {
+        const searchBox = document.getElementById("fav-search-results");
+        const searchInput = document.getElementById("fav-search");
+
+        if (!searchBox.contains(e.target) && e.target !== searchInput) {
+            searchBox.innerHTML = "";
+        }
+    });
+
+
+    // --- ADD FAVORITE (dengan proteksi double-click) ---
+    document.addEventListener("click", async function(e) {
+        if (e.target.classList.contains("add-fav")) {
+            const btn = e.target;
+            const playerId = btn.dataset.id;
+
+            // 🔒 Kunci tombol agar tidak bisa diklik lagi
+            btn.disabled = true;
+            btn.innerText = "...";
+
+            // 🔥 Update state favorit secara lokal (agar UI tidak toggle lagi)
+            favoritePlayerIds.add(parseInt(playerId));
+
+            // 🔄 Ubah tampilan menjadi "Sudah Ada" tanpa nunggu server
+            btn.outerHTML = `<span class="text-gray-400 text-sm">Sudah Ada</span>`;
+
+            // --- Kirim request ke backend ---
+            await fetch("/stats/api/favorite/toggle/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ player_id: playerId })
+            });
+
+            // 🔄 Sinkronkan ulang dengan database (jaga konsistensi)
+            loadFavorites();
+        }
+    });
+
+
+    // INITIAL LOAD
+    loadFavorites();
+
+    {% endif %}
+
 </script>
 
 {% include 'footer.html' %}
