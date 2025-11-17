@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-*hlsrb51tra@cn$x(^ngh=n$7711*r5hu1!@#6)p^htxis6l$b
 
 # SECURITY WARNING: don't run with debug turned on in production!
 PRODUCTION = os.getenv('PRODUCTION', 'False').lower() == 'true'
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "raihan-maulana41-eplradar.pbp.cs.ui.ac.id"]
 CSRF_TRUSTED_ORIGINS = ["https://raihan-maulana41-eplradar.pbp.cs.ui.ac.id"]
