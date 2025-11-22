@@ -1,7 +1,12 @@
 from django.shortcuts import render
 from django.db.models import Max, Min
-from .models import Match
+from django.utils import timezone
+from django.http import JsonResponse
+from .models import Match, ScorePrediction
 from clubs.models import Club
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST, require_http_methods
+from django.contrib.auth.decorators import login_required
 
 def show_matches(request):
     week_stats = Match.objects.aggregate(Min('week'), Max('week'))
@@ -26,12 +31,13 @@ def show_matches(request):
     clubs = []
     request_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
     
-    if not request_ajax:
-        clubs = sorted(
-            Club.objects.all(), 
-            key=lambda x: x.points, 
-            reverse=True
-        )
+    all_predictions = ScorePrediction.objects.all().select_related('match', 'user').order_by('-created_at')
+    
+    clubs = sorted(
+        Club.objects.all(), 
+        key=lambda x: x.points, 
+        reverse=True
+    )
     
     context = {
         'current_week': current_week,
@@ -44,9 +50,60 @@ def show_matches(request):
         
         'matches': matches_in_week,
         'clubs': clubs,
+        'predictions': all_predictions,
     }
     
     if request_ajax:
         return render(request, 'show_matches_ajax.html', context)
     else:
         return render(request, 'show_matches.html', context)
+
+@login_required
+@require_POST
+def add_prediction_ajax(request):
+    match_id = request.POST.get('match_id')
+    home_score = request.POST.get('home_score_prediction')
+    away_score = request.POST.get('away_score_prediction')
+    
+    try:
+        match = Match.objects.get(id=match_id)
+    except Match.DoesNotExist:
+        return JsonResponse({'message': 'Pertandingan tidak ditemukan!'}, status=404)
+    
+    # Cek apakah user sudah pernah prediksi match ini
+    if ScorePrediction.objects.filter(user=request.user, match=match).exists():
+        return JsonResponse({'message': 'Kamu sudah membuat prediksi untuk pertandingan ini!'}, status=400)
+    
+    prediction = ScorePrediction.objects.create(
+        user=request.user,
+        match=match,
+        home_score_prediction=home_score,
+        away_score_prediction=away_score,
+    )
+    
+    return JsonResponse({'message': 'Prediksi skor berhasil disimpan!'})
+
+@login_required
+@require_POST
+def update_prediction_ajax(request, prediction_id):
+    try:
+        prediction = ScorePrediction.objects.get(id=prediction_id, user=request.user)
+    except ScorePrediction.DoesNotExist:
+        return JsonResponse({'message': 'Prediksi tidak ditemukan!'}, status=404)
+    
+    prediction.home_score_prediction = request.POST.get('home_score_prediction')
+    prediction.away_score_prediction = request.POST.get('away_score_prediction')
+    prediction.save()
+    
+    return JsonResponse({'message': 'Prediksi berhasil diupdate!'})
+
+@login_required
+@require_POST
+def delete_prediction_ajax(request, prediction_id):
+    try:
+        prediction = ScorePrediction.objects.get(id=prediction_id, user=request.user)
+    except ScorePrediction.DoesNotExist:
+        return JsonResponse({'message': 'Prediksi tidak ditemukan!'}, status=404)
+    
+    prediction.delete()
+    return JsonResponse({'message': 'Prediksi berhasil dihapus!'})

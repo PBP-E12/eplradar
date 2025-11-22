@@ -4,11 +4,12 @@
 {% block content %}
 
 {% include 'navbar.html' %}
+{% include 'toast.html' %}
 
 <div class="bg-[#1d1f22] w-full pt-10 min-h-screen">
-    
     <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
         
+        <!-- Hero Section -->
         <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex items-center pl-4 sm:pl-12 lg:pl-20" 
              style="background-image: url('{% static "img/match.png" %}')">
             <div class="text-white">
@@ -16,9 +17,8 @@
                 <p class="text-base sm:text-xl text-gray-200 max-w-xs sm:max-w-md mb-6 sm:mb-8">
                     Dapatkan informasi terkait pertandingan dan klasemen tim favoritmu di musim ini!
                 </p>
-            
                 <a href="#jadwal-pertandingan" class="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all">
-                    <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
                     </svg>
                     Lihat Jadwal Pertandingan
@@ -26,6 +26,7 @@
             </div>
         </div>
         
+        <!-- Klasemen Section -->
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-semibold text-white">Klasemen</h2>
         </div>
@@ -33,9 +34,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 lg:gap-4">
             <div class="bg-[#333438] rounded-2xl px-4 sm:px-6 lg:px-12 py-4 sm:py-6 lg:py-9 overflow-x-auto">
                 <div class="min-w-[500px] sm:min-w-[600px]">
-                    
                     <div class="flex items-start justify-between">
-                        
                         <div class="flex flex-col items-start flex-1">
                             <div class="h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">
                                 <p class="text-base sm:text-lg lg:text-xl text-[#b0b0b0]">Klasemen</p>
@@ -52,7 +51,6 @@
                         </div>
                         
                         <div class="flex items-center justify-end gap-4 sm:gap-6 lg:gap-10 xl:gap-12">
-                            
                             <div class="flex flex-col items-end justify-start">
                                 <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">MP</p>
                                 <div class="flex flex-col items-end">
@@ -61,7 +59,6 @@
                                     {% endfor %}
                                 </div>
                             </div>
-                            
                             <div class="flex flex-col items-end justify-start">
                                 <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">W</p>
                                 <div class="flex flex-col items-end">
@@ -70,7 +67,6 @@
                                     {% endfor %}
                                 </div>
                             </div>
-                            
                             <div class="flex flex-col items-end justify-start">
                                 <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">D</p>
                                 <div class="flex flex-col items-end">
@@ -79,7 +75,6 @@
                                     {% endfor %}
                                 </div>
                             </div>
-                            
                             <div class="flex flex-col items-end justify-start">
                                 <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">L</p>
                                 <div class="flex flex-col items-end">
@@ -88,7 +83,6 @@
                                     {% endfor %}
                                 </div>
                             </div>
-                            
                             <div class="flex flex-col items-end justify-start">
                                 <p class="text-sm sm:text-base lg:text-lg xl:text-xl font-semibold text-[#b0b0b0] h-[50px] sm:h-[60px] lg:h-[68px] flex items-center">P</p>
                                 <div class="flex flex-col items-end">
@@ -103,15 +97,14 @@
             </div>
         </div>
         
+        <!-- Match Section -->
         <div class="flex justify-between items-center mt-24">
             <h2 class="text-xl font-semibold text-white">Semua Match Musim Ini</h2>
         </div>
         
         <div class="flex flex-col justify-start items-start w-full relative mt-6 gap-4" id="jadwal-pertandingan">
             <div class="flex items-center space-x-4 mb-2">
-                <select id="weekFilter" 
-                    class="bg-gray-800 text-white px-3 sm:px-4 py-2 rounded-lg text-base sm:text-lg lg:text-xl cursor-pointer focus:outline-none"
-                >
+                <select id="weekFilter" class="bg-gray-800 text-white px-3 sm:px-4 py-2 rounded-lg text-base sm:text-lg lg:text-xl cursor-pointer focus:outline-none">
                     {% for week in week_range %}
                         <option value="{{ week }}" {% if week == current_week %}selected{% endif %}>
                             Pekan ke-{{ week }}
@@ -120,9 +113,74 @@
                 </select>
             </div>
 
-            <div id="matches-container" class="flex flex-col justify-start items-center self-stretch flex-grow-0 flex-shrink-0 gap-6 sm:gap-8 lg:gap-10 px-4 sm:px-6 lg:px-20 py-6 sm:py-8 lg:py-12 rounded-xl bg-[#333438]">
+            <div id="matches-container" class="flex flex-col justify-start items-center self-stretch flex-grow-0 flex-shrink-0 gap-6 sm:gap-8 lg:gap-10 px-4 sm:px-6 lg:px-20 py-6 sm:py-8 lg:py-12 rounded-xl bg-[#333438] w-full">
                 {% include 'show_matches_ajax.html' %}
             </div>
+
+        <!-- Prediksi Skor -->
+        <div class="mt-24 mb-24 w-full">
+            <h2 class="text-xl font-semibold text-white mb-4">Prediksi Skor</h2>
+            
+            {% if user.is_authenticated %}
+            <button onclick="showPredictionModal()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                Buat Prediksi Skor
+            </button>
+            {% else %}
+            <p class="text-gray-400 text-sm mb-4">Login untuk membuat prediksi skor.</p>
+            {% endif %}
+            
+            <!-- Daftar Semua Prediksi Skor -->
+            {% if predictions %}
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for prediction in predictions %}
+                <div class="bg-[#333438] rounded-xl p-5">
+                    <!-- User & Tanggal -->
+                    <div class="flex items-center justify-between mb-8">
+                        <p class="text-sm text-400 font-medium">Oleh : {{ prediction.user.username }}</p>
+                    </div>
+                    
+                    <!-- Match Info -->
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex-1 text-center">
+                            <img src="/static/img/club-matches/{{ prediction.match.home_team }}.png" 
+                                    class="w-10 h-10 object-contain mx-auto mb-2"/>
+                            <p class="text-sm text-white font-medium truncate">{{ prediction.match.home_team }}</p>
+                        </div>
+                        
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl font-bold text-blue-400">{{ prediction.home_score_prediction }}</span>
+                            <span class="text-gray-500">-</span>
+                            <span class="text-2xl font-bold text-blue-400">{{ prediction.away_score_prediction }}</span>
+                        </div>
+                        
+                        <div class="flex-1 text-center">
+                            <img src="/static/img/club-matches/{{ prediction.match.away_team }}.png" 
+                                    class="w-10 h-10 object-contain mx-auto mb-2"/>
+                            <p class="text-sm text-white font-medium truncate">{{ prediction.match.away_team }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Edit/Delete -->
+                    {% if user.is_authenticated and prediction.user == user %}
+                    <div class="mt-4 pt-3 border-t border-gray-700 flex justify-end gap-2">
+                        <button onclick="editPrediction({{ prediction.id }}, {{ prediction.match.id }}, '{{ prediction.match.home_team }}', '{{ prediction.match.away_team }}', {{ prediction.home_score_prediction }}, {{ prediction.away_score_prediction }})" 
+                                class="text-xs text-yellow-400 hover:text-yellow-300 px-3 py-1 rounded-lg hover:bg-gray-700 transition-colors">
+                            Edit
+                        </button>
+                        <button onclick="deletePrediction({{ prediction.id }})" 
+                                class="text-xs text-red-400 hover:text-red-300 px-3 py-1 rounded-lg hover:bg-gray-700 transition-colors">
+                            Hapus
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="mt-8 bg-[#333438] rounded-xl p-8 text-center">
+                <p class="text-gray-400">Belum ada prediksi skor.</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -141,9 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
         matchContainer.innerHTML = '<p class="text-base sm:text-lg lg:text-xl text-white text-center py-10">Memuat pertandingan...</p>'; 
 
         fetch(ajaxUrl, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(response => {
             if (!response.ok) throw new Error('Network response was not ok');
@@ -151,7 +207,6 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(html => {
             matchContainer.innerHTML = html; 
-
             const newUrl = window.location.pathname + '?week=' + selectedWeek;
             window.history.pushState({ path: newUrl }, '', newUrl);
         })
@@ -159,9 +214,32 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Gagal memuat data pertandingan:', error);
             matchContainer.innerHTML = '<p class="text-base sm:text-lg lg:text-xl text-red-500 text-center py-10">Gagal memuat data pertandingan. Silakan coba lagi.</p>';
         });
-        });
     });
+});
 </script>
 
+<!-- Delete Confirmation Modal -->
+<div id="deleteConfirmModal" class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-black bg-opacity-70 transition-opacity duration-150">
+  <div id="deleteConfirmModalContent" class="bg-[#1d1f22] text-white rounded-2xl shadow-2xl w-11/12 sm:w-96 transform scale-95 opacity-0 transition-all duration-200 border border-gray-700">
+    <div class="p-6 text-center">
+      <svg class="w-16 h-16 mx-auto mb-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+      </svg>
+      <h3 class="text-xl font-semibold mb-2">Hapus Prediksi?</h3>
+      <p class="text-gray-400 text-sm mb-6">Prediksi yang dihapus tidak dapat dikembalikan.</p>
+      <div class="flex gap-3 justify-center">
+        <button onclick="hideDeleteConfirmModal()" class="px-6 py-2 border border-gray-600 text-gray-300 rounded-lg font-medium hover:bg-gray-800 transition-colors">
+          Batal
+        </button>
+        <button id="confirmDeleteBtn" class="px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors">
+          Hapus
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include 'prediction_modal.html' %}
 {% include 'footer.html' %}
+
 {% endblock content %}
