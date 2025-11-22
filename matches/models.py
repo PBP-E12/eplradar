@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 #Create your models here.
  
 class Match(models.Model):
@@ -8,15 +9,13 @@ class Match(models.Model):
      away_score = models.PositiveIntegerField(default=0)
      week = models.PositiveIntegerField(default=0)
      match_date = models.DateTimeField()
-     status = models.CharField(
-         max_length=10,
-         choices=[
-             ('upcoming', 'Akan Bertanding'),
-             ('live', 'Sedang Berlangsung'),
-             ('finished', 'Telah Berakhir'),
-         ],
-         default='upcoming'
-     )
 
      class Meta:
          ordering = ['match_date']
+
+class ScorePrediction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    match = models.ForeignKey(Match, on_delete=models.CASCADE)
+    home_score_prediction = models.PositiveIntegerField()
+    away_score_prediction = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
