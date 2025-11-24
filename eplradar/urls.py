@@ -11,6 +11,7 @@ urlpatterns = [
     path('stats/', include('stats.urls')),
     path('news/', include('news.urls')),
     path('matches/', include('matches.urls')),
+    path('auth/', include('authentication.urls')),
 ]
 
 if settings.DEBUG:
