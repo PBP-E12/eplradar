@@ -142,16 +142,14 @@ def update_news_ajax(request, pk):
 
 @login_required
 @csrf_exempt
-@require_http_methods(["DELETE", "POST"])
+@require_http_methods(["POST"])
 def delete_news_ajax(request, pk):
     try:
         news = News.objects.get(pk=pk, user=request.user)
     except News.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Berita tidak ditemukan atau bukan milik Anda.'}, status=404)
 
-    if request.method == 'DELETE' or request.POST.get('_method') == 'DELETE':
-        title = news.title
-        news.delete()
-        return JsonResponse({'status': 'success', 'message': f'Berita "{title}" telah dihapus.'}, status=200)
-
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=400)
+    
+    title = news.title
+    news.delete()
+    return JsonResponse({'status': 'success', 'message': f'Berita "{title}" telah dihapus.'}, status=200)

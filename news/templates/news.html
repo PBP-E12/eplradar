@@ -156,6 +156,71 @@
 
     document.addEventListener('newsAdded', loadNews);
     document.addEventListener('DOMContentLoaded', loadNews);
+
+async function editNews(newsId) {
+      try {
+        // ambil data
+        const card = document.querySelector(`[data-news-id="${newsId}"]`);
+        const title = card.querySelector('h3').textContent;
+        const content = card.querySelector('p').textContent.replace('...', '');
+        
+        const response = await fetch(`?category=all&sort=-created_at`, {
+          headers: { "X-Requested-With": "XMLHttpRequest" }
+        });
+        const data = await response.json();
+        const newsItem = data.news_items.find(item => item.id === newsId);
+        
+        if (newsItem) {
+          // Isi form dengan data yang ada
+          document.getElementById('title').value = newsItem.title;
+          document.getElementById('content').value = newsItem.content;
+          document.getElementById('category').value = newsItem.category;
+          document.getElementById('thumbnail').value = newsItem.thumbnail || '';
+          document.getElementById('is_featured').checked = newsItem.is_featured;
+          document.querySelector('#crudModal h3').textContent = 'Edit News';
+          document.querySelector('#submitNews').textContent = 'Update News';  
+          document.getElementById('newsForm').setAttribute('data-edit-id', newsId);
+          
+          showModal();
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Error', 'Failed to load news data', 'error');
+      }
+    }
+
+    // Delete News Function
+    async function deleteNews(newsId) {
+      if (!confirm('Apakah Anda yakin ingin menghapus berita ini?')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/news/delete-news-ajax/${newsId}/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status == "success") {
+          const card = document.querySelector(`[data-news-id="${newsId}"]`);
+          card.classList.add('opacity-0', 'scale-95');
+          setTimeout(() => {
+            card.remove();
+          }, 300);
+          
+          showToast('Success', data.message, 'success');
+        } else {
+          showToast('Error', data.message || 'Failed to delete news', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Error', 'An error occurred while deleting', 'error');
+      }
+    }
   </script>
 
 </div>
