@@ -1,0 +1,251 @@
+{% load static %}
+
+<div id="predictionModal" class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-black bg-opacity-70 transition-opacity duration-150">
+    <div id="predictionModalContent" class="bg-[#1d1f22] text-white rounded-2xl shadow-2xl w-5/6 sm:w-3/5 md:w-1/2 lg:w-2/5 xl:w-1/3 max-h-screen overflow-y-auto transform scale-95 opacity-0 transition-all duration-200 border border-gray-700">
+        <div class="flex items-center justify-between p-5 border-b border-gray-700">
+            <div>
+            <h3 class="text-xl font-semibold text-white">Prediksi Skor</h3>
+            <p class="text-sm text-gray-400 mt-1">Tebak skor pertandingan tim favoritmu!</p>
+            </div>
+            <button type="button" class="text-gray-400 hover:text-gray-200 p-1.5 rounded-lg" onclick="hidePredictionModal()">
+            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>
+            </button>
+        </div>
+
+        <div class="px-6 py-5">
+            <form id="predictionForm">
+                {% csrf_token %}
+                
+                <!-- Match Dropdown -->
+                <div class="mb-6">
+                    <label for="match_select" class="block text-sm font-medium text-gray-300 mb-2">Pilih Pertandingan</label>
+                    <select id="match_select" name="match_id" required
+                            class="w-full border border-gray-700 rounded-xl px-4 py-3 bg-gray-800 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            onchange="updateMatchDisplay()">
+                    <option value="">Daftar Pertandingan</option>
+                    {% for match in matches %}
+                    <option value="{{ match.id }}" 
+                            data-home="{{ match.home_team }}" 
+                            data-away="{{ match.away_team }}">
+                        {{ match.home_team }} vs {{ match.away_team }}
+                    </option>
+                    {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Score Prediction Inputs -->
+                <div id="scorePredictionInputs" class="hidden">
+                    <div class="flex items-center justify-center gap-4 mb-6">
+                        <div class="text-center">
+                        <label id="homeLabelName" class="block text-sm font-medium text-gray-400 mb-2">Skor Home</label>
+                        <input 
+                            type="number" 
+                            id="home_score_prediction" 
+                            name="home_score_prediction" 
+                            min="0" 
+                            max="99"
+                            class="w-20 h-16 text-center text-3xl font-bold border border-gray-700 rounded-xl bg-gray-800 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                            placeholder="0"
+                            required
+                        >
+                        </div>
+
+                        <span class="text-gray-500 font-bold text-2xl mt-6">:</span>
+
+                        <div class="text-center">
+                        <label id="awayLabelName" class="block text-sm font-medium text-gray-400 mb-2">Skor Away</label>
+                        <input 
+                            type="number" 
+                            id="away_score_prediction" 
+                            name="away_score_prediction" 
+                            min="0" 
+                            max="99"
+                            class="w-20 h-16 text-center text-3xl font-bold border border-gray-700 rounded-xl bg-gray-800 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                            placeholder="0"
+                            required
+                        >
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 p-6 border-t border-gray-700 rounded-b">
+        <button type="button" class="order-2 sm:order-1 px-6 py-3 border border-gray-600 text-gray-300 rounded-md font-medium hover:bg-gray-800 transition-colors" onclick="hidePredictionModal()">Batal</button>
+        <button type="submit" id="submitPrediction" form="predictionForm" class="order-1 sm:order-2 flex-1 bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors shadow-md disabled:bg-gray-600 disabled:cursor-not-allowed" disabled>Simpan Prediksi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+    function showPredictionModal() {
+        const modal = document.getElementById('predictionModal');
+        const modalContent = document.getElementById('predictionModalContent');
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('opacity-0', 'scale-95');
+            modalContent.classList.add('opacity-100', 'scale-100');
+        }, 50);
+    }
+
+    function hidePredictionModal() {
+        const modal = document.getElementById('predictionModal');
+        const modalContent = document.getElementById('predictionModalContent');
+        const form = document.getElementById('predictionForm');
+
+        modalContent.classList.remove('opacity-100', 'scale-100');
+        modalContent.classList.add('opacity-0', 'scale-95');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            form.reset();
+            form.removeAttribute('data-edit-id');
+            document.getElementById('scorePredictionInputs').classList.add('hidden');
+            document.getElementById('submitPrediction').disabled = true;
+            document.getElementById('submitPrediction').textContent = 'Simpan Prediksi';
+        }, 150);
+    }
+
+    function updateMatchDisplay() {
+        const select = document.getElementById('match_select');
+        const selectedOption = select.options[select.selectedIndex];
+        const scoreInputs = document.getElementById('scorePredictionInputs');
+        const submitBtn = document.getElementById('submitPrediction');
+
+        if (select.value) {
+            document.getElementById('homeLabelName').textContent = selectedOption.dataset.home;
+            document.getElementById('awayLabelName').textContent = selectedOption.dataset.away;
+            
+            scoreInputs.classList.remove('hidden');
+            submitBtn.disabled = false;
+        } else {
+            scoreInputs.classList.add('hidden');
+            submitBtn.disabled = true;
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    async function submitPrediction(event) {
+        event.preventDefault();
+        const form = document.getElementById('predictionForm');
+        const formData = new FormData(form);
+        const editId = form.getAttribute('data-edit-id');
+
+        let url = "{% url 'matches:add_prediction_ajax' %}";
+         if (editId) {
+        url = `/matches/update-prediction-ajax/${editId}/`;
+        }
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "X-CSRFToken": csrftoken },
+            body: formData,
+        });
+
+        if (response.ok) {
+            hidePredictionModal();
+            showToast('Berhasil', editId ? 'Prediksi berhasil diedit!' : 'Prediksi berhasil disimpan!', 'success');
+            setTimeout(() => location.reload(), 3000);
+        } else {
+        const errorData = await response.json();
+            showToast('Gagal', errorData.message || 'Gagal mengedit prediksi.', 'error');
+        }
+    }
+
+    function editPrediction(predictionId, matchId, homeTeam, awayTeam, homeScore, awayScore) {
+        const modal = document.getElementById('predictionModal');
+        const modalContent = document.getElementById('predictionModalContent');
+        const form = document.getElementById('predictionForm');
+
+        // Set form ke mode edit
+        form.setAttribute('data-edit-id', predictionId);
+        document.getElementById('match_select').value = matchId;
+        document.getElementById('homeLabelName').textContent = homeTeam;
+        document.getElementById('awayLabelName').textContent = awayTeam;
+        document.getElementById('home_score_prediction').value = homeScore;
+        document.getElementById('away_score_prediction').value = awayScore;
+
+        // Show inputs & enable button
+        document.getElementById('scorePredictionInputs').classList.remove('hidden');
+        document.getElementById('submitPrediction').disabled = false;
+        document.getElementById('submitPrediction').textContent = 'Update Prediksi';
+
+        // Show modal
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('opacity-0', 'scale-95');
+            modalContent.classList.add('opacity-100', 'scale-100');
+        }, 50);
+    }
+
+    // Delete Prediksi
+    let pendingDeleteId = null;
+
+    // Show delete confirmation modal
+    function deletePrediction(predictionId) {
+        pendingDeleteId = predictionId;
+        const modal = document.getElementById('deleteConfirmModal');
+        const modalContent = document.getElementById('deleteConfirmModalContent');
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('opacity-0', 'scale-95');
+            modalContent.classList.add('opacity-100', 'scale-100');
+        }, 50);
+    }
+
+    // Hide delete confirmation modal
+    function hideDeleteConfirmModal() {
+        const modal = document.getElementById('deleteConfirmModal');
+        const modalContent = document.getElementById('deleteConfirmModalContent');
+
+        modalContent.classList.remove('opacity-100', 'scale-100');
+        modalContent.classList.add('opacity-0', 'scale-95');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            pendingDeleteId = null;
+        }, 150);
+    }
+
+    // Konfirmasi delete prediksi
+    async function confirmDelete() {
+        if (!pendingDeleteId) return;
+
+        const response = await fetch(`/matches/delete-prediction-ajax/${pendingDeleteId}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrftoken },
+        });
+
+        hideDeleteConfirmModal();
+
+        if (response.ok) {
+            showToast('Berhasil', 'Prediksi berhasil dihapus!', 'success');
+            setTimeout(() => location.reload(), 3000);
+        } else {
+            showToast('Gagal', 'Gagal menghapus prediksi.', 'error');
+        }
+    }
+
+    // Event listener
+    document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
+    document.getElementById('predictionForm').addEventListener('submit', submitPrediction);
+</script>

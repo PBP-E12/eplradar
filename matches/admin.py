@@ -10,9 +10,7 @@ class MatchAdmin(admin.ModelAdmin):
         'away_score',
         'week',
         'match_date',
-        'status',
     )
-    list_filter = ('status', 'week')
     search_fields = ('home_team', 'away_team')
     readonly_fields = (
         'home_team',
@@ -21,7 +19,6 @@ class MatchAdmin(admin.ModelAdmin):
         'away_score',
         'week',
         'match_date',
-        'status',
     )
     ordering = ('-match_date',)
 

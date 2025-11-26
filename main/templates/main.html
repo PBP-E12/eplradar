@@ -1,32 +1,28 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block meta %}
-<title> {{ title }} </title>
-{% endblock meta %}
-
 {% block content %}
 {% include 'navbar.html' %}
 
 <div class="bg-[#1d1f22] w-full pt-10 min-h-screen">
-  <div class="mx-auto px-4 sm:px-6 lg:px-20 py-8">
-    <div class="my-24 rounded-2xl h-[560px] bg-cover bg-center flex items-center pl-24" style="background-image: url('{% static "img/Rectangle-3.png" %}')">
-      <div class="text-white">
-        <p class="text-lg text-gray-200 mb-2">Selamat datang di</p>
-        <img src="{% static 'img/logo.png' %}" alt="EPL Radar" class="h-20 w-auto mb-2">
-        <p class="text-xl text-gray-200 max-w-md mb-8">
-          Portal statistik dan berita Liga Inggris terlengkap. Dapatkan data match, pemain, dan klub terkini. 
-        </p>
-      
-        <a href="#stats" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
-          <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
-          </svg>
-          Jelajahi Sekarang
-        </a>
-      </div>
-      
-    </div>
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 xl:px-20 py-8">
+        <div class="my-12 sm:my-16 lg:my-24 rounded-2xl h-[400px] sm:h-[480px] lg:h-[560px] bg-cover bg-center flex items-center pl-4 sm:pl-12 lg:pl-24" 
+             style="background-image: url('{% static "img/Rectangle-3.png" %}')">
+            <div class="text-white">
+                <p class="text-sm sm:text-lg text-gray-200 mb-2">Selamat datang di</p>
+                <img src="{% static 'img/logo.png' %}" alt="EPL Radar" class="h-12 sm:h-16 lg:h-20 w-auto mb-2">
+                <p class="text-base sm:text-xl text-gray-200 max-w-xs sm:max-w-md mb-6 sm:mb-8">
+                    Portal statistik dan berita Liga Inggris terlengkap. Dapatkan data match, pemain, dan klub terkini. 
+                </p>
+            
+                <a href="#stats" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all">
+                    <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
+                    </svg>
+                    Jelajahi Sekarang
+                </a>
+            </div>
+        </div>
   
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-xl font-semibold text-white">Match Terdekat</h2>
@@ -54,7 +50,7 @@
                   <div class="flex justify-between items-center w-full max-w-2xl lg:max-w-4xl">
                       
                       <div class="flex justify-end items-center flex-grow-0 flex-shrink-0 w-[145px] gap-3">
-                          <p class="flex-grow-0 flex-shrink-0 text-xl lg:text-2xl font-medium text-right text-white">
+                          <p class="flex-grow-0 flex-shrink-0 sm:text-xs lg:text-2xl font-medium text-right text-white">
                               {{ match.home_team }}
                           </p>
                           <img
@@ -64,7 +60,7 @@
                       </div>
                       
                       <div class="flex justify-center items-center flex-grow-0 flex-shrink-0 px-8 py-3 rounded-2xl bg-[#3247b1] self-stretch">
-                          <p class="flex-grow-0 flex-shrink-0 text-xl font-medium text-left text-white">
+                          <p class="flex-grow-0 flex-shrink-0 sm:text-sm lg:text-xl font-medium text-left text-white">
                               VS
                           </p>
                       </div>
@@ -74,7 +70,7 @@
                               src="/static/img/club-matches/{{ match.away_team }}.png"
                               class="flex-grow-0 flex-shrink-0 w-10 lg:w-[41px] h-10 lg:h-12 object-contain"
                           />
-                          <p class="flex-grow-0 flex-shrink-0 text-xl lg:text-2xl font-medium text-left text-white">
+                          <p class="flex-grow-0 flex-shrink-0 sm:text-xs lg:text-2xl font-medium text-left text-white">
                               {{ match.away_team }}
                           </p>
                       </div>
@@ -88,7 +84,7 @@
           <p class="text-xl text-white">Tidak ada pertandingan di Pekan {{ current_week }}.</p>
       {% endif %}
       </div>
-    </div>
+    </div> 
   
     <section id="stats">
       <div class="flex justify-between items-center mb-8 mt-24">
@@ -101,18 +97,20 @@
         </a>
       </div>
 
-      <div class="flex">
-        <div id="home-sidebar" class="w-[180px] mr-12 space-y-2">
-          <button data-stat="goals" class="stat-category-btn w-full text-left py-3 px-4 rounded-lg bg-blue-700 text-white font-semibold transition-colors">
-            Top Scorer
-          </button>
-          <button data-stat="curr_assists" class="stat-category-btn w-full text-left py-3 px-4 rounded-lg bg-transparent text-gray-400 hover:bg-[#333438] hover:text-white transition-colors">
-            Top Assist
-          </button>
-          <button data-stat="curr_cleansheet" class="stat-category-btn w-full text-left py-3 px-4 rounded-lg bg-transparent text-gray-400 hover:bg-[#333438] hover:text-white transition-colors">
-            Cleansheet
-          </button>
-        </div>
+      <div class="flex flex-col lg:flex-row">
+        <div id="home-sidebar" class="w-full lg:w-[180px] lg:mr-12 space-y-2 mb-6 lg:mb-0">
+                    <div class="flex justify-around lg:flex-col lg:justify-start gap-2">
+                        <button data-stat="goals" class="stat-category-btn flex-grow lg:flex-none text-center lg:text-left py-2 px-3 lg:py-3 lg:px-4 rounded-lg bg-blue-700 text-white font-semibold text-sm sm:text-base transition-colors">
+                            Top Scorer
+                        </button>
+                        <button data-stat="curr_assists" class="stat-category-btn flex-grow lg:flex-none text-center lg:text-left py-2 px-3 lg:py-3 lg:px-4 rounded-lg bg-transparent text-gray-400 hover:bg-[#333438] hover:text-white text-sm sm:text-base transition-colors">
+                            Top Assist
+                        </button>
+                        <button data-stat="curr_cleansheet" class="stat-category-btn flex-grow lg:flex-none text-center lg:text-left py-2 px-3 lg:py-3 lg:px-4 rounded-lg bg-transparent text-gray-400 hover:bg-[#333438] hover:text-white text-sm sm:text-base transition-colors">
+                            Cleansheet
+                        </button>
+                    </div>
+                </div>
 
         <div class="flex-grow">
           <div id="home-loading" class="bg-gray-500 rounded-lg p-10 text-center hidden">
@@ -212,22 +210,22 @@
             const subText = data.club;
             const imageClub = data.club_logo;
             const imagePemain = data.photo;
-            const imageSrc = imageClub || defaultImage;
+            const imgSrc = isClubView ? imageClub || defaultImage : imagePemain || defaultImage;
 
             return `
-                <div class="flex items-center justify-between rounded-xl py-4 px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300 mb-4">
-                    <img src="${isClubView ? imageClub || defaultImage : imagePemain || defaultImage}" alt="${name}" class="h-[100px] w-[100px] object-contain mr-4">
-                    <div class="flex-grow">
-                        <h1 class="text-lg font-semibold text-white">${name}</h1>
+                <div class="flex items-center justify-between rounded-xl py-3 px-4 sm:py-4 sm:px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300 mb-2 sm:mb-4">
+                    <img src="${imgSrc}" alt="${name}" class="h-16 w-16 sm:h-20 sm:w-20 object-contain rounded-md mr-3 sm:mr-4 flex-shrink-0">
+                    <div class="flex-grow min-w-0">
+                        <h1 class="text-base sm:text-xl font-semibold text-white truncate">${name}</h1>
                         ${!isClubView ? `
-                            <div class="flex items-center mt-4 space-x-2">
-                                <img src="${imageClub || defaultImage}" alt="${subText}" class="w-6 h-6 mr-2 object-contain">
-                                <p class="text-gray-200 text-sm truncate">${subText}</p>
+                            <div class="flex items-center mt-2 space-x-1 sm:space-x-2 min-w-0">
+                                <img src="${imageClub || defaultImage}" alt="${subText}" class="w-4 h-4 sm:w-5 sm:h-5 object-contain">
+                                <p class="text-gray-200 text-xs sm:text-sm truncate">${subText}</p>
                             </div>
                         ` : ''}
                     </div>
-                    <div class="text-lg font-semibold text-white ml-4 flex-shrink-0">
-                        ${statValue} ${label}
+                    <div class="text-base sm:text-xl font-semibold text-white ml-3 sm:ml-4 flex-shrink-0 text-right">
+                        ${statValue} <span class="text-sm md:text-lg">${label}</span>
                     </div>
                 </div>
             `;

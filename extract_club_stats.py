@@ -20,4 +20,4 @@ with open(csv_path, newline='', encoding='utf-8') as csvfile:
         )
         count += 1
 
-print(f"✅ Berhasil menambahkan {count} pertandingan dari {csv_path}")
+print(f"Berhasil menambahkan {count} pertandingan dari {csv_path}")

@@ -9,9 +9,6 @@
 | 4 | **Ahmad Zein Rasyid Siregar** | 2406408395 |
 | 5 | **Antonius Daniel Maruli Nainggolan** | 2406496012 |
 
-## 🌐 Repository Github
- 📦 [https://github.com/PBP-E12/eplradar](https://github.com/PBP-E12/eplradar)
-
 ## 🌐 Link Deployment PWS
 🔗 [EPLRadar](https://raihan-maulana41-eplradar.pbp.cs.ui.ac.id/)
 
@@ -66,10 +63,10 @@ Dataset yang digunakan berasal dari Kaggle:
 | Role | Deskripsi |
 |------|------------|
 | **Reguler User** | Dapat mengakses seluruh informasi publik seperti profil klub & pemain, statistik, klasemen, serta berita terkini. |
-| **Developer** | Memiliki akses tambahan untuk menambahkan, mengedit, dan menghapus informasi terkait EPL. |
+| **Login User** | Memiliki akses tambahan untuk menambahkan, mengedit, dan menghapus Berita. |
 
 ---
 
 ## 🎨 Link Figma (Prototype Desain)
-🔗 [Figma Prototype - EPLRadar](https://www.figma.com/design/x3Nh1E5K1JBcf06W9FKGO8/Prototype?node-id=0-1&t=IZnH6RKu0OLDW8Ei-1)
+🔗 [Figma Prototype - EPLRadar](https://www.figma.com/design/x3Nh1E5K1JBcf06W9FKGO8/Prototype?node-id=297-2670&m=dev)
 

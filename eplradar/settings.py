@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-*hlsrb51tra@cn$x(^ngh=n$7711*r5hu1!@#6)p^htxis6l$b
 PRODUCTION = os.getenv('PRODUCTION', 'False').lower() == 'true'
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "raihan-maulana41-eplradar.pbp.cs.ui.ac.id"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "raihan-maulana41-eplradar.pbp.cs.ui.ac.id", "10.0.2.2"]
 CSRF_TRUSTED_ORIGINS = ["https://raihan-maulana41-eplradar.pbp.cs.ui.ac.id"]
 
 # Application definition
@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'stats',
     'matches',
     'clubs',
+    'authentication',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -59,7 +61,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
 
 ROOT_URLCONF = 'eplradar.urls'
 

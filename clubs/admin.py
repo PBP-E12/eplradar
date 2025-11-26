@@ -8,7 +8,6 @@ class ClubAdmin(admin.ModelAdmin):
     search_fields = ('nama_klub',)
     list_filter = ('jumlah_win', 'jumlah_lose', 'jumlah_draw')
 
-    # Supaya admin hanya untuk melihat data, bukan CRUD
     def has_add_permission(self, request):
         return False
 

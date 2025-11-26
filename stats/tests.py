@@ -75,7 +75,6 @@ class StatsViewTest(TestCase):
     # --- TEST UNTUK show_stats ---
 
     def test_show_stats_view(self):
-        # Membuat request GET
         request = self.factory.get('/stats/')
         response = show_stats(request)
         
