@@ -1,7 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
+from django.core import serializers
 from .models import Player
 from clubs.models import Club
+
 
 def show_player_detail(request, id):
     player = get_object_or_404(Player, id=id)
@@ -23,10 +25,6 @@ def show_player_detail(request, id):
         }
         return JsonResponse(data)
     
-    
-
-    
-
 def show_player_main(request):
     team_id = request.GET.get('team')
     
@@ -50,3 +48,26 @@ def show_player_main(request):
     
     # Otherwise return the full page
     return render(request, 'playerspage.html', context)
+
+
+def api_players(request):
+    '''
+    Docstring for api_players
+    returns json when called with http request GET
+    :param request: Description
+    '''
+    if request.method == 'GET':
+        # Team filter logic
+        team_id = request.GET.get('team')
+        if team_id and team_id != 'all':
+            players = Player.objects.filter(team_id=team_id)
+        else:
+            players = Player.objects.all()
+
+        json_response = serializers.serialize('json', players)
+        return json_response
+    
+    elif request.method == 'POST':
+        return
+    else:
+        return JsonResponse({"error": "Method not allowed."}, status=405)
