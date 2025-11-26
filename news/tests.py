@@ -5,7 +5,6 @@ from .models import News
 
 
 class NewsFunctionalTest(TestCase):
-    """Functional-style test for News app (similar to FootballNewsFunctionalTest style)"""
 
     @classmethod
     def setUpTestData(cls):
