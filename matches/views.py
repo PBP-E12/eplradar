@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.db.models import Max, Min
 from django.utils import timezone
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.core import serializers
 from .models import Match, ScorePrediction
 from clubs.models import Club
 from django.views.decorators.csrf import csrf_exempt
@@ -118,12 +119,14 @@ def show_matches_api(request):
         home_score = match.home_score
         away_team = match.away_team
         away_score = match.away_score
+        week = match.week
         data.append({
              'match_date': match_date,
              'home_team': home_team,
              'home_score': home_score,
              'away_team': away_team,
-             'away_score': away_score
+             'away_score': away_score,
+             'week': week,
          })
 
     return JsonResponse(data, status=200)
@@ -148,3 +151,13 @@ def show_klasemen_api(request):
         })
     
     return JsonResponse(data, status=200)
+
+def show_json_match(request):
+    matches = Match.objects.all()
+    json_data = serializers.serialize("json", matches)
+    return HttpResponse(json_data, content_type="application/json")
+
+def show_json_prediction(request):
+    prediction = ScorePrediction.objects.all()
+    json_data = serializers.serialize("json", prediction)
+    return HttpResponse(json_data, content_type="application/json")
