@@ -1,111 +1,120 @@
-
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
 from clubs.models import Club 
 from players.models import Player 
 from stats.models import FavoritePlayer
-from django.contrib.auth.decorators import login_required
 import json
 
-def show_stats(request):
-    """Menampilkan halaman statistik utama."""
-    context = {
-        'title': 'Statistik Klub & Pemain',
-    }
-    return render(request, 'stats.html', context)
+def show_stats(request):    
+    return render(request, 'stats.html', {"title": "Statistik Klub & Pemain"})
 
+def statistics_api(request):
+    """
+    Mengembalikan statistik pemain dan klub dalam satu endpoint:
+    - player.top_scorer
+    - player.top_assist
+    - player.clean_sheet
+    - club.top_scorer
+    - club.top_assist
+    - club.clean_sheet
+    """
 
-def club_stats_api(request):
-    """API untuk statistik klub."""
-    clubs = Club.objects.all().order_by('-jumlah_win')
-    data = []
-    for club in clubs:
-         data.append({
-             'id': str(club.id),
-             'name': club.nama_klub,
-             'logo': club.logo.url if club.logo else '',
-             'points': club.points,
-             'wins': club.jumlah_win,
-             'draws': club.jumlah_draw,
-             'losses': club.jumlah_lose,
-             'total_matches': club.total_matches,
-         })
-    return JsonResponse(data, safe=False)
+    players = Player.objects.select_related("team").all()
 
+    top_scorer = players.order_by("-curr_goals")[:10]
+    top_assist = players.order_by("-curr_assists")[:10]
+    clean_sheet = players.order_by("-curr_cleansheet")[:10]
 
-def player_stats_api(request):
-    """API untuk statistik pemain."""
-    players = Player.objects.all().select_related('team').order_by('-curr_goals')
-    data = []
-    for player in players:
-         player_photo_url = player.profile_picture_url.url if player.profile_picture_url else None
-         club_name = player.team.nama_klub
-         club_logo_url = player.team.logo.url if player.team.logo else None
-         data.append({
-             'photo': player_photo_url,
-             'club': club_name,
-             'club_logo': club_logo_url,
-             'goals': player.curr_goals,
-             'id': str(player.id),
-             'name': player.name,
-             'position': player.position,
-             'citizenship': player.citizenship,
-             'age': player.age,
-             'curr_assists': player.curr_assists,
-             'match_played': player.match_played,
-             'curr_cleansheet': player.curr_cleansheet,
-             'team_id': str(player.team.id)
-         })
-    return JsonResponse(data, safe=False)
+    def serialize_player(p):
+        return {
+            "id": p.id,
+            "name": p.name,
+            "club": p.team.nama_klub,
+            "club_logo": p.team.logo.url if p.team.logo else "",
+            "photo": p.profile_picture_url.url if p.profile_picture_url else "",
+            "goals": p.curr_goals,
+            "assists": p.curr_assists,
+            "clean_sheet": p.curr_cleansheet,
+        }
 
-@login_required
-@require_http_methods(["POST"])
-def update_favorite_reason(request):
-    body = json.loads(request.body)
-    fav_id = body.get("fav_id")
-    reason = body.get("reason", "")
-
-    # BATAS KARAKTER
-    if len(reason) > 150:
-        return JsonResponse({"error": "Reason terlalu panjang"}, status=400)
-
-    fav = get_object_or_404(FavoritePlayer, id=fav_id, user=request.user)
-    fav.reason = reason
-    fav.save()
-
-    return JsonResponse({"status": "updated"})
-
-
-@login_required
-def favorite_list_api(request):
-    favs = FavoritePlayer.objects.filter(user=request.user).select_related("player")
-    data = [{
-        "fav_id": f.id,
-        "player_id": f.player.id,
-        "name": f.player.name,
-        "club": f.player.team.nama_klub,
-        "photo": f.player.profile_picture_url.url if f.player.profile_picture_url else "",
-        "reason": f.reason,
-    } for f in favs]
-    return JsonResponse({"favorites": data})
-
-@login_required
-@require_http_methods(["POST"])
-def toggle_favorite_player(request):
-    body = json.loads(request.body)
-    player_id = body.get("player_id")
-
-    player = get_object_or_404(Player, id=player_id)
-    fav, created = FavoritePlayer.objects.get_or_create(
-        user=request.user, player=player
+    clubs_qs = Club.objects.annotate(
+        total_goals=Sum("player__curr_goals"),
+        total_assists=Sum("player__curr_assists"),
+        total_cleansheet=Sum("player__curr_cleansheet"),
     )
 
-    if not created:
-        fav.delete()
-        return JsonResponse({"status": "removed"})
+    clubs = [{
+        "club": c.nama_klub,
+        "club_logo": c.logo.url if c.logo else "",
+        "total_goals": c.total_goals or 0,
+        "total_assists": c.total_assists or 0,
+        "total_cleansheet": c.total_cleansheet or 0,
+    } for c in clubs_qs]
 
-    return JsonResponse({"status": "added"})
+    return JsonResponse({
+        "player": {
+            "top_scorer": [serialize_player(p) for p in top_scorer],
+            "top_assist": [serialize_player(p) for p in top_assist],
+            "clean_sheet": [serialize_player(p) for p in clean_sheet],
+        },
+        "club": {
+            "top_scorer": sorted(clubs, key=lambda x: x["total_goals"], reverse=True)[:10],
+            "top_assist": sorted(clubs, key=lambda x: x["total_assists"], reverse=True)[:10],
+            "clean_sheet": sorted(clubs, key=lambda x: x["total_cleansheet"], reverse=True)[:10],
+        }
+    })
+
+@login_required
+def favorite_api(request):
+
+    if request.method == "GET":
+        favs = FavoritePlayer.objects.filter(
+            user=request.user
+        ).select_related("player", "player__team")
+
+        data = [{
+            "fav_id": f.id,
+            "player_id": f.player.id,
+            "name": f.player.name,
+            "club": f.player.team.nama_klub,
+            "photo": f.player.profile_picture_url.url if f.player.profile_picture_url else "",
+            "reason": f.reason,
+        } for f in favs]
+
+        return JsonResponse({"favorites": data})
+
+    if request.method == "POST":
+        body = json.loads(request.body)
+        player_id = body.get("player_id")
+        reason = body.get("reason")
+
+        if not player_id:
+            return JsonResponse({"error": "player_id is required"}, status=400)
+
+        player = get_object_or_404(Player, id=player_id)
+
+        fav, created = FavoritePlayer.objects.get_or_create(
+            user=request.user,
+            player=player
+        )
+
+        if reason is not None:
+            if len(reason) > 150:
+                return JsonResponse({"error": "Note terlalu panjang"}, status=400)
+            fav.reason = reason
+            fav.save()
+            return JsonResponse({"status": "updated", "reason": fav.reason})
+
+        if not created:
+            fav.delete()
+            return JsonResponse({"status": "removed"})
+
+        return JsonResponse({"status": "added"})
+
+    return JsonResponse({"error": "Method Not Allowed"}, status=405)
 
 @login_required
 def search_player_api(request):

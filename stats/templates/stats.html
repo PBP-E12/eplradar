@@ -78,352 +78,305 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const API_URL = "/stats/api/stats/players/";
-        const loadingEl = document.getElementById('loading');
-        const errorEl = document.getElementById('error');
-        const filterKlubEl = document.getElementById('filter-klub');
-        const filterPemainEl = document.getElementById('filter-pemain');
+document.addEventListener('DOMContentLoaded', function() {
 
-        const gridContainers = {
-            goals: document.getElementById('top-scorer-grid'),
-            curr_assists: document.getElementById('top-assist-grid'),
-            curr_cleansheet: document.getElementById('clean-sheet-grid')
-        };
-        
-        const statLabels = {
-            goals: 'Gol',
-            curr_assists: 'Assist',
-            curr_cleansheet: 'Kali'
-        };
+    const API_URL = "/stats/api/stats/"; // ENDPOINT BARU
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
 
-        let currentFilter = 'pemain'; // Default: Pemain
+    const filterKlubEl = document.getElementById('filter-klub');
+    const filterPemainEl = document.getElementById('filter-pemain');
 
-        let allPlayersData = []; // Menyimpan data API
+    const grids = {
+        scorer: document.getElementById('top-scorer-grid'),
+        assist: document.getElementById('top-assist-grid'),
+        clean: document.getElementById('clean-sheet-grid')
+    };
 
-        function createCard(data, statKey, isClubView) {
-            const statValue = isClubView ? data.totalStat : data[statKey] || 0;
-            const label = statLabels[statKey];
-            const name = isClubView ? data.club : data.name;
-            let subText = data.club;
-            let imageClub = data.club_logo;
-            let imagePemain = data.photo;
-            
-            const defaultImage = "{% static 'img/no-image.png' %}"
+    let statsData = null;    
+    let currentFilter = "pemain";
 
-            return !isClubView ? `
-                <div class="flex items-center rounded-xl p-3 sm:py-4 sm:px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300">
-                    <img src="${imagePemain || defaultImage}" alt="${name}" class="h-[80px] w-[80px] sm:h-[100px] sm:w-[100px] object-cover rounded-md mr-4 sm:mr-6">
-                    <div class="flex-grow min-w-0">
-                        <h1 class="text-lg sm:text-xl font-semibold text-white truncate">${name}</h1>
-                        <div class="flex items-center mt-2 sm:mt-3 space-x-1 sm:space-x-2 min-w-0">
-                            <img src="${imageClub || defaultImage}" alt="${subText}" class="w-5 h-5 sm:w-6 sm:h-6 object-contain">
-                            <p class="text-gray-200 text-xs sm:text-sm truncate">${subText}</p>
-                        </div>
-                    </div>
-                    <div class="flex-shrink-0 text-lg sm:text-xl font-semibold text-white ml-4 text-right">
-                        ${statValue} <span class="text-sm sm:text-lg">${label}</span>
-                    </div>
+    function cardPlayer(p, value, label) {
+        const img = p.photo || "{% static 'img/no-image.png' %}";
+        const clubLogo = p.club_logo || "{% static 'img/no-image.png' %}";
+
+        return `
+        <div class="flex items-center rounded-xl p-4 bg-[#333438] hover:ring hover:ring-blue-500/50 transition">
+            <img src="${img}" class="h-[80px] w-[80px] object-cover rounded-md mr-4">
+            <div class="flex-grow">
+                <h1 class="text-xl font-semibold text-white truncate">${p.name}</h1>
+                <div class="flex items-center mt-2 space-x-2">
+                    <img src="${clubLogo}" class="w-6 h-6 object-contain">
+                    <p class="text-gray-300 text-sm truncate">${p.club}</p>
                 </div>
-            ` : `
-                <div class="flex items-center rounded-xl p-4 sm:py-4 sm:px-6 bg-[#333438] hover:ring hover:ring-blue-500/50 transition duration-300">
-                    <img src="${imageClub || defaultImage}" alt="${name}" class="h-[80px] w-[80px] sm:h-[100px] sm:w-[100px] object-contain mr-4 sm:mr-6">
-                    <div class="flex-grow min-w-0">
-                        <h1 class="text-lg sm:text-xl font-semibold text-white truncate">${name}</h1>
-                    </div>
-                    <div class="flex-shrink-0 text-lg sm:text-xl font-semibold text-white ml-4 text-right">
-                        ${statValue} <span class="text-sm sm:text-lg">${label}</span>
-                    </div>
-                </div>
-              `;
-        }
-
-
-        function getTopPlayers(players, statKey) {
-            const sortedPlayers = [...players].sort((a, b) => (b[statKey] || 0) - (a[statKey] || 0));
-            return sortedPlayers;
-        }
-
-        function getTopClubs(players, statKey) {
-            const clubStats = {};
-
-            players.forEach(player => {
-                const statValue = player[statKey] || 0;
-                if (!clubStats[player.club]) {
-                    clubStats[player.club] = {
-                        club: player.club,
-                        club_logo: player.club_logo,
-                        totalStat: 0,
-                        players: [] 
-                    };
-                }
-                clubStats[player.club].totalStat += statValue;
-                clubStats[player.club].players.push({ 
-                    name: player.name, 
-                    stat: statValue,
-                    photo: player.photo 
-                });
-            });
-
-            const clubArray = Object.values(clubStats);
-
-            clubArray.sort((a, b) => b.totalStat - a.totalStat);
-            return clubArray;
-        }
-
-
-        function renderStats(players, filterType) {
-            ['goals', 'curr_assists', 'curr_cleansheet'].forEach(statKey => {
-                let items;
-                let isClubView = filterType === 'klub';
-
-                if (isClubView) {
-                    items = getTopClubs(players, statKey);
-                } else {
-                    items = getTopPlayers(players, statKey);
-                }
-
-                let html = items.map(item => createCard(item, statKey, isClubView)).join('');
-                gridContainers[statKey].innerHTML = html;
-            });
-        }
-
-        async function loadStats() {
-            if (allPlayersData.length > 0) {
-                renderStats(allPlayersData, currentFilter);
-                return;
-            }
-
-            loadingEl.classList.remove('hidden');
-            errorEl.classList.add('hidden');
-            errorEl.textContent = '';
-
-            try {
-                const response = await fetch(API_URL);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                
-                allPlayersData = data.data || data; 
-
-                if (!allPlayersData || allPlayersData.length === 0) {
-                    errorEl.classList.remove('hidden');
-                    errorEl.textContent = 'Tidak ada data pemain.';
-                    return;
-                }
-                
-                renderStats(allPlayersData, currentFilter);
-
-            } catch (error) {
-                errorEl.classList.remove('hidden');
-                errorEl.textContent = 'Gagal mengambil data statistik: ' + error.message;
-            } finally {
-                loadingEl.classList.add('hidden');
-            }
-        }
-
-        function setFilter(filterType) {
-            currentFilter = filterType;
-            
-            const activeClass = ['text-blue-700', 'font-semibold', 'hover:text-blue-800'];
-            const inactiveClass = ['text-gray-500', 'hover:text-white'];
-            
-            [filterKlubEl, filterPemainEl].forEach(el => {
-                const isCurrent = el.id === `filter-${filterType}`;
-                el.classList.toggle('text-blue-700', isCurrent);
-                el.classList.toggle('font-semibold', isCurrent);
-                el.classList.toggle('hover:text-blue-800', isCurrent);
-                el.classList.toggle('text-gray-500', !isCurrent);
-                el.classList.toggle('hover:text-white', !isCurrent);
-            });
-            
-            if (allPlayersData.length > 0) {
-                renderStats(allPlayersData, currentFilter);
-            }
-        }
-
-        filterKlubEl.addEventListener('click', () => setFilter('klub'));
-        filterPemainEl.addEventListener('click', () => setFilter('pemain'));
-
-        setFilter(currentFilter);
-        loadStats();
-    });
-
-    {% if user.is_authenticated %}
-
-    let favoritePlayerIds = new Set();
-
-    // LOAD FAVORITES
-    async function loadFavorites() {
-        const res = await fetch("/stats/api/favorite/list/");
-        const data = await res.json();
-
-        favoritePlayerIds = new Set(data.favorites.map(f => f.player_id));
-
-        renderFavorites(data.favorites);
-    }
-
-    // RENDER LIST FAVORIT
-    function renderFavorites(items) {
-        const box = document.getElementById("favorite-list");
-        box.innerHTML = items.map(f => `
-            <div class="flex items-center bg-[#3a3b3e] p-4 rounded-lg">
-                <img src="${f.photo}" class="w-16 h-16 rounded mr-2 lg:mr-6">
-
-                <div class="flex-grow">
-                    <p class="font-semibold">${f.name}</p>
-                    <p class="text-sm text-gray-300">${f.club}</p>
-
-                    <div class="mt-2">
-                        <input data-id="${f.fav_id}"
-                            maxlength="150"
-                            value="${f.reason}"
-                            placeholder="Note (max 150 karakter)"
-                            class="fav-reason p-2 w-full rounded bg-[#2b2c2f] text-sm">
-
-                        <button data-id="${f.fav_id}"
-                                class="save-reason mt-3 bg-blue-600 px-2 py-1 rounded text-sm hidden">
-                            Save
-                        </button>
-
-                        <span class="save-success text-green-400 text-sm hidden">Berhasil disimpan!</span>
-
-                    </div>
-                </div>
-
-                <button class="ml-2 lg:mx-6 text-red-400 fav-delete" data-id="${f.player_id}">Hapus</button>
             </div>
-        `).join("");
+            <div class="text-white text-xl font-bold ml-3">
+                ${value} <span class="text-sm">${label}</span>
+            </div>
+        </div>`;
     }
 
-    document.addEventListener("input", function(e) {
-        if (e.target.classList.contains("fav-reason")) {
-            const id = e.target.dataset.id;
-            const saveBtn = document.querySelector(`button.save-reason[data-id="${id}"]`);
-            const successMsg = saveBtn.parentElement.querySelector(".save-success");
+    function cardClub(c, value, label) {
+        const logo = c.club_logo || "{% static 'img/no-image.png' %}";
 
-            saveBtn.classList.remove("hidden");
-            successMsg.classList.add("hidden");
+        return `
+        <div class="flex items-center rounded-xl p-4 bg-[#333438] hover:ring hover:ring-blue-500/50 transition">
+            <img src="${logo}" class="h-[80px] w-[80px] object-contain mr-4">
+            <div class="flex-grow">
+                <h1 class="text-xl font-semibold text-white truncate">${c.club}</h1>
+            </div>
+            <div class="text-white text-xl font-bold ml-3">
+                ${value} <span class="text-sm">${label}</span>
+            </div>
+        </div>`;
+    }
+
+    function renderStats() {
+
+        if (!statsData) return;
+
+        grids.scorer.innerHTML = "";
+        grids.assist.innerHTML = "";
+        grids.clean.innerHTML = "";
+
+        if (currentFilter === "pemain") {
+
+            statsData.player.top_scorer.forEach(p =>
+                grids.scorer.innerHTML += cardPlayer(p, p.goals, "Gol")
+            );
+
+            statsData.player.top_assist.forEach(p =>
+                grids.assist.innerHTML += cardPlayer(p, p.assists, "Assist")
+            );
+
+            statsData.player.clean_sheet.forEach(p =>
+                grids.clean.innerHTML += cardPlayer(p, p.clean_sheet, "Kali")
+            );
+
+        } else {
+
+            statsData.club.top_scorer.forEach(c =>
+                grids.scorer.innerHTML += cardClub(c, c.total_goals, "Gol")
+            );
+
+            statsData.club.top_assist.forEach(c =>
+                grids.assist.innerHTML += cardClub(c, c.total_assists, "Assist")
+            );
+
+            statsData.club.clean_sheet.forEach(c =>
+                grids.clean.innerHTML += cardClub(c, c.total_cleansheet, "Kali")
+            );
         }
-    });
+    }
 
+    async function loadStats() {
 
-    document.addEventListener("click", async function(e) {
-        if (e.target.classList.contains("save-reason")) {
-            const favId = e.target.dataset.id;
-            const input = document.querySelector(`input.fav-reason[data-id="${favId}"]`);
-            const reason = input.value;
+        loadingEl.classList.remove('hidden');
 
-            const res = await fetch("/stats/api/favorite/update-reason/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": "{{ csrf_token }}"
-                },
-                body: JSON.stringify({ fav_id: favId, reason })
-            });
+        try {
+            const resp = await fetch(API_URL);
+            const data = await resp.json();
 
-            if (res.ok) {
-                const saveBtn = e.target;
-                const successMsg = saveBtn.parentElement.querySelector(".save-success");
+            statsData = data; 
 
-                saveBtn.classList.add("hidden");
-                successMsg.classList.remove("hidden");
+            renderStats();
 
-                setTimeout(() => {
-                    successMsg.classList.add("hidden");
-                }, 1500);
-            }
+        } catch (err) {
+            errorEl.classList.remove('hidden');
+            errorEl.textContent = "Gagal mengambil data statistik";
         }
-    });
 
+        loadingEl.classList.add('hidden');
+    }
 
-    // DELETE FAVORITE
-    document.addEventListener("click", async function(e) {
-        if (e.target.classList.contains("fav-delete")) {
-            const playerId = e.target.dataset.id;
-            await fetch("/stats/api/favorite/toggle/", {
-                method: "POST",
-                headers: {"Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}"},
-                body: JSON.stringify({ player_id: playerId })
-            });
-            loadFavorites();
-        }
-    });
+    function setFilter(type) {
+        currentFilter = type;
 
-    // SEARCH PLAYER UNTUK ADD FAVORITE
-    document.getElementById("fav-search").addEventListener("input", async function() {
-        const q = this.value;
-        if (q.length < 2) return;
+        filterKlubEl.classList.toggle("text-blue-700", type === "klub");
+        filterKlubEl.classList.toggle("text-gray-500", type !== "klub");
 
-        const res = await fetch(`/stats/api/player/search/?q=${q}`);
-        const data = await res.json();
+        filterPemainEl.classList.toggle("text-blue-700", type === "pemain");
+        filterPemainEl.classList.toggle("text-gray-500", type !== "pemain");
 
-        const box = document.getElementById("fav-search-results");
-        box.innerHTML = data.players.map(p => {
-            const isFav = favoritePlayerIds.has(p.id);
-            return `
-                <div class="p-2 bg-[#3a3b3e] mt-1 rounded flex justify-between items-center">
-                    <span>${p.name} - ${p.club}</span>
-                    ${
-                        isFav
-                        ? `<span class="text-gray-400 text-sm">Sudah Ada</span>`
-                        : `<button class="add-fav bg-blue-600 px-2 py-1 rounded text-sm" data-id="${p.id}">+</button>`
-                    }
+        renderStats();
+    }
+
+    filterKlubEl.addEventListener("click", () => setFilter("klub"));
+    filterPemainEl.addEventListener("click", () => setFilter("pemain"));
+
+    loadStats();
+
+});
+
+{% if user.is_authenticated %}
+
+let favoritePlayerIds = new Set();
+
+async function loadFavorites() {
+    const res = await fetch("/stats/api/favorite/");
+    const data = await res.json();
+
+    favoritePlayerIds = new Set(data.favorites.map(f => f.player_id));
+    renderFavorites(data.favorites);
+}
+
+function renderFavorites(items) {
+    const box = document.getElementById("favorite-list");
+
+    box.innerHTML = items.map(f => `
+        <div class="flex items-center bg-[#3a3b3e] p-4 rounded-lg">
+            <img src="${f.photo}" class="w-16 h-16 rounded mr-2 lg:mr-6">
+
+            <div class="flex-grow">
+                <p class="font-semibold">${f.name}</p>
+                <p class="text-sm text-gray-300">${f.club}</p>
+
+                <div class="mt-2">
+                    <input 
+                        data-id="${f.player_id}"
+                        maxlength="150"
+                        value="${f.reason}"
+                        placeholder="Note (max 150 karakter)"
+                        class="fav-reason p-2 w-full rounded bg-[#2b2c2f] text-sm">
+
+                    <button 
+                        data-id="${f.player_id}"
+                        class="save-reason mt-3 bg-blue-600 px-2 py-1 rounded text-sm hidden">
+                        Save
+                    </button>
+
+                    <span class="save-success text-green-400 text-sm hidden">
+                        Berhasil disimpan!
+                    </span>
                 </div>
-            `;
-        }).join("");
+            </div>
 
-    });
+            <button 
+                class="ml-2 lg:mx-6 text-red-400 fav-delete" 
+                data-id="${f.player_id}">
+                Hapus
+            </button>
+        </div>
+    `).join("");
+}
 
-    document.addEventListener("click", function(e) {
-        const searchBox = document.getElementById("fav-search-results");
-        const searchInput = document.getElementById("fav-search");
+document.addEventListener("input", function(e) {
+    if (e.target.classList.contains("fav-reason")) {
+        const playerId = e.target.dataset.id;
+        const btn = document.querySelector(`button.save-reason[data-id="${playerId}"]`);
+        const msg = btn.parentElement.querySelector(".save-success");
 
-        if (!searchBox.contains(e.target) && e.target !== searchInput) {
-            searchBox.innerHTML = "";
-        }
-    });
+        btn.classList.remove("hidden");
+        msg.classList.add("hidden");
+    }
+});
 
+document.addEventListener("click", async function(e) {
+    if (e.target.classList.contains("save-reason")) {
+        const playerId = e.target.dataset.id;
+        const input = document.querySelector(`input.fav-reason[data-id="${playerId}"]`);
+        const reason = input.value;
 
-    // --- ADD FAVORITE (dengan proteksi double-click) ---
-    document.addEventListener("click", async function(e) {
-        if (e.target.classList.contains("add-fav")) {
+        const res = await fetch("/stats/api/favorite/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({
+                player_id: playerId,
+                reason: reason
+            })
+        });
+
+        if (res.ok) {
             const btn = e.target;
-            const playerId = btn.dataset.id;
+            const msg = btn.parentElement.querySelector(".save-success");
+            btn.classList.add("hidden");
+            msg.classList.remove("hidden");
 
-            // 🔒 Kunci tombol agar tidak bisa diklik lagi
-            btn.disabled = true;
-            btn.innerText = "...";
-
-            // 🔥 Update state favorit secara lokal (agar UI tidak toggle lagi)
-            favoritePlayerIds.add(parseInt(playerId));
-
-            // 🔄 Ubah tampilan menjadi "Sudah Ada" tanpa nunggu server
-            btn.outerHTML = `<span class="text-gray-400 text-sm">Sudah Ada</span>`;
-
-            // --- Kirim request ke backend ---
-            await fetch("/stats/api/favorite/toggle/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": "{{ csrf_token }}"
-                },
-                body: JSON.stringify({ player_id: playerId })
-            });
-
-            // 🔄 Sinkronkan ulang dengan database (jaga konsistensi)
-            loadFavorites();
+            setTimeout(() => msg.classList.add("hidden"), 1500);
         }
-    });
+    }
+});
 
+document.addEventListener("click", async function(e) {
+    if (e.target.classList.contains("fav-delete")) {
+        const playerId = e.target.dataset.id;
 
-    // INITIAL LOAD
-    loadFavorites();
+        await fetch("/stats/api/favorite/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ player_id: playerId })
+        });
 
-    {% endif %}
+        loadFavorites();
+    }
+});
 
+document.getElementById("fav-search").addEventListener("input", async function() {
+    const q = this.value;
+    if (q.length < 2) return;
+
+    const res = await fetch(`/stats/api/player/search/?q=${q}`);
+    const data = await res.json();
+
+    const box = document.getElementById("fav-search-results");
+    box.innerHTML = data.players.map(p => {
+        const isFav = favoritePlayerIds.has(p.id);
+        return `
+            <div class="p-2 bg-[#3a3b3e] mt-1 rounded flex justify-between items-center">
+                <span>${p.name} - ${p.club}</span>
+                ${
+                    isFav
+                    ? `<span class="text-gray-400 text-sm">Sudah Ada</span>`
+                    : `<button class="add-fav bg-blue-600 px-2 py-1 rounded text-sm" data-id="${p.id}">+</button>`
+                }
+            </div>
+        `;
+    }).join("");
+});
+
+document.addEventListener("click", function(e) {
+    const searchBox = document.getElementById("fav-search-results");
+    const searchInput = document.getElementById("fav-search");
+
+    if (!searchBox.contains(e.target) && e.target !== searchInput) {
+        searchBox.innerHTML = "";
+    }
+});
+
+document.addEventListener("click", async function(e) {
+    if (e.target.classList.contains("add-fav")) {
+        const btn = e.target;
+        const playerId = btn.dataset.id;
+
+        btn.disabled = true;
+        btn.innerText = "...";
+
+        favoritePlayerIds.add(parseInt(playerId));
+
+        btn.outerHTML = `<span class="text-gray-400 text-sm">Sudah Ada</span>`;
+
+        await fetch("/stats/api/favorite/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ player_id: playerId })
+        });
+
+        loadFavorites();
+    }
+});
+
+loadFavorites();
+
+{% endif %}
 </script>
 
 {% include 'footer.html' %}
