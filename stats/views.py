@@ -6,11 +6,13 @@ from django.db.models import Sum
 from clubs.models import Club 
 from players.models import Player 
 from stats.models import FavoritePlayer
+from django.views.decorators.csrf import csrf_exempt
 import json
 
 def show_stats(request):    
     return render(request, 'stats.html', {"title": "Statistik Klub & Pemain"})
 
+@csrf_exempt
 def statistics_api(request):
     """
     Mengembalikan statistik pemain dan klub dalam satu endpoint:
@@ -33,8 +35,8 @@ def statistics_api(request):
             "id": p.id,
             "name": p.name,
             "club": p.team.nama_klub,
-            "club_logo": p.team.logo.url if p.team.logo else "",
-            "photo": p.profile_picture_url.url if p.profile_picture_url else "",
+            "club_logo": request.build_absolute_uri(p.team.logo.url) if p.team.logo else "",
+            "photo": request.build_absolute_uri(p.profile_picture_url.url) if p.profile_picture_url else "",
             "goals": p.curr_goals,
             "assists": p.curr_assists,
             "clean_sheet": p.curr_cleansheet,
@@ -48,7 +50,7 @@ def statistics_api(request):
 
     clubs = [{
         "club": c.nama_klub,
-        "club_logo": c.logo.url if c.logo else "",
+        "club_logo": request.build_absolute_uri(c.logo.url) if c.logo else "",
         "total_goals": c.total_goals or 0,
         "total_assists": c.total_assists or 0,
         "total_cleansheet": c.total_cleansheet or 0,
@@ -67,6 +69,7 @@ def statistics_api(request):
         }
     })
 
+@csrf_exempt
 @login_required
 def favorite_api(request):
 
@@ -80,7 +83,7 @@ def favorite_api(request):
             "player_id": f.player.id,
             "name": f.player.name,
             "club": f.player.team.nama_klub,
-            "photo": f.player.profile_picture_url.url if f.player.profile_picture_url else "",
+            "photo": request.build_absolute_uri(f.player.profile_picture_url.url) if f.player.profile_picture_url else "",
             "reason": f.reason,
         } for f in favs]
 
@@ -116,6 +119,7 @@ def favorite_api(request):
 
     return JsonResponse({"error": "Method Not Allowed"}, status=405)
 
+@csrf_exempt
 @login_required
 def search_player_api(request):
     q = request.GET.get("q", "")
