@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -8,40 +8,48 @@ from django.contrib.auth.models import User
 @csrf_exempt
 def login(request):
     if request.method == 'POST':
+
         username = request.POST.get('username')
         password = request.POST.get('password')
-        
+
+        if not username or not password:
+            try:
+                data = json.loads(request.body)
+                username = data.get("username")
+                password = data.get("password")
+            except:
+                pass
+
         if not username or not password:
             return JsonResponse({
                 "status": False,
                 "message": "Username and password are required."
             }, status=400)
-        
+
         user = authenticate(username=username, password=password)
-        
+
         if user is not None:
             if user.is_active:
                 auth_login(request, user)
-                
+
                 is_admin = user.is_staff or user.is_superuser
-                
+
                 return JsonResponse({
                     "username": user.username,
                     "status": True,
                     "message": "Login successful!",
-                    "is_admin": is_admin,  
+                    "is_admin": is_admin,
                 }, status=200)
             else:
                 return JsonResponse({
                     "status": False,
                     "message": "Login failed, account is disabled."
                 }, status=401)
-        else:
-            return JsonResponse({
-                "status": False,
-                "message": "Login failed, please check your username or password."
-            }, status=401)
-    
+
+        return JsonResponse({
+            "status": False,
+            "message": "Login failed, please check your username or password."
+        }, status=401)
 
     return JsonResponse({
         "status": False,
