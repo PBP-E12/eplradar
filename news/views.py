@@ -1,9 +1,12 @@
+import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_http_methods
 from django.contrib.auth.decorators import login_required
 from .models import News
+import requests
+from django.utils.html import strip_tags
 
 
 def news_list(request):
@@ -153,3 +156,64 @@ def delete_news_ajax(request, pk):
     title = news.title
     news.delete()
     return JsonResponse({'status': 'success', 'message': f'Berita "{title}" telah dihapus.'}, status=200)
+
+
+def proxy_image(request):
+    image_url = request.GET.get('url')
+    if not image_url:
+        return HttpResponse('No URL provided', status=400)
+    
+    try:
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        
+        return HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/jpeg')
+        )
+    except requests.RequestException as e:
+        return HttpResponse(f'Error fetching image: {str(e)}', status=500)
+    
+@csrf_exempt
+def create_news_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        title = strip_tags(data.get("title", ""))  # Strip HTML tags
+        content = strip_tags(data.get("content", ""))  # Strip HTML tags
+        category = data.get("category", "")
+        thumbnail = data.get("thumbnail", "")
+        is_featured = data.get("is_featured", False)
+        user = request.user
+        
+        new_news = News(
+            title=title, 
+            content=content,
+            category=category,
+            thumbnail=thumbnail,
+            is_featured=is_featured,
+            user=user
+        )
+        new_news.save()
+        
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
+
+def show_json(request):
+    news_items = News.objects.all()
+    data = [
+        {
+            'id': n.id,
+            'user_id': n.user.id if n.user else None,
+            'user': n.user.username if n.user else None,
+            'title': n.title,
+            'content': n.content,
+            'category': n.category,
+            'thumbnail': n.thumbnail,
+            'news_views': n.news_views,
+            'created_at': n.created_at.isoformat() if n.created_at else None,
+            'is_featured': n.is_featured,
+        }
+        for n in news_items
+    ]
+    return JsonResponse(data, safe=False)
