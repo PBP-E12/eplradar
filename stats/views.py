@@ -119,7 +119,7 @@ def favorite_api(request):
 
     return JsonResponse({"error": "Method Not Allowed"}, status=405)
 
-@csrf_exempt
+@csrf_exempt    
 @login_required
 def search_player_api(request):
     q = request.GET.get("q", "")
