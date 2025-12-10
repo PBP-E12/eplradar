@@ -129,7 +129,7 @@ def show_matches_api(request):
              'week': week,
          })
 
-    return JsonResponse(data, status=200)
+    return JsonResponse(data, status=200, safe=False)
 
 def show_klasemen_api(request):
     clubs = []
@@ -150,7 +150,7 @@ def show_klasemen_api(request):
             'poin': club.points
         })
     
-    return JsonResponse(data, status=200)
+    return JsonResponse(data, status=200, safe=False)
 
 def show_json_match(request):
     matches = Match.objects.all()
