@@ -46,7 +46,7 @@ def login(request):
 @csrf_exempt
 def register(request):
     if request.method == 'POST':
-        # 🔥 AMAN: ambil dari body ATAU POST
+
         try:
             data = json.loads(request.body)
         except:
@@ -86,6 +86,16 @@ def register(request):
         "message": "Invalid request method."
     }, status=405)
 
+@csrf_exempt
 def logout(request):
-    auth_logout(request)
-    return JsonResponse({"status": "success"})
+    if request.method in ["POST", "GET"]:
+        auth_logout(request)
+        return JsonResponse({
+            "status": True,
+            "message": "Logout successful"
+        })
+
+    return JsonResponse({
+        "status": False,
+        "message": "Invalid method"
+    }, status=405)
