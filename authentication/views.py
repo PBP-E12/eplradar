@@ -85,3 +85,7 @@ def register(request):
         "status": False,
         "message": "Invalid request method."
     }, status=405)
+
+def logout(request):
+    auth_logout(request)
+    return JsonResponse({"status": "success"})
