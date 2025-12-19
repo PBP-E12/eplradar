@@ -10,6 +10,5 @@ urlpatterns = [
     path('update-news-ajax/<int:pk>/', views.update_news_ajax, name='update_news_ajax'),
     path('delete-news-ajax/<int:pk>/', views.delete_news_ajax, name='delete_news_ajax'),
     path('create-news-flutter', views.create_news_flutter,name="create_news_flutter"),
-    path('json/news_list', views.show_json, name="show_json_list"),
-    
+    path('json/news_list', views.show_json, name="show_json_list"),   
 ]
