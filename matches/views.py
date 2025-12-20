@@ -227,7 +227,7 @@ def create_prediction_api(request):
     try:
         data = json.loads(request.body)
         
-        user_id = data.get('user_id')
+        user_id = request.user,
         if not user_id:
             return JsonResponse({
                 'status': 'error',
