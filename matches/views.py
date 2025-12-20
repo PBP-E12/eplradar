@@ -321,19 +321,21 @@ def prediction_detail_api(request, prediction_id):
         return JsonResponse({'error': 'Prediksi tidak ditemukan'}, status=404)
 
 @csrf_exempt
-@require_http_methods(["PUT", "PATCH"])
+@require_http_methods(["POST"])
+@login_required
 def update_prediction_api(request, prediction_id):
     try:
-        prediction = ScorePrediction.objects.get(id=prediction_id)
+        prediction = ScorePrediction.objects.get(
+            id=prediction_id,
+            user=request.user
+        )
+
         data = json.loads(request.body)
-        
-        if 'home_score_prediction' in data:
-            prediction.home_score_prediction = data['home_score_prediction']
-        if 'away_score_prediction' in data:
-            prediction.away_score_prediction = data['away_score_prediction']
-        
+
+        prediction.home_score_prediction = data.get('home_score_prediction', prediction.home_score_prediction)
+        prediction.away_score_prediction = data.get('away_score_prediction',prediction.away_score_prediction)
         prediction.save()
-        
+
         return JsonResponse({
             'status': 'success',
             'message': 'Prediksi berhasil diupdate',
@@ -343,22 +345,12 @@ def update_prediction_api(request, prediction_id):
                 'away_score_prediction': prediction.away_score_prediction,
             }
         })
-        
+
     except ScorePrediction.DoesNotExist:
         return JsonResponse({
             'status': 'error',
             'message': 'Prediksi tidak ditemukan'
         }, status=404)
-    except json.JSONDecodeError:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Invalid JSON'
-        }, status=400)
-    except Exception as e:
-        return JsonResponse({
-            'status': 'error',
-            'message': str(e)
-        }, status=400)
 
 @csrf_exempt
 @require_http_methods(["DELETE"])
