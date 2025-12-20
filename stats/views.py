@@ -7,7 +7,21 @@ from clubs.models import Club
 from players.models import Player 
 from stats.models import FavoritePlayer
 from django.views.decorators.csrf import csrf_exempt
-import json
+from django.templatetags.static import static
+import json, re
+
+def normalize_filename(name: str) -> str:
+    name = name.strip()
+    name = re.sub(r"\s+", "_", name)
+    return name
+
+def player_photo_static(player_name):
+    filename = normalize_filename(player_name) + ".png"
+    return static(f"img/player/{filename}")
+
+def club_logo_static(club_name):
+    filename = normalize_filename(club_name) + ".png"
+    return static(f"img/club/{filename}")
 
 def show_stats(request):    
     return render(request, 'stats.html', {"title": "Statistik Klub & Pemain"})
@@ -35,8 +49,8 @@ def statistics_api(request):
             "id": p.id,
             "name": p.name,
             "club": p.team.nama_klub,
-            "club_logo": request.build_absolute_uri(p.team.logo.url) if p.team.logo else "",
-            "photo": request.build_absolute_uri(p.profile_picture_url.url) if p.profile_picture_url else "",
+            "club_logo": club_logo_static(p.team.nama_klub),
+            "photo": player_photo_static(p.name),
             "goals": p.curr_goals,
             "assists": p.curr_assists,
             "clean_sheet": p.curr_cleansheet,
@@ -50,7 +64,7 @@ def statistics_api(request):
 
     clubs = [{
         "club": c.nama_klub,
-        "club_logo": request.build_absolute_uri(c.logo.url) if c.logo else "",
+        "club_logo": club_logo_static(c.nama_klub),
         "total_goals": c.total_goals or 0,
         "total_assists": c.total_assists or 0,
         "total_cleansheet": c.total_cleansheet or 0,
@@ -83,7 +97,7 @@ def favorite_api(request):
             "player_id": f.player.id,
             "name": f.player.name,
             "club": f.player.team.nama_klub,
-            "photo": request.build_absolute_uri(f.player.profile_picture_url.url) if f.player.profile_picture_url else "",
+            "photo": player_photo_static(f.player.name),
             "reason": f.reason,
         } for f in favs]
 
@@ -129,7 +143,7 @@ def search_player_api(request):
         "id": p.id,
         "name": p.name,
         "club": p.team.nama_klub,
-        "photo": p.profile_picture_url.url if p.profile_picture_url else "",
+        "photo": player_photo_static(p.name),
     } for p in players]
 
     return JsonResponse({"players": data})
