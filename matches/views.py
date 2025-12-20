@@ -223,27 +223,19 @@ def show_predictions_by_match_api(request, match_id):
 
 @csrf_exempt
 @require_http_methods(["POST"])
+@login_required
 def create_prediction_api(request):
     try:
         data = json.loads(request.body)
-        
-        user_id = request.user,
-        if not user_id:
-            return JsonResponse({
-                'status': 'error',
-                'message': 'User ID diperlukan'
-            }, status=400)
-        
-        try:
-            from django.contrib.auth.models import User
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return JsonResponse({
-                'status': 'error',
-                'message': 'User tidak ditemukan'
-            }, status=404)
-        
+        user = request.user
+
         match_id = data.get('match_id')
+        if not match_id:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Match ID diperlukan'
+            }, status=400)
+
         try:
             match = Match.objects.get(id=match_id)
         except Match.DoesNotExist:
@@ -251,21 +243,25 @@ def create_prediction_api(request):
                 'status': 'error',
                 'message': 'Pertandingan tidak ditemukan'
             }, status=404)
-        
-        existing_prediction = ScorePrediction.objects.filter(user=user, match=match).first()
+
+        existing_prediction = ScorePrediction.objects.filter(
+            user=user,
+            match=match
+        ).first()
+
         if existing_prediction:
             return JsonResponse({
                 'status': 'error',
                 'message': 'Anda sudah membuat prediksi untuk pertandingan ini'
             }, status=400)
-        
+
         prediction = ScorePrediction.objects.create(
             user=user,
             match=match,
             home_score_prediction=data.get('home_score_prediction'),
             away_score_prediction=data.get('away_score_prediction'),
         )
-        
+
         return JsonResponse({
             'status': 'success',
             'message': 'Prediksi berhasil dibuat',
@@ -286,7 +282,7 @@ def create_prediction_api(request):
                 'created_at': prediction.created_at.isoformat(),
             }
         }, status=201)
-        
+
     except json.JSONDecodeError:
         return JsonResponse({
             'status': 'error',
