@@ -78,6 +78,12 @@
 </div>
 
 <script>
+    function resolveImage(url) {
+        if (!url) return "{% static 'img/no-image.png' %}";
+        if (url.startsWith("http")) return url;
+        return url;
+    }
+
 document.addEventListener('DOMContentLoaded', function() {
 
     const API_URL = "/stats/api/stats/"; 
@@ -97,8 +103,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentFilter = "pemain";
 
     function cardPlayer(p, value, label) {
-        const img = p.photo || "{% static 'img/no-image.png' %}";
-        const clubLogo = p.club_logo || "{% static 'img/no-image.png' %}";
+        const img = resolveImage(p.photo);
+        const clubLogo = resolveImage(p.club_logo);
 
         return `
         <div class="flex items-center rounded-xl p-4 bg-[#333438] hover:ring hover:ring-blue-500/50 transition">
@@ -117,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function cardClub(c, value, label) {
-        const logo = c.club_logo || "{% static 'img/no-image.png' %}";
+        const logo = resolveImage(c.club_logo);
 
         return `
         <div class="flex items-center rounded-xl p-4 bg-[#333438] hover:ring hover:ring-blue-500/50 transition">
@@ -225,7 +231,7 @@ function renderFavorites(items) {
 
     box.innerHTML = items.map(f => `
         <div class="flex items-center bg-[#3a3b3e] p-4 rounded-lg">
-            <img src="${f.photo}" class="w-16 h-16 rounded mr-2 lg:mr-6">
+            <img src="${resolveImage(f.photo)}" class="w-16 h-16 rounded mr-2 lg:mr-6 object-contain">
 
             <div class="flex-grow">
                 <p class="font-semibold">${f.name}</p>
