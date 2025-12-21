@@ -115,7 +115,7 @@ def create_comment_api(request):
 @csrf_exempt
 def update_comment_api(request, comment_id):
     """Update comment (only owner)"""
-    if request.method != 'PUT':
+    if request.method not in ['PUT', 'POST']:  # ← Accept both PUT and POST
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     
     try:
@@ -151,7 +151,7 @@ def update_comment_api(request, comment_id):
 @csrf_exempt
 def delete_comment_api(request, comment_id):
     """Delete comment (only owner)"""
-    if request.method != 'DELETE':
+    if request.method not in ['DELETE', 'POST']:  # ← Accept both DELETE and POST
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     
     try:
