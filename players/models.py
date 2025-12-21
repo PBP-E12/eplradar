@@ -1,6 +1,7 @@
 from django.db import models
 from clubs.models import Club
 import uuid
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Player(models.Model):
@@ -18,3 +19,18 @@ class Player(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class PlayerComment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    player_name = models.CharField(max_length=100)
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.player_name}"
+    

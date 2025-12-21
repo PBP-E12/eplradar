@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponse, FileResponse
 from django.core import serializers
-from .models import Player
+from .models import Player, PlayerComment
 from clubs.models import Club
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -151,3 +151,38 @@ def api_player_image(request, player_id):
         return FileResponse(player.profile_picture_url.open(), content_type='image/jpeg')
     else:
         return HttpResponse(status=404)
+
+def api_player_comments(request, player_id):
+    '''
+    Handles API requests for player comments based on HTTP method
+    '''
+    player = get_object_or_404(Player, id=player_id)
+    if request.method == 'GET':
+        comments = PlayerComment.objects.filter(player_name=player.name)
+        comments_data = []
+        for comment in comments:
+            comments_data.append({
+                'id': comment.id,
+                'user': comment.user.username,
+                'comment': comment.comment,
+                'created_at': comment.created_at.isoformat(),
+                'updated_at': comment.updated_at.isoformat(),
+            })
+        return JsonResponse({'comments': comments_data})
+    elif request.method == 'POST':
+        if not request.user.is_authenticated:
+            return JsonResponse({'status': 'error', 'message': 'Authentication required'})
+        comment_text = request.POST.get('comment')
+        if not comment_text:
+            return JsonResponse({'status': 'error', 'message': 'Comment is required'})
+        try:
+            comment = PlayerComment.objects.create(
+                user=request.user,
+                player_name=player.name,
+                comment=comment_text
+            )
+            return JsonResponse({'status': 'success', 'comment_id': comment.id})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    else:
+        return JsonResponse({"error": "Method not allowed."}, status=405)
