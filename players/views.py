@@ -6,6 +6,7 @@ from clubs.models import Club
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 import requests
+from urllib.parse import unquote
 
 def show_player_detail(request, id):
     player = get_object_or_404(Player, id=id)
@@ -17,7 +18,7 @@ def show_player_detail(request, id):
             'name': player.name,
             'position': player.position,
             'team_name': player.team.nama_klub,
-            'profile_picture_url': player.profile_picture_url.url or '',
+            'profile_picture_url': unquote(player.profile_picture_url.url) if player.profile_picture_url else '',
             'citizenship': player.citizenship,
             'age': player.age,
             'curr_goals': player.curr_goals,
@@ -87,7 +88,7 @@ def api_players_get(request):
             'curr_assists': player.curr_assists,
             'match_played': player.match_played,
             'curr_cleansheet': player.curr_cleansheet,
-            'profile_picture_url': player.profile_picture_url.url if player.profile_picture_url else '',
+            'profile_picture_url': unquote(player.profile_picture_url.url) if player.profile_picture_url else '',
         })
     return JsonResponse({'players': players_data})
 
