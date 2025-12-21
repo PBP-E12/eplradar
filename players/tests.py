@@ -95,10 +95,11 @@ class PlayerTests(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse('players:api_players'))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Type'], 'players/json')
+        self.assertEqual(response['Content-Type'], 'application/json')
         # Check that the player is in the response
-        data = json.loads(response.content.decode('utf-8'))
-        self.assertTrue(any(player['fields']['name'] == 'Meitantei Conan' for player in data))
+        data = response.json()
+        self.assertIn('players', data)
+        self.assertTrue(any(player['name'] == 'Meitantei Conan' for player in data['players']))
 
     def test_api_players_add(self):
         self.client.force_login(self.user)
@@ -121,7 +122,7 @@ class PlayerTests(TestCase):
     def test_api_players_delete(self):
         self.client.force_login(self.user)
         data = {'player_id': str(self.player.id)}
-        response = self.client.post(reverse('players:api_players'), data)
+        response = self.client.post(reverse('players:api_players_delete'), data)
         self.assertEqual(response.status_code, 200)
         json_response = response.json()
         self.assertEqual(json_response['status'], 'success')
