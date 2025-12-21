@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 #Create your models here.
- 
+
 class Match(models.Model):
      home_team = models.CharField(max_length=100)
      away_team = models.CharField(max_length=100)
