@@ -6,6 +6,8 @@ from clubs.models import Club
 from PIL import Image
 import io
 from .views import show_player_detail, show_player_main
+from django.contrib.auth.models import User
+import json
 
 # Create your tests here.
 class PlayerTests(TestCase):
@@ -33,6 +35,7 @@ class PlayerTests(TestCase):
             match_played=8,
             curr_cleansheet=0,
         )
+        self.user = User.objects.create_user(username='testuser', password='testpass')
 
     def test_model_test(self):
         # Models attribute tests
@@ -87,6 +90,46 @@ class PlayerTests(TestCase):
         self.assertEqual(response.status_code, 200)
         # compare JSON payloads directly
         self.assertEqual(response.json(), expected_response)
+
+    def test_api_players_get(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('players:api_players'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'players/json')
+        # Check that the player is in the response
+        data = json.loads(response.content.decode('utf-8'))
+        self.assertTrue(any(player['fields']['name'] == 'Meitantei Conan' for player in data))
+
+    def test_api_players_add(self):
+        self.client.force_login(self.user)
+        data = {
+            'name': 'New Player',
+            'position': 'Midfielder',
+            'team_id': str(self.team.id),
+            'citizenship': 'Testland',
+            'age': '25'
+        }
+        response = self.client.post(reverse('players:api_players'), data)
+        self.assertEqual(response.status_code, 200)
+        json_response = response.json()
+        self.assertEqual(json_response['status'], 'success')
+        self.assertIn('player_id', json_response)
+        # Check if player was created
+        player = Player.objects.get(id=json_response['player_id'])
+        self.assertEqual(player.name, 'New Player')
+
+    def test_api_players_delete(self):
+        self.client.force_login(self.user)
+        data = {'player_id': str(self.player.id)}
+        response = self.client.post(reverse('players:api_players'), data)
+        self.assertEqual(response.status_code, 200)
+        json_response = response.json()
+        self.assertEqual(json_response['status'], 'success')
+        # Check if player was deleted
+        with self.assertRaises(Player.DoesNotExist):
+            Player.objects.get(id=self.player.id)
+
+    
 
     def tearDown(self):
         self.team.delete()
