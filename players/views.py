@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, FileResponse
 from django.core import serializers
 from .models import Player
 from clubs.models import Club
@@ -64,8 +64,22 @@ def api_players_get(request):
         else:
             players = Player.objects.all()
 
-        json_response = serializers.serialize('json', players)
-        return HttpResponse(json_response, content_type="players/json")
+        players_data = []
+        for player in players:
+            players_data.append({
+                'id': str(player.id),
+                'name': player.name,
+                'position': player.position,
+                'team_id': str(player.team_id),
+                'citizenship': player.citizenship,
+                'age': player.age,
+                'curr_goals': player.curr_goals,
+                'curr_assists': player.curr_assists,
+                'match_played': player.match_played,
+                'curr_cleansheet': player.curr_cleansheet,
+                'profile_picture_url': player.profile_picture_url.url if player.profile_picture_url else '',
+            })
+        return JsonResponse({'players': players_data})
     else:
         return JsonResponse({"error": "Method not allowed."}, status=405)
 
@@ -118,3 +132,13 @@ def api_players_delete(request):
             return JsonResponse({'status': 'error', 'message': str(e)})
     else:
         return JsonResponse({"error": "Method not allowed."}, status=405)
+
+def api_player_image(request, player_id):
+    '''
+    Handles GET request for retrieving player image
+    '''
+    player = get_object_or_404(Player, id=player_id)
+    if player.profile_picture_url:
+        return FileResponse(player.profile_picture_url.open(), content_type='image/jpeg')
+    else:
+        return HttpResponse(status=404)
