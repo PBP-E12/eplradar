@@ -223,9 +223,14 @@ def show_predictions_by_match_api(request, match_id):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-@login_required
 def create_prediction_api(request):
     try:
+        if not request.user.is_authenticated:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Authentication required'
+            }, status=401)
+
         data = json.loads(request.body)
         user = request.user
 
@@ -258,8 +263,8 @@ def create_prediction_api(request):
         prediction = ScorePrediction.objects.create(
             user=user,
             match=match,
-            home_score_prediction=data.get('home_score_prediction'),
-            away_score_prediction=data.get('away_score_prediction'),
+            home_score_prediction=data.get('home_score_prediction', 0),
+            away_score_prediction=data.get('away_score_prediction', 0),
         )
 
         return JsonResponse({
@@ -322,18 +327,29 @@ def prediction_detail_api(request, prediction_id):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-@login_required
 def update_prediction_api(request, prediction_id):
     try:
-        prediction = ScorePrediction.objects.get(
-            id=prediction_id,
-            user=request.user
-        )
+        if not request.user.is_authenticated:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Authentication required'
+            }, status=401)
+
+        try:
+            prediction = ScorePrediction.objects.get(
+                id=prediction_id,
+                user=request.user
+            )
+        except ScorePrediction.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Prediksi tidak ditemukan atau bukan milik Anda'
+            }, status=404)
 
         data = json.loads(request.body)
 
         prediction.home_score_prediction = data.get('home_score_prediction', prediction.home_score_prediction)
-        prediction.away_score_prediction = data.get('away_score_prediction',prediction.away_score_prediction)
+        prediction.away_score_prediction = data.get('away_score_prediction', prediction.away_score_prediction)
         prediction.save()
 
         return JsonResponse({
@@ -346,17 +362,38 @@ def update_prediction_api(request, prediction_id):
             }
         })
 
-    except ScorePrediction.DoesNotExist:
+    except json.JSONDecodeError:
         return JsonResponse({
             'status': 'error',
-            'message': 'Prediksi tidak ditemukan'
-        }, status=404)
+            'message': 'Invalid JSON'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=400)
 
 @csrf_exempt
-@require_http_methods(["DELETE"])
+@require_http_methods(["POST", "DELETE"])
 def delete_prediction_api(request, prediction_id):
     try:
-        prediction = ScorePrediction.objects.get(id=prediction_id)
+        if not request.user.is_authenticated:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Authentication required'
+            }, status=401)
+
+        try:
+            prediction = ScorePrediction.objects.get(
+                id=prediction_id,
+                user=request.user
+            )
+        except ScorePrediction.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Prediksi tidak ditemukan atau bukan milik Anda'
+            }, status=404)
+        
         prediction.delete()
         
         return JsonResponse({
@@ -364,11 +401,6 @@ def delete_prediction_api(request, prediction_id):
             'message': 'Prediksi berhasil dihapus'
         })
         
-    except ScorePrediction.DoesNotExist:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Prediksi tidak ditemukan'
-        }, status=404)
     except Exception as e:
         return JsonResponse({
             'status': 'error',
