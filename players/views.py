@@ -52,36 +52,44 @@ def show_player_main(request):
     # Otherwise return the full page
     return render(request, 'playerspage.html', context)
 
+def api_players(request):
+    '''
+    Handles API requests for players based on HTTP method
+    '''
+    if request.method == 'GET':
+        return api_players_get(request)
+    elif request.method == 'POST':
+        return api_players_post(request)
+    else:
+        return JsonResponse({"error": "Method not allowed."}, status=405)
+
 def api_players_get(request):
     '''
     Handles GET request for listing players
     '''
-    if request.method == 'GET':
-        # Team filter logic
-        team_id = request.GET.get('team')
-        if team_id and team_id != 'all':
-            players = Player.objects.filter(team_id=team_id)
-        else:
-            players = Player.objects.all()
-
-        players_data = []
-        for player in players:
-            players_data.append({
-                'id': str(player.id),
-                'name': player.name,
-                'position': player.position,
-                'team_id': str(player.team_id),
-                'citizenship': player.citizenship,
-                'age': player.age,
-                'curr_goals': player.curr_goals,
-                'curr_assists': player.curr_assists,
-                'match_played': player.match_played,
-                'curr_cleansheet': player.curr_cleansheet,
-                'profile_picture_url': player.profile_picture_url.url if player.profile_picture_url else '',
-            })
-        return JsonResponse({'players': players_data})
+    # Team filter logic
+    team_id = request.GET.get('team')
+    if team_id and team_id != 'all':
+        players = Player.objects.filter(team_id=team_id)
     else:
-        return JsonResponse({"error": "Method not allowed."}, status=405)
+        players = Player.objects.all()
+
+    players_data = []
+    for player in players:
+        players_data.append({
+            'id': str(player.id),
+            'name': player.name,
+            'position': player.position,
+            'team_id': str(player.team_id),
+            'citizenship': player.citizenship,
+            'age': player.age,
+            'curr_goals': player.curr_goals,
+            'curr_assists': player.curr_assists,
+            'match_played': player.match_played,
+            'curr_cleansheet': player.curr_cleansheet,
+            'profile_picture_url': player.profile_picture_url.url if player.profile_picture_url else '',
+        })
+    return JsonResponse({'players': players_data})
 
 @login_required
 def api_players_post(request):
