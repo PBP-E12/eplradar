@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, FileResponse
 from django.core import serializers
 from .models import Player
 from clubs.models import Club
@@ -116,5 +116,21 @@ def api_players_delete(request):
             return JsonResponse({'status': 'error', 'message': 'Player not found'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
+    else:
+        return JsonResponse({"error": "Method not allowed."}, status=405)
+
+def api_player_image(request, player_id):
+    '''
+    Handles GET request for retrieving a player's profile image
+    '''
+    if request.method == 'GET':
+        try:
+            player = Player.objects.get(id=player_id)
+            if player.profile_picture_url and player.profile_picture_url.name:
+                return FileResponse(player.profile_picture_url, content_type='image/png')
+            else:
+                return JsonResponse({'error': 'No profile picture available'}, status=404)
+        except Player.DoesNotExist:
+            return JsonResponse({'error': 'Player not found'}, status=404)
     else:
         return JsonResponse({"error": "Method not allowed."}, status=405)
