@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 import requests
 from urllib.parse import unquote
+from django.views.decorators.csrf import csrf_exempt
 
 def show_player_detail(request, id):
     player = get_object_or_404(Player, id=id)
@@ -152,6 +153,7 @@ def api_player_image(request, player_id):
     else:
         return HttpResponse(status=404)
 
+@csrf_exempt
 def api_player_comments(request, player_id):
     '''
     Handles API requests for player comments based on HTTP method
