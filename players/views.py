@@ -52,12 +52,9 @@ def show_player_main(request):
     # Otherwise return the full page
     return render(request, 'playerspage.html', context)
 
-@login_required
-def api_players(request):
+def api_players_get(request):
     '''
-    returns json when called with http request GET
-    Handles GET for listing, POST for add/delete
-    :param request: Description
+    Handles GET request for listing players
     '''
     if request.method == 'GET':
         # Team filter logic
@@ -69,43 +66,55 @@ def api_players(request):
 
         json_response = serializers.serialize('json', players)
         return HttpResponse(json_response, content_type="players/json")
-    
-    elif request.method == 'POST':
-        if 'player_id' in request.POST:
-            # Delete
-            player_id = request.POST.get('player_id')
-            if not player_id:
-                return JsonResponse({'status': 'error', 'message': 'Player ID is required'})
+    else:
+        return JsonResponse({"error": "Method not allowed."}, status=405)
 
-            try:
-                player = Player.objects.get(id=player_id)
-                player.delete()
-                return JsonResponse({'status': 'success'})
-            except Player.DoesNotExist:
-                return JsonResponse({'status': 'error', 'message': 'Player not found'})
-            except Exception as e:
-                return JsonResponse({'status': 'error', 'message': str(e)})
-        else:
-            # Add
-            name = request.POST.get('name')
-            position = request.POST.get('position')
-            team_id = request.POST.get('team_id')
-            citizenship = request.POST.get('citizenship')
-            age = request.POST.get('age')
+@login_required
+def api_players_post(request):
+    '''
+    Handles POST request for adding a player
+    '''
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        position = request.POST.get('position')
+        team_id = request.POST.get('team_id')
+        citizenship = request.POST.get('citizenship')
+        age = request.POST.get('age')
 
-            if not all([name, position, team_id, citizenship, age]):
-                return JsonResponse({'status': 'error', 'message': 'All fields are required'})
+        if not all([name, position, team_id, citizenship, age]):
+            return JsonResponse({'status': 'error', 'message': 'All fields are required'})
 
-            try:
-                player = Player.objects.create(
-                    name=name,
-                    position=position,
-                    team_id=team_id,
-                    citizenship=citizenship,
-                    age=age
-                )
-                return JsonResponse({'status': 'success', 'player_id': str(player.id)})
-            except Exception as e:
-                return JsonResponse({'status': 'error', 'message': str(e)})
+        try:
+            player = Player.objects.create(
+                name=name,
+                position=position,
+                team_id=team_id,
+                citizenship=citizenship,
+                age=age
+            )
+            return JsonResponse({'status': 'success', 'player_id': str(player.id)})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    else:
+        return JsonResponse({"error": "Method not allowed."}, status=405)
+
+@login_required
+def api_players_delete(request):
+    '''
+    Handles POST request for deleting a player
+    '''
+    if request.method == 'POST':
+        player_id = request.POST.get('player_id')
+        if not player_id:
+            return JsonResponse({'status': 'error', 'message': 'Player ID is required'})
+
+        try:
+            player = Player.objects.get(id=player_id)
+            player.delete()
+            return JsonResponse({'status': 'success'})
+        except Player.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Player not found'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
     else:
         return JsonResponse({"error": "Method not allowed."}, status=405)
